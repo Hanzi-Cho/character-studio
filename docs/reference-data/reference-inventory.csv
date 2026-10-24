@@ -1,0 +1,39 @@
+id,source_page,source_image,review,observation
+4589468435181-01,https://chiikawamarket.jp/products/4589468435181,https://chiikawamarket.jp/cdn/shop/products/000000000036_1.jpg,reviewed,front; crown/chin/eye/ear landmarks measured
+4589468435181-02,https://chiikawamarket.jp/products/4589468435181,https://chiikawamarket.jp/cdn/shop/products/7_000000000036_1.jpg,excluded,same front pose/resized duplicate
+4589468435181-03,https://chiikawamarket.jp/products/4589468435181,https://chiikawamarket.jp/cdn/shop/products/2_000000000036_2.jpg,reviewed,"outdoor group; tilted right Chiikawa, depth only"
+4589468435181-04,https://chiikawamarket.jp/products/4589468435181,https://chiikawamarket.jp/cdn/shop/products/6_000000000036_3.jpg,reviewed,kitchen group; right Chiikawa arm attachment
+4589468435181-05,https://chiikawamarket.jp/products/4589468435181,https://chiikawamarket.jp/cdn/shop/products/4_000000000036_4.jpg,reviewed,"human holding pair; front tilt, small feet"
+4589468435181-06,https://chiikawamarket.jp/products/4589468435181,https://chiikawamarket.jp/cdn/shop/products/5_000000000036_5.jpg,reviewed,human holding Chiikawa; head/ear silhouette
+4589468435181-07,https://chiikawamarket.jp/products/4589468435181,https://chiikawamarket.jp/cdn/shop/products/8_000000000036_6.jpg,excluded,near-identical front; conservatively excluded from count
+4589468435181-08,https://chiikawamarket.jp/products/4589468435181,https://chiikawamarket.jp/cdn/shop/products/9_000000000036_7.jpg,reviewed,back; ear separation and rounded back
+4582662910645-01,https://chiikawamarket.jp/products/4582662910645,https://chiikawamarket.jp/cdn/shop/products/4582662910645_1.jpg,reviewed,front; head/chin landmarks measured
+4582662910645-02,https://chiikawamarket.jp/products/4582662910645,https://chiikawamarket.jp/cdn/shop/products/4582662910645_2.jpg,reviewed,three plush group; center Chiikawa proportions
+4582662910645-03,https://chiikawamarket.jp/products/4582662910645,https://chiikawamarket.jp/cdn/shop/products/4582662910645_3.jpg,reviewed,six plush group; scale variants; count photo once
+4582662910645-04,https://chiikawamarket.jp/products/4582662910645,https://chiikawamarket.jp/cdn/shop/products/4582662910645_4.jpg,excluded,duplicate front
+4582662910645-05,https://chiikawamarket.jp/products/4582662910645,https://chiikawamarket.jp/cdn/shop/products/4582662910645_5.jpg,reviewed,back; short feet and seamless round silhouette
+4571609359074-01,https://chiikawamarket.jp/products/4571609359074,https://chiikawamarket.jp/cdn/shop/files/4571609359074_1.jpg,reviewed,front; head landmarks and open mouth measured
+4571609359074-02,https://chiikawamarket.jp/products/4571609359074,https://chiikawamarket.jp/cdn/shop/files/image_1_fccf2104-fac9-431f-9e12-c62826fa6541.jpg,reviewed,park group; Chiikawa lower center; short limbs
+4571609387930-01,https://chiikawamarket.jp/products/4571609387930,https://chiikawamarket.jp/cdn/shop/files/4571609387930_1.jpg,reviewed,front; near-equal body/head width; no reliable chin seam
+4571609387930-02,https://chiikawamarket.jp/products/4571609387930,https://chiikawamarket.jp/cdn/shop/files/image_1_c487192a-7ec4-422b-bbda-15e058c0bb3d.jpg,reviewed,"holding pair; Chiikawa right, broad torso"
+4571609387930-03,https://chiikawamarket.jp/products/4571609387930,https://chiikawamarket.jp/cdn/shop/files/image_2_df244526-723e-4042-a0d9-b0c86fc5dda6.jpg,excluded,Usagi only; wrong character
+4571609387930-04,https://chiikawamarket.jp/products/4571609387930,https://chiikawamarket.jp/cdn/shop/files/4571609387930_1_7cbfa4bc-73db-46f6-8eb3-c5345ecf2f91.jpg,excluded,duplicate front
+4571609387930-05,https://chiikawamarket.jp/products/4571609387930,https://chiikawamarket.jp/cdn/shop/files/4571609387930_2.jpg,reviewed,back; broad continuous head/body
+4571609391890-01,https://chiikawamarket.jp/products/4571609391890,https://chiikawamarket.jp/cdn/shop/files/4571609391890_1.jpg,reviewed,front; head landmarks measured; seated feet excluded from standing leg inference
+4571609391890-02,https://chiikawamarket.jp/products/4571609391890,https://chiikawamarket.jp/cdn/shop/files/image_1_9aeef748-14ce-49ca-813c-ecd40f28da72.jpg,reviewed,outdoor posed group; lower left Chiikawa plus flying Chiikawa
+4571609391890-03,https://chiikawamarket.jp/products/4571609391890,https://chiikawamarket.jp/cdn/shop/files/image_2_9afd6052-c6b0-4fa3-89f5-e3d3aad91fd8.jpg,reviewed,indoor front Chiikawa; body partially occluded
+4571609391890-04,https://chiikawamarket.jp/products/4571609391890,https://chiikawamarket.jp/cdn/shop/files/4571609391890_1_17dc72e5-4c9e-48ad-a06e-7b5d3d3edc30.jpg,excluded,duplicate front
+4571609391890-05,https://chiikawamarket.jp/products/4571609391890,https://chiikawamarket.jp/cdn/shop/files/4571609391890_2.jpg,reviewed,back; arms beside body
+4571609391890-06,https://chiikawamarket.jp/products/4571609391890,https://chiikawamarket.jp/cdn/shop/files/4571609391890_3.jpg,reviewed,true side; head depth/height and ear fore/aft measured
+4582662969889-01,https://chiikawamarket.jp/products/4582662969889,https://chiikawamarket.jp/cdn/shop/files/4582662969889_1.jpg,reviewed,front; hat occludes crown and bow occludes chest; excluded from head-height median
+4582662969889-02,https://chiikawamarket.jp/products/4582662969889,https://chiikawamarket.jp/cdn/shop/files/image1_6ace7f4e-a421-48ec-bd6b-b7439a2167ab.jpg,reviewed,human holding trio; Chiikawa center
+4582662969889-03,https://chiikawamarket.jp/products/4582662969889,https://chiikawamarket.jp/cdn/shop/files/image2_93df15aa-a4c2-4a97-9f2a-2be74fc7d683.jpg,reviewed,seated human holding Chiikawa; tilted front
+4582662969889-04,https://chiikawamarket.jp/products/4582662969889,https://chiikawamarket.jp/cdn/shop/files/image3_f4593b1e-107c-4c86-a44e-d91ed2441023.jpg,reviewed,group row; Chiikawa fourth from left; pose only
+4582662969889-05,https://chiikawamarket.jp/products/4582662969889,https://chiikawamarket.jp/cdn/shop/files/image4_7e3e395b-9b41-4937-bd96-af9fa3181e2e.jpg,reviewed,group stairs; Chiikawa center; short feet
+4582662969889-06,https://chiikawamarket.jp/products/4582662969889,https://chiikawamarket.jp/cdn/shop/files/4582662969889_1_89889caa-3431-4bc7-a2be-eb31a64b2d6a.jpg,excluded,duplicate front
+4582662969889-07,https://chiikawamarket.jp/products/4582662969889,https://chiikawamarket.jp/cdn/shop/files/4582662969889_2.jpg,reviewed,back; tail/ear silhouette
+kitan-normal,https://kitan.jp/products/okaonosqueeze_chiikawa/,https://kitan.jp/wp-content/uploads/2024/12/normal.jpg,reviewed,normal; head/eyes/cheeks/mouth/brow endpoints measured
+kitan-nakigao,https://kitan.jp/products/okaonosqueeze_chiikawa/,https://kitan.jp/wp-content/uploads/2024/12/nakigao.jpg,reviewed,crying; wavy brows and ink outlined tears
+kitan-nikkori,https://kitan.jp/products/okaonosqueeze_chiikawa/,https://kitan.jp/wp-content/uploads/2024/12/nikkori.jpg,reviewed,smile; raised closed eyelids/open mouth measured
+kitan-yaruki,https://kitan.jp/products/okaonosqueeze_chiikawa/,https://kitan.jp/wp-content/uploads/2024/12/yaruki.jpg,reviewed,"official label is motivated, not angry; inner-down brows measured"
+kitan-komatta,https://kitan.jp/products/okaonosqueeze_chiikawa/,https://kitan.jp/wp-content/uploads/2024/12/komatta.jpg,reviewed,worried; wavy brow and small wavering mouth

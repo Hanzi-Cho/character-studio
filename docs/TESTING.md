@@ -1,5 +1,17 @@
 # 검증 기록 — 2026-10-24
 
+## 2026-10-24 · R02.3 실측 비율 회귀
+
+- `node node_modules/typescript/bin/tsc --noEmit`, `node scripts/build.mjs`: 통과.
+- `node --import tsx --test tests/model.test.ts tests/domain.test.ts tests/integration.test.ts tests/batch.test.ts`: **14/14 통과**.
+- 신규: 실제 월드 버텍스에서 머리 높이/폭 0.74~0.78, 눈·볼 정규화 좌표, 귀 연결·18° 기울기; 6종 눈썹 tube 양 끝 단면 중심에서 각도 검증.
+- 유지: 몸통 크기 극값에서 얼굴 불변/발 바닥 접촉, 6표정 변경 시 geometry ID·몸 버퍼 version·색·장식 보존, 실제 HTTP/stdin MCP·저장/되돌리기·충돌·도메인 경계 검증.
+- 1280×720 실제 WebGL 정면/드래그 회전/6표정 화면 확인. 390×844 화면에서 머리·귀·팔다리·선택 UI·입력창 표시 및 가로 overflow 없음 (clientWidth=scrollWidth=390).
+- 브라우저 error 로그 0개. 6표정 방문 후 geometry ID 유지, 대기 시 scheduled=false. GPU geometry 수 증가는 최초 방문 표정의 lazy upload이며 재생성은 없음을 별도 모델 테스트로 확인했다.
+- 근거: `docs/evidence/chiikawa-measured-*-v3.jpg`, [측정 보고서](CHIIKAWA-MEASUREMENTS.md), `tests/model.test.ts`.
+- 실제 휴대폰 터치/성능, 외부 AI 호스트의 새 모델 표시, 사용자의 닮음 최종 평가는 미검증. 이 변경으로 제품화/출시 상태를 올리지 않는다.
+
+
 ## 2026-10-24 2차 비율·6종 표정 검증 (현재)
 
 R02.2: 얼굴/몸 폭 약 1.08:1, 연속 표면, 짧은 팔다리. R03.2: 표정 시안 6종과 expression-only patch. 자동 테스트 12/12 통과. 기존 테스트를 새로운 연속 표면에 맞춰 갱신했고 체형 최솟값/최댓값에서도 얼굴 폭·위치와 바닥 접촉을 검사한다. 6종 전환 시 몸 vertex buffer version/내용, 재질 색, geometry ID, 장식을 보존하는지 확인한다.

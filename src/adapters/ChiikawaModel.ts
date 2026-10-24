@@ -1,8 +1,14 @@
 import * as THREE from "three";
 import type { CharacterDocument } from "../domain/character.js";
 
+import {
+  CHIIKAWA_RIG as RIG,
+  EXPRESSION_BROWS,
+  facePoint,
+  bodyProfile,
+} from "./chiikawaRig.js";
+
 type Profile = readonly (readonly [radius: number, height: number])[];
-const FACE_DROP = 0.16;
 
 /** Reference-driven proportions. One continuous head/torso silhouette;
  * face markings are curved meshes on the head surface, not a front-facing image.
@@ -30,29 +36,13 @@ export class ChiikawaModel {
   private readonly tears = this.inkMaterial("#9bcbdc");
   private bodyGeometry!: THREE.BufferGeometry;
   private bodyBase!: Float32Array;
-  private readonly headProfile = this.profile([
-    [0, 0.23],
-    [0.4, 0.25],
-    [0.72, 0.4],
-    [0.92, 0.65],
-    [1.035, 0.94],
-    [1.065, 1.25],
-    [1.07, 1.5],
-    [1.12, 1.74],
-    [1.16, 1.96],
-    [1.145, 2.2],
-    [1.055, 2.43],
-    [0.89, 2.63],
-    [0.65, 2.78],
-    [0.36, 2.88],
-    [0, 2.92],
-  ]);
-  private readonly headDepth = 0.63;
+  private readonly headProfile = this.profile(bodyProfile());
+  private readonly headDepth = RIG.head.depthRatio;
   private lastDocument?: CharacterDocument;
 
   constructor() {
     this.root.name = "chiikawa";
-    this.root.scale.y = 0.86;
+    // No whole-character squash: the measured head height must survive rendering.
     this.head.name = "head";
     this.torso.name = "torso";
     this.feet.name = "feet";
@@ -134,34 +124,35 @@ export class ChiikawaModel {
       // Short, white rounded ears grow from a buried pivot on the head.
       const ear = new THREE.Group();
       ear.name = side < 0 ? "left-ear" : "right-ear";
-      ear.position.set(side * 0.6, 2.76, -0.005);
-      ear.rotation.z = -side * 0.14;
+      ear.position.set(side * RIG.ear.x, RIG.ear.y, RIG.ear.z);
+      ear.rotation.z = -side * THREE.MathUtils.degToRad(RIG.ear.outwardDegrees);
       this.ellipsoid(
         ear,
-        [0, 0.13, 0],
-        [0.145, 0.195, 0.13],
+        [0, RIG.ear.lift, 0],
+        [RIG.ear.width / 2, RIG.ear.height / 2, RIG.ear.depth / 2],
         this.earFur,
         true,
       );
       this.ears.add(ear);
       const arm = this.ellipsoid(
         this.torso,
-        [side * 1.075, 1.12, 0.035],
-        [0.18, 0.115, 0.135],
+        [side * RIG.arm.x, RIG.arm.y, RIG.arm.z],
+        [RIG.arm.length / 2, RIG.arm.thickness / 2, RIG.arm.depth / 2],
         this.fur,
         true,
       );
       arm.name = side < 0 ? "left-arm" : "right-arm";
-      arm.rotation.z = -side * 0.6;
+      arm.rotation.z = -side * THREE.MathUtils.degToRad(RIG.arm.downDegrees);
       const foot = this.ellipsoid(
         this.feet,
-        [side * 0.48, 0.2, 0.09],
-        [0.12, 0.18, 0.14],
+        [side * RIG.foot.x, RIG.foot.y, RIG.foot.z],
+        [RIG.foot.width / 2, RIG.foot.height / 2, RIG.foot.depth / 2],
         this.fur,
         true,
       );
       foot.name = side < 0 ? "left-foot" : "right-foot";
-      foot.rotation.z = side * 0.06;
+      foot.rotation.z =
+        side * THREE.MathUtils.degToRad(RIG.foot.outwardDegrees);
     }
   }
 
@@ -197,7 +188,6 @@ export class ChiikawaModel {
     offset = 0.014,
     rotation = 0,
   ) {
-    cy -= FACE_DROP;
     const positions: number[] = [],
       indices: number[] = [];
     const rings = 6,
@@ -245,7 +235,7 @@ export class ChiikawaModel {
     offset = 0.029,
   ) {
     const spline = new THREE.SplineCurve(
-      points.map(([x, y]) => new THREE.Vector2(x, y - FACE_DROP)),
+      points.map(([x, y]) => new THREE.Vector2(x, y)),
     );
     const project = (x: number, y: number) => this.faceZ(x, y, offset);
     class SurfaceCurve extends THREE.Curve<THREE.Vector3> {
@@ -265,185 +255,235 @@ export class ChiikawaModel {
       false,
     );
     this.geometries.add(geometry);
-    this.mesh(parent, geometry, material).castShadow = false;
+    const mesh = this.mesh(parent, geometry, material);
+    mesh.castShadow = false;
+    return mesh;
   }
-  private muzzle(parent: THREE.Object3D) {
-    this.stroke(
+  /** All face placement uses the documented head coordinate frame. */
+  private mark(
+    parent: THREE.Object3D,
+    u: number,
+    v: number,
+    width: number,
+    height: number,
+    material: THREE.Material,
+    offset = 0.018,
+    rotation = 0,
+  ) {
+    const [x, y] = facePoint(u, v);
+    return this.faceEllipse(
       parent,
-      [
-        [-0.135, 2.145],
-        [-0.132, 2.092],
-        [-0.09, 2.066],
-        [-0.044, 2.083],
-        [0, 2.132],
-        [0.044, 2.083],
-        [0.09, 2.066],
-        [0.132, 2.092],
-        [0.135, 2.145],
-      ],
-      0.019,
+      x,
+      y,
+      (width * RIG.head.width) / 2,
+      (height * RIG.head.width) / 2,
+      material,
+      offset,
+      rotation,
     );
-    this.faceEllipse(parent, 0, 2.172, 0.023, 0.017, this.ink, 0.028);
   }
-  private eyebrows(parent: THREE.Object3D, lift = 0) {
-    for (const side of [-1, 1])
-      this.stroke(
+  private line(
+    parent: THREE.Object3D,
+    points: [number, number][],
+    radius = 0.008,
+    material: THREE.Material = this.ink,
+    offset = 0.029,
+  ) {
+    return this.stroke(
+      parent,
+      points.map(([u, v]) => facePoint(u, v)),
+      radius * RIG.head.width,
+      material,
+      offset,
+    );
+  }
+  private muzzle(parent: THREE.Object3D, lift = 0) {
+    const lip: [number, number][] = [
+      [-0.07, 0.655 + lift],
+      [-0.065, 0.68 + lift],
+      [-0.044, 0.691 + lift],
+      [-0.022, 0.682 + lift],
+      [0, 0.655 + lift],
+      [0.022, 0.682 + lift],
+      [0.044, 0.691 + lift],
+      [0.065, 0.68 + lift],
+      [0.07, 0.655 + lift],
+    ];
+    this.line(
+      parent,
+      lip.map(([u, v]) => [
+        (u * RIG.mouth.width) / 0.14,
+        v + RIG.mouth.v - 0.67,
+      ]),
+    ).name = "muzzle";
+    this.mark(
+      parent,
+      0,
+      RIG.mouth.v - 0.02 + lift,
+      0.022,
+      0.016,
+      this.ink,
+      0.03,
+    );
+  }
+  private eyebrows(
+    parent: THREE.Object3D,
+    expression: CharacterDocument["expression"],
+  ) {
+    const { degrees, v } = EXPRESSION_BROWS[expression];
+    const rise =
+      (0.08 * RIG.head.width * Math.tan(THREE.MathUtils.degToRad(degrees))) /
+      RIG.head.height;
+    for (const side of [-1, 1]) {
+      const brow = this.line(
         parent,
         [
-          [side * 0.44, 2.53 + lift],
-          [side * 0.385, 2.548 + lift],
-          [side * 0.32, 2.549 + lift],
-          [side * 0.275, 2.539 + lift],
+          [side * 0.205, v + rise / 2],
+          [side * 0.165, v - 0.01],
+          [side * 0.125, v - rise / 2],
         ],
-        0.015,
+        expression === "angry" ? 0.009 : 0.007,
       );
+      brow.name = side < 0 ? "left-brow" : "right-brow";
+    }
   }
   private buildFace() {
     for (const side of [-1, 1]) {
-      const cheekX = side * 0.69;
-      this.faceEllipse(this.head, cheekX, 2.1, 0.205, 0.12, this.blush, 0.012);
-      for (let j = 0; j < 4; j++) {
-        const x = cheekX + (j - 1.5) * 0.065;
-        this.stroke(
+      const u = side * RIG.cheek.x;
+      this.mark(
+        this.head,
+        u,
+        RIG.cheek.v,
+        RIG.cheek.width,
+        RIG.cheek.height,
+        this.blush,
+        0.012,
+      ).name = side < 0 ? "left-cheek" : "right-cheek";
+      // Three short diagonal blush marks, as in the clear official face studies.
+      for (let j = 0; j < 3; j++) {
+        const x = u + (j - 1) * 0.035;
+        this.line(
           this.head,
           [
-            [x - 0.029, 2.045],
-            [x + 0.027, 2.155],
+            [x - 0.01, RIG.cheek.v + 0.025],
+            [x + 0.009, RIG.cheek.v - 0.024],
           ],
-          0.0075,
+          0.004,
           this.ink,
           0.026,
         );
       }
       const eye = new THREE.Group();
       eye.name = side < 0 ? "left-eye" : "right-eye";
-      const x = side * 0.35,
-        y = 2.295;
-      this.faceEllipse(eye, x, y, 0.137, 0.151, this.ink, 0.018);
-      this.faceEllipse(
+      const x = side * RIG.eye.x,
+        v = RIG.eye.v;
+      this.mark(eye, x, v, RIG.eye.width, RIG.eye.height, this.ink);
+      this.mark(
         eye,
-        x - 0.014,
-        y + 0.061,
-        0.073,
+        x - 0.006,
+        v - 0.034,
+        0.063,
         0.03,
         this.highlight,
         0.034,
-        0.18,
+        0.16,
       );
-      this.faceEllipse(
+      this.mark(
         eye,
-        x + 0.022,
-        y - 0.054,
-        0.058,
-        0.028,
+        x + 0.01,
+        v + 0.031,
+        0.047,
+        0.02,
         this.highlight,
         0.034,
-        0.18,
+        0.12,
       );
-      // Local pivot keeps eye-size edits centered rather than shifting facial spacing.
-      const pivot = new THREE.Vector3(
-        x,
-        y - FACE_DROP,
-        this.faceZ(x, y - FACE_DROP, 0),
-      );
+      const [px, py] = facePoint(x, v);
+      const pivot = new THREE.Vector3(px, py, this.faceZ(px, py, 0));
       for (const child of eye.children) child.position.sub(pivot);
       eye.position.copy(pivot);
       this.eyes.add(eye);
     }
     const gentle = new THREE.Group();
-    this.eyebrows(gentle);
+    this.eyebrows(gentle, "gentle");
     this.muzzle(gentle);
-    this.stroke(
+    this.line(
       gentle,
       [
-        [-0.051, 2.025],
-        [-0.031, 1.985],
-        [0.015, 1.981],
-        [0.05, 2.012],
+        [-0.025, 0.743],
+        [-0.01, 0.755],
+        [0.012, 0.755],
+        [0.025, 0.744],
       ],
-      0.017,
+      0.007,
     );
+
     const happy = new THREE.Group();
-    this.eyebrows(happy, 0.025);
-    this.muzzle(happy);
-    this.faceEllipse(happy, 0, 1.995, 0.066, 0.078, this.ink, 0.022);
-    this.faceEllipse(happy, 0.003, 1.967, 0.043, 0.029, this.blush, 0.036);
+    this.eyebrows(happy, "happy");
+    // Open mouth is drawn first; W-shaped lip stays legible above it.
+    this.mark(happy, 0, 0.697, 0.082, 0.112, this.ink, 0.019);
+    this.mark(happy, 0, 0.691, 0.046, 0.075, this.highlight, 0.034);
+    this.mark(happy, 0, 0.733, 0.043, 0.023, this.blush, 0.04);
+    this.muzzle(happy, -0.05);
     for (const side of [-1, 1])
-      this.stroke(
+      this.line(
         happy,
         [
-          [side * 0.465, 2.275],
-          [side * 0.35, 2.345],
-          [side * 0.235, 2.275],
+          [side * 0.215, 0.49],
+          [side * 0.16, 0.467],
+          [side * 0.105, 0.49],
         ],
-        0.025,
+        0.01,
       );
-    const surprised = new THREE.Group();
-    this.eyebrows(surprised, 0.045);
-    this.faceEllipse(surprised, 0, 2.07, 0.061, 0.086, this.ink, 0.023);
+
     const sad = new THREE.Group();
-    const angry = new THREE.Group();
-    const sleepy = new THREE.Group();
+    this.eyebrows(sad, "sad");
+    this.muzzle(sad);
     for (const side of [-1, 1]) {
-      this.stroke(
-        sad,
-        [
-          [side * 0.48, 2.51],
-          [side * 0.37, 2.54],
-          [side * 0.26, 2.59],
-        ],
-        0.018,
-      );
-      this.faceEllipse(sad, side * 0.41, 2.1, 0.045, 0.1, this.tears, 0.041);
-      this.faceEllipse(
-        sad,
-        side * 0.42,
-        2.13,
-        0.012,
-        0.036,
-        this.highlight,
-        0.05,
-      );
-      // Brows descend towards the nose; the face outline and eye spacing stay fixed.
-      this.stroke(
-        angry,
-        [
-          [side * 0.49, 2.54],
-          [side * 0.37, 2.5],
-          [side * 0.24, 2.44],
-        ],
-        0.024,
-      );
-      this.stroke(
-        sleepy,
-        [
-          [side * 0.47, 2.3],
-          [side * 0.35, 2.26],
-          [side * 0.23, 2.3],
-        ],
-        0.022,
-      );
+      this.mark(sad, side * 0.178, 0.615, 0.035, 0.088, this.tears, 0.041);
+      this.mark(sad, side * 0.174, 0.598, 0.01, 0.029, this.highlight, 0.052);
     }
-    this.stroke(
+    this.line(
       sad,
       [
-        [-0.07, 2.01],
-        [0, 2.05],
-        [0.07, 2.01],
+        [-0.027, 0.757],
+        [0, 0.741],
+        [0.027, 0.757],
       ],
-      0.019,
+      0.0075,
     );
-    this.stroke(
+
+    const angry = new THREE.Group();
+    this.eyebrows(angry, "angry");
+    this.muzzle(angry);
+    this.line(
       angry,
       [
-        [-0.075, 2.02],
-        [0, 2.055],
-        [0.075, 2.02],
+        [-0.028, 0.752],
+        [0, 0.737],
+        [0.028, 0.752],
       ],
-      0.021,
+      0.008,
     );
-    this.eyebrows(sleepy, -0.025);
-    this.faceEllipse(sleepy, 0, 2.07, 0.032, 0.043, this.ink, 0.026);
+
+    const surprised = new THREE.Group();
+    this.eyebrows(surprised, "surprised");
+    this.mark(surprised, 0, 0.7, 0.061, 0.084, this.ink, 0.025);
+
+    const sleepy = new THREE.Group();
+    this.eyebrows(sleepy, "sleepy");
+    for (const side of [-1, 1])
+      this.line(
+        sleepy,
+        [
+          [side * 0.215, 0.5],
+          [side * 0.16, 0.529],
+          [side * 0.105, 0.5],
+        ],
+        0.009,
+      );
+    this.mark(sleepy, 0, 0.7, 0.032, 0.043, this.ink, 0.026);
+
     for (const [name, group] of [
       ["gentle", gentle],
       ["happy", happy],
@@ -461,7 +501,7 @@ export class ChiikawaModel {
   private buildAccessories() {
     const bow = new THREE.Group();
     bow.name = "bow";
-    bow.position.set(0, 1.28, 0.69);
+    bow.position.set(0, 1.12, 0.8);
     for (const side of [-1, 1]) {
       const wing = this.ellipsoid(
         bow,
@@ -478,7 +518,7 @@ export class ChiikawaModel {
     bow.visible = false;
     const star = new THREE.Group();
     star.name = "star";
-    star.position.set(0.61, 2.94, 0.16);
+    star.position.set(0.67, 3.17, 0.18);
     const shape = new THREE.Shape();
     for (let i = 0; i < 10; i++) {
       const a = Math.PI / 2 + (i * Math.PI) / 5,
@@ -509,7 +549,7 @@ export class ChiikawaModel {
     this.earFur.color.set(next.earColor);
     this.blush.color.set(next.cheekColor);
     const torsoHeight = next.bodyHeight;
-    const headOffset = 1.37 * (torsoHeight - 1);
+    const headOffset = (RIG.torso.top - RIG.torso.bottom) * (torsoHeight - 1);
     if (
       !this.lastDocument ||
       next.bodyWidth !== this.lastDocument.bodyWidth ||
@@ -522,11 +562,15 @@ export class ChiikawaModel {
         const x = this.bodyBase[i * 3],
           y = this.bodyBase[i * 3 + 1],
           z = this.bodyBase[i * 3 + 2];
-        const weight = 1 - THREE.MathUtils.smoothstep(y, 1.25, 1.82);
+        const weight =
+          1 -
+          THREE.MathUtils.smoothstep(y, RIG.torso.blendStart, RIG.torso.top);
         positions.setXYZ(
           i,
           x * (1 + (next.bodyWidth - 1) * weight),
-          y >= 1.6 ? y + headOffset : 0.23 + (y - 0.23) * torsoHeight,
+          y >= RIG.torso.top
+            ? y + headOffset
+            : RIG.torso.bottom + (y - RIG.torso.bottom) * torsoHeight,
           z,
         );
       }
@@ -536,7 +580,7 @@ export class ChiikawaModel {
       this.bodyGeometry.computeBoundingSphere();
     }
     this.torso.scale.set(next.bodyWidth, torsoHeight, 1);
-    this.torso.position.y = 0.23 * (1 - torsoHeight);
+    this.torso.position.y = RIG.torso.bottom * (1 - torsoHeight);
     this.head.position.y = headOffset;
     this.feet.scale.x = next.bodyWidth;
     for (const ear of this.ears.children) ear.scale.setScalar(next.earSize);

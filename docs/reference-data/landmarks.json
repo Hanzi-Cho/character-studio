@@ -1,0 +1,1568 @@
+{
+  "method": "Manual visual landmarks after whole-image resize to 600x600; no crop; typical +/-5 px. Pixel coordinates preserved for review; normalized values computed, not manually rounded inputs.",
+  "reviewed_unique_photos": 31,
+  "measurements": [
+    {
+      "id": "4589468435181-01",
+      "head_bounds": [
+        126,
+        100,
+        481,
+        366
+      ],
+      "torso_span": [
+        181,
+        431,
+        430
+      ],
+      "eyes": [
+        [
+          251,
+          240
+        ],
+        [
+          355,
+          240
+        ]
+      ],
+      "eye_size": [
+        42,
+        44
+      ],
+      "cheeks": [
+        [
+          198,
+          270
+        ],
+        [
+          414,
+          274
+        ]
+      ],
+      "cheek_size": [
+        54,
+        32
+      ],
+      "mouth_center": [
+        305,
+        281
+      ],
+      "mouth_width": 54,
+      "ears": [
+        [
+          209,
+          101
+        ],
+        [
+          393,
+          96
+        ]
+      ],
+      "ear_size": [
+        70,
+        70
+      ],
+      "arms": [
+        [
+          155,
+          419
+        ],
+        [
+          454,
+          418
+        ]
+      ],
+      "feet": [
+        [
+          228,
+          535
+        ],
+        [
+          374,
+          535
+        ]
+      ],
+      "head_median": true,
+      "coordinate_frame": [
+        600,
+        600
+      ],
+      "uncertainty_px": 5,
+      "source_image": "https://chiikawamarket.jp/cdn/shop/products/000000000036_1.jpg",
+      "source_page": "https://chiikawamarket.jp/products/4589468435181",
+      "derived": {
+        "head_width_px": 355,
+        "head_height_px": 266,
+        "head_height_per_100_width": 74.93,
+        "eyes_head_width_units": [
+          [
+            -14.79,
+            39.44
+          ],
+          [
+            14.51,
+            39.44
+          ]
+        ],
+        "cheeks_head_width_units": [
+          [
+            -29.72,
+            47.89
+          ],
+          [
+            31.13,
+            49.01
+          ]
+        ],
+        "mouth_center_head_width_units": [
+          [
+            0.42,
+            50.99
+          ]
+        ],
+        "ears_head_width_units": [
+          [
+            -26.62,
+            0.28
+          ],
+          [
+            25.21,
+            -1.13
+          ]
+        ],
+        "arms_head_width_units": [
+          [
+            -41.83,
+            89.86
+          ],
+          [
+            42.39,
+            89.58
+          ]
+        ],
+        "feet_head_width_units": [
+          [
+            -21.27,
+            122.54
+          ],
+          [
+            19.86,
+            122.54
+          ]
+        ],
+        "head_to_torso_width": 1.42,
+        "ear_outward_degrees": [
+          20.7,
+          19.1
+        ]
+      },
+      "original_size": [
+        800,
+        800
+      ],
+      "ear_axes_base_to_tip": [
+        [
+          [
+            219,
+            123
+          ],
+          [
+            202,
+            78
+          ]
+        ],
+        [
+          [
+            382,
+            123
+          ],
+          [
+            399,
+            74
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "4582662910645-01",
+      "head_bounds": [
+        124,
+        99,
+        476,
+        359
+      ],
+      "torso_span": [
+        190,
+        413,
+        443
+      ],
+      "eyes": [
+        [
+          245,
+          227
+        ],
+        [
+          350,
+          227
+        ]
+      ],
+      "eye_size": [
+        40,
+        40
+      ],
+      "cheeks": [
+        [
+          197,
+          252
+        ],
+        [
+          400,
+          258
+        ]
+      ],
+      "cheek_size": [
+        42,
+        28
+      ],
+      "mouth_center": [
+        298,
+        264
+      ],
+      "mouth_width": 49,
+      "ears": [
+        [
+          215,
+          103
+        ],
+        [
+          386,
+          103
+        ]
+      ],
+      "ear_size": [
+        78,
+        74
+      ],
+      "arms": [
+        [
+          158,
+          414
+        ],
+        [
+          443,
+          416
+        ]
+      ],
+      "feet": [
+        [
+          251,
+          515
+        ],
+        [
+          349,
+          515
+        ]
+      ],
+      "head_median": true,
+      "coordinate_frame": [
+        600,
+        600
+      ],
+      "uncertainty_px": 5,
+      "source_image": "https://chiikawamarket.jp/cdn/shop/products/4582662910645_1.jpg",
+      "source_page": "https://chiikawamarket.jp/products/4582662910645",
+      "derived": {
+        "head_width_px": 352,
+        "head_height_px": 260,
+        "head_height_per_100_width": 73.86,
+        "eyes_head_width_units": [
+          [
+            -15.62,
+            36.36
+          ],
+          [
+            14.2,
+            36.36
+          ]
+        ],
+        "cheeks_head_width_units": [
+          [
+            -29.26,
+            43.47
+          ],
+          [
+            28.41,
+            45.17
+          ]
+        ],
+        "mouth_center_head_width_units": [
+          [
+            -0.57,
+            46.88
+          ]
+        ],
+        "ears_head_width_units": [
+          [
+            -24.15,
+            1.14
+          ],
+          [
+            24.43,
+            1.14
+          ]
+        ],
+        "arms_head_width_units": [
+          [
+            -40.34,
+            89.49
+          ],
+          [
+            40.62,
+            90.06
+          ]
+        ],
+        "feet_head_width_units": [
+          [
+            -13.92,
+            118.18
+          ],
+          [
+            13.92,
+            118.18
+          ]
+        ],
+        "head_to_torso_width": 1.578,
+        "ear_outward_degrees": [
+          17.3,
+          19.6
+        ]
+      },
+      "original_size": [
+        1200,
+        1200
+      ],
+      "ear_axes_base_to_tip": [
+        [
+          [
+            221,
+            126
+          ],
+          [
+            207,
+            81
+          ]
+        ],
+        [
+          [
+            380,
+            125
+          ],
+          [
+            396,
+            80
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "4571609359074-01",
+      "head_bounds": [
+        125,
+        106,
+        475,
+        370
+      ],
+      "torso_span": [
+        183,
+        424,
+        440
+      ],
+      "eyes": [
+        [
+          248,
+          250
+        ],
+        [
+          349,
+          250
+        ]
+      ],
+      "eye_size": [
+        40,
+        40
+      ],
+      "cheeks": [
+        [
+          200,
+          278
+        ],
+        [
+          398,
+          279
+        ]
+      ],
+      "cheek_size": [
+        58,
+        47
+      ],
+      "mouth_center": [
+        299,
+        291
+      ],
+      "mouth_width": 45,
+      "ears": [
+        [
+          214,
+          112
+        ],
+        [
+          379,
+          110
+        ]
+      ],
+      "ear_size": [
+        70,
+        65
+      ],
+      "arms": [
+        [
+          156,
+          391
+        ],
+        [
+          447,
+          392
+        ]
+      ],
+      "feet": [
+        [
+          257,
+          522
+        ],
+        [
+          340,
+          521
+        ]
+      ],
+      "head_median": true,
+      "coordinate_frame": [
+        600,
+        600
+      ],
+      "uncertainty_px": 5,
+      "source_image": "https://chiikawamarket.jp/cdn/shop/files/4571609359074_1.jpg",
+      "source_page": "https://chiikawamarket.jp/products/4571609359074",
+      "derived": {
+        "head_width_px": 350,
+        "head_height_px": 264,
+        "head_height_per_100_width": 75.43,
+        "eyes_head_width_units": [
+          [
+            -14.86,
+            41.14
+          ],
+          [
+            14.0,
+            41.14
+          ]
+        ],
+        "cheeks_head_width_units": [
+          [
+            -28.57,
+            49.14
+          ],
+          [
+            28.0,
+            49.43
+          ]
+        ],
+        "mouth_center_head_width_units": [
+          [
+            -0.29,
+            52.86
+          ]
+        ],
+        "ears_head_width_units": [
+          [
+            -24.57,
+            1.71
+          ],
+          [
+            22.57,
+            1.14
+          ]
+        ],
+        "arms_head_width_units": [
+          [
+            -41.14,
+            81.43
+          ],
+          [
+            42.0,
+            81.71
+          ]
+        ],
+        "feet_head_width_units": [
+          [
+            -12.29,
+            118.86
+          ],
+          [
+            11.43,
+            118.57
+          ]
+        ],
+        "head_to_torso_width": 1.452,
+        "ear_outward_degrees": [
+          21.5,
+          21.3
+        ]
+      },
+      "original_size": [
+        1200,
+        1200
+      ],
+      "ear_axes_base_to_tip": [
+        [
+          [
+            221,
+            132
+          ],
+          [
+            206,
+            94
+          ]
+        ],
+        [
+          [
+            370,
+            132
+          ],
+          [
+            386,
+            91
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "4571609387930-01",
+      "head_bounds": [
+        125,
+        96,
+        476,
+        null
+      ],
+      "torso_span": [
+        124,
+        476,
+        400
+      ],
+      "eyes": [
+        [
+          256,
+          203
+        ],
+        [
+          343,
+          203
+        ]
+      ],
+      "eye_size": [
+        34,
+        32
+      ],
+      "cheeks": [
+        [
+          210,
+          231
+        ],
+        [
+          389,
+          229
+        ]
+      ],
+      "cheek_size": [
+        54,
+        37
+      ],
+      "mouth_center": [
+        299,
+        239
+      ],
+      "mouth_width": 45,
+      "ears": [
+        [
+          214,
+          102
+        ],
+        [
+          384,
+          100
+        ]
+      ],
+      "ear_size": [
+        48,
+        47
+      ],
+      "arms": [
+        [
+          110,
+          345
+        ],
+        [
+          493,
+          347
+        ]
+      ],
+      "feet": [
+        [
+          193,
+          503
+        ],
+        [
+          413,
+          503
+        ]
+      ],
+      "head_median": false,
+      "limitation": "No chin seam; height is undefined, not guessed. This is the chubby product variant.",
+      "coordinate_frame": [
+        600,
+        600
+      ],
+      "uncertainty_px": 5,
+      "source_image": "https://chiikawamarket.jp/cdn/shop/files/4571609387930_1.jpg",
+      "source_page": "https://chiikawamarket.jp/products/4571609387930",
+      "derived": {
+        "head_width_px": 351,
+        "head_height_px": null,
+        "head_height_per_100_width": null,
+        "eyes_head_width_units": [
+          [
+            -12.68,
+            30.48
+          ],
+          [
+            12.11,
+            30.48
+          ]
+        ],
+        "cheeks_head_width_units": [
+          [
+            -25.78,
+            38.46
+          ],
+          [
+            25.21,
+            37.89
+          ]
+        ],
+        "mouth_center_head_width_units": [
+          [
+            -0.43,
+            40.74
+          ]
+        ],
+        "ears_head_width_units": [
+          [
+            -24.64,
+            1.71
+          ],
+          [
+            23.79,
+            1.14
+          ]
+        ],
+        "arms_head_width_units": [
+          [
+            -54.27,
+            70.94
+          ],
+          [
+            54.84,
+            71.51
+          ]
+        ],
+        "feet_head_width_units": [
+          [
+            -30.63,
+            115.95
+          ],
+          [
+            32.05,
+            115.95
+          ]
+        ],
+        "head_to_torso_width": 0.997
+      },
+      "original_size": [
+        1200,
+        1200
+      ]
+    },
+    {
+      "id": "4571609391890-01",
+      "head_bounds": [
+        128,
+        100,
+        473,
+        347
+      ],
+      "torso_span": [
+        185,
+        420,
+        440
+      ],
+      "eyes": [
+        [
+          247,
+          240
+        ],
+        [
+          351,
+          240
+        ]
+      ],
+      "eye_size": [
+        42,
+        40
+      ],
+      "cheeks": [
+        [
+          204,
+          270
+        ],
+        [
+          397,
+          270
+        ]
+      ],
+      "cheek_size": [
+        56,
+        43
+      ],
+      "mouth_center": [
+        301,
+        277
+      ],
+      "mouth_width": 43,
+      "ears": [
+        [
+          218,
+          106
+        ],
+        [
+          383,
+          104
+        ]
+      ],
+      "ear_size": [
+        61,
+        57
+      ],
+      "arms": [
+        [
+          151,
+          420
+        ],
+        [
+          447,
+          420
+        ]
+      ],
+      "feet": [
+        [
+          254,
+          488
+        ],
+        [
+          343,
+          488
+        ]
+      ],
+      "head_median": true,
+      "limitation": "Sitting pose; feet positions not used as standing leg dimensions.",
+      "coordinate_frame": [
+        600,
+        600
+      ],
+      "uncertainty_px": 5,
+      "source_image": "https://chiikawamarket.jp/cdn/shop/files/4571609391890_1.jpg",
+      "source_page": "https://chiikawamarket.jp/products/4571609391890",
+      "derived": {
+        "head_width_px": 345,
+        "head_height_px": 247,
+        "head_height_per_100_width": 71.59,
+        "eyes_head_width_units": [
+          [
+            -15.51,
+            40.58
+          ],
+          [
+            14.64,
+            40.58
+          ]
+        ],
+        "cheeks_head_width_units": [
+          [
+            -27.97,
+            49.28
+          ],
+          [
+            27.97,
+            49.28
+          ]
+        ],
+        "mouth_center_head_width_units": [
+          [
+            0.14,
+            51.3
+          ]
+        ],
+        "ears_head_width_units": [
+          [
+            -23.91,
+            1.74
+          ],
+          [
+            23.91,
+            1.16
+          ]
+        ],
+        "arms_head_width_units": [
+          [
+            -43.33,
+            92.75
+          ],
+          [
+            42.46,
+            92.75
+          ]
+        ],
+        "feet_head_width_units": [
+          [
+            -13.48,
+            112.46
+          ],
+          [
+            12.32,
+            112.46
+          ]
+        ],
+        "head_to_torso_width": 1.468
+      },
+      "original_size": [
+        1200,
+        1200
+      ]
+    },
+    {
+      "id": "4582662969889-01",
+      "head_bounds": [
+        128,
+        129,
+        464,
+        390
+      ],
+      "torso_span": [
+        177,
+        421,
+        430
+      ],
+      "eyes": [
+        [
+          246,
+          271
+        ],
+        [
+          349,
+          271
+        ]
+      ],
+      "eye_size": [
+        41,
+        39
+      ],
+      "cheeks": [
+        [
+          211,
+          300
+        ],
+        [
+          388,
+          296
+        ]
+      ],
+      "cheek_size": [
+        48,
+        38
+      ],
+      "mouth_center": [
+        299,
+        306
+      ],
+      "mouth_width": 43,
+      "head_median": false,
+      "uncertainty_px": 12,
+      "limitation": "Hat/bow occlude crown/chin, excluded from height median.",
+      "coordinate_frame": [
+        600,
+        600
+      ],
+      "source_image": "https://chiikawamarket.jp/cdn/shop/files/4582662969889_1.jpg",
+      "source_page": "https://chiikawamarket.jp/products/4582662969889",
+      "derived": {
+        "head_width_px": 336,
+        "head_height_px": 261,
+        "head_height_per_100_width": 77.68,
+        "eyes_head_width_units": [
+          [
+            -14.88,
+            42.26
+          ],
+          [
+            15.77,
+            42.26
+          ]
+        ],
+        "cheeks_head_width_units": [
+          [
+            -25.3,
+            50.89
+          ],
+          [
+            27.38,
+            49.7
+          ]
+        ],
+        "mouth_center_head_width_units": [
+          [
+            0.89,
+            52.68
+          ]
+        ],
+        "head_to_torso_width": 1.377
+      },
+      "original_size": [
+        1200,
+        1200
+      ]
+    },
+    {
+      "id": "kitan-normal",
+      "head_bounds": [
+        30,
+        100,
+        565,
+        519
+      ],
+      "eyes": [
+        [
+          207,
+          313
+        ],
+        [
+          391,
+          313
+        ]
+      ],
+      "eye_size": [
+        68,
+        68
+      ],
+      "cheeks": [
+        [
+          142,
+          354
+        ],
+        [
+          457,
+          346
+        ]
+      ],
+      "cheek_size": [
+        83,
+        63
+      ],
+      "mouth_center": [
+        302,
+        385
+      ],
+      "mouth_width": 80,
+      "ears": [
+        [
+          145,
+          88
+        ],
+        [
+          449,
+          90
+        ]
+      ],
+      "ear_size": [
+        86,
+        106
+      ],
+      "brows": [
+        [
+          [
+            188,
+            227
+          ],
+          [
+            229,
+            218
+          ]
+        ],
+        [
+          [
+            405,
+            231
+          ],
+          [
+            358,
+            218
+          ]
+        ]
+      ],
+      "head_median": true,
+      "coordinate_frame": [
+        600,
+        600
+      ],
+      "uncertainty_px": 5,
+      "source_image": "https://kitan.jp/wp-content/uploads/2024/12/normal.jpg",
+      "source_page": "https://kitan.jp/products/okaonosqueeze_chiikawa/",
+      "derived": {
+        "head_width_px": 535,
+        "head_height_px": 419,
+        "head_height_per_100_width": 78.32,
+        "eyes_head_width_units": [
+          [
+            -16.92,
+            39.81
+          ],
+          [
+            17.48,
+            39.81
+          ]
+        ],
+        "cheeks_head_width_units": [
+          [
+            -29.07,
+            47.48
+          ],
+          [
+            29.81,
+            45.98
+          ]
+        ],
+        "mouth_center_head_width_units": [
+          [
+            0.84,
+            53.27
+          ]
+        ],
+        "ears_head_width_units": [
+          [
+            -28.5,
+            -2.24
+          ],
+          [
+            28.32,
+            -1.87
+          ]
+        ],
+        "brow_inner_up_degrees": [
+          12.4,
+          15.5
+        ],
+        "ear_outward_degrees": [
+          19.4,
+          19.2
+        ]
+      },
+      "original_size": [
+        800,
+        800
+      ],
+      "ear_axes_base_to_tip": [
+        [
+          [
+            169,
+            145
+          ],
+          [
+            137,
+            54
+          ]
+        ],
+        [
+          [
+            427,
+            147
+          ],
+          [
+            459,
+            55
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "kitan-nakigao",
+      "head_bounds": [
+        32,
+        101,
+        566,
+        521
+      ],
+      "eyes": [
+        [
+          221,
+          309
+        ],
+        [
+          396,
+          315
+        ]
+      ],
+      "eye_size": [
+        68,
+        72
+      ],
+      "cheeks": [
+        [
+          144,
+          363
+        ],
+        [
+          461,
+          363
+        ]
+      ],
+      "mouth_center": [
+        304,
+        387
+      ],
+      "mouth_width": 80,
+      "brows": [
+        [
+          [
+            199,
+            226
+          ],
+          [
+            235,
+            242
+          ]
+        ],
+        [
+          [
+            389,
+            235
+          ],
+          [
+            340,
+            248
+          ]
+        ]
+      ],
+      "head_median": false,
+      "limitation": "Wavy crying brows; endpoints alone do not describe expression. Same product head as normal, not an independent proportion sample.",
+      "coordinate_frame": [
+        600,
+        600
+      ],
+      "uncertainty_px": 5,
+      "source_image": "https://kitan.jp/wp-content/uploads/2024/12/nakigao.jpg",
+      "source_page": "https://kitan.jp/products/okaonosqueeze_chiikawa/",
+      "derived": {
+        "head_width_px": 534,
+        "head_height_px": 420,
+        "head_height_per_100_width": 78.65,
+        "eyes_head_width_units": [
+          [
+            -14.61,
+            38.95
+          ],
+          [
+            18.16,
+            40.07
+          ]
+        ],
+        "cheeks_head_width_units": [
+          [
+            -29.03,
+            49.06
+          ],
+          [
+            30.34,
+            49.06
+          ]
+        ],
+        "mouth_center_head_width_units": [
+          [
+            0.94,
+            53.56
+          ]
+        ],
+        "brow_inner_up_degrees": [
+          -24.0,
+          -14.9
+        ]
+      },
+      "original_size": [
+        800,
+        800
+      ]
+    },
+    {
+      "id": "kitan-nikkori",
+      "head_bounds": [
+        30,
+        101,
+        563,
+        520
+      ],
+      "eyes": [
+        [
+          210,
+          296
+        ],
+        [
+          380,
+          292
+        ]
+      ],
+      "eye_size": [
+        56,
+        15
+      ],
+      "cheeks": [
+        [
+          134,
+          342
+        ],
+        [
+          450,
+          342
+        ]
+      ],
+      "mouth_center": [
+        302,
+        369
+      ],
+      "mouth_width": 46,
+      "mouth_height": 60,
+      "brows": [
+        [
+          [
+            194,
+            223
+          ],
+          [
+            228,
+            215
+          ]
+        ],
+        [
+          [
+            383,
+            218
+          ],
+          [
+            349,
+            214
+          ]
+        ]
+      ],
+      "head_median": false,
+      "coordinate_frame": [
+        600,
+        600
+      ],
+      "uncertainty_px": 5,
+      "source_image": "https://kitan.jp/wp-content/uploads/2024/12/nikkori.jpg",
+      "source_page": "https://kitan.jp/products/okaonosqueeze_chiikawa/",
+      "derived": {
+        "head_width_px": 533,
+        "head_height_px": 419,
+        "head_height_per_100_width": 78.61,
+        "eyes_head_width_units": [
+          [
+            -16.23,
+            36.59
+          ],
+          [
+            15.67,
+            35.83
+          ]
+        ],
+        "cheeks_head_width_units": [
+          [
+            -30.49,
+            45.22
+          ],
+          [
+            28.8,
+            45.22
+          ]
+        ],
+        "mouth_center_head_width_units": [
+          [
+            1.03,
+            50.28
+          ]
+        ],
+        "brow_inner_up_degrees": [
+          13.2,
+          6.7
+        ]
+      },
+      "original_size": [
+        800,
+        800
+      ]
+    },
+    {
+      "id": "kitan-yaruki",
+      "head_bounds": [
+        30,
+        100,
+        566,
+        524
+      ],
+      "eyes": [
+        [
+          214,
+          320
+        ],
+        [
+          387,
+          319
+        ]
+      ],
+      "eye_size": [
+        71,
+        72
+      ],
+      "cheeks": [
+        [
+          134,
+          367
+        ],
+        [
+          455,
+          367
+        ]
+      ],
+      "mouth_center": [
+        305,
+        385
+      ],
+      "mouth_width": 79,
+      "brows": [
+        [
+          [
+            199,
+            235
+          ],
+          [
+            236,
+            253
+          ]
+        ],
+        [
+          [
+            386,
+            233
+          ],
+          [
+            356,
+            254
+          ]
+        ]
+      ],
+      "head_median": false,
+      "limitation": "Motivated expression is a reference for inner-down brows; app angry is an adaptation.",
+      "coordinate_frame": [
+        600,
+        600
+      ],
+      "uncertainty_px": 5,
+      "source_image": "https://kitan.jp/wp-content/uploads/2024/12/yaruki.jpg",
+      "source_page": "https://kitan.jp/products/okaonosqueeze_chiikawa/",
+      "derived": {
+        "head_width_px": 536,
+        "head_height_px": 424,
+        "head_height_per_100_width": 79.1,
+        "eyes_head_width_units": [
+          [
+            -15.67,
+            41.04
+          ],
+          [
+            16.6,
+            40.86
+          ]
+        ],
+        "cheeks_head_width_units": [
+          [
+            -30.6,
+            49.81
+          ],
+          [
+            29.29,
+            49.81
+          ]
+        ],
+        "mouth_center_head_width_units": [
+          [
+            1.31,
+            53.17
+          ]
+        ],
+        "brow_inner_up_degrees": [
+          -25.9,
+          -35.0
+        ]
+      },
+      "original_size": [
+        800,
+        800
+      ]
+    },
+    {
+      "id": "kitan-komatta",
+      "head_bounds": [
+        30,
+        100,
+        565,
+        519
+      ],
+      "eyes": [
+        [
+          220,
+          304
+        ],
+        [
+          385,
+          304
+        ]
+      ],
+      "eye_size": [
+        70,
+        71
+      ],
+      "cheeks": [
+        [
+          137,
+          347
+        ],
+        [
+          460,
+          347
+        ]
+      ],
+      "mouth_center": [
+        303,
+        380
+      ],
+      "mouth_width": 78,
+      "brows": [
+        [
+          [
+            211,
+            234
+          ],
+          [
+            260,
+            234
+          ]
+        ],
+        [
+          [
+            388,
+            233
+          ],
+          [
+            349,
+            234
+          ]
+        ]
+      ],
+      "head_median": false,
+      "limitation": "Wavy brows: near-zero endpoint angle does not imply a flat brow.",
+      "coordinate_frame": [
+        600,
+        600
+      ],
+      "uncertainty_px": 5,
+      "source_image": "https://kitan.jp/wp-content/uploads/2024/12/komatta.jpg",
+      "source_page": "https://kitan.jp/products/okaonosqueeze_chiikawa/",
+      "derived": {
+        "head_width_px": 535,
+        "head_height_px": 419,
+        "head_height_per_100_width": 78.32,
+        "eyes_head_width_units": [
+          [
+            -14.49,
+            38.13
+          ],
+          [
+            16.36,
+            38.13
+          ]
+        ],
+        "cheeks_head_width_units": [
+          [
+            -30.0,
+            46.17
+          ],
+          [
+            30.37,
+            46.17
+          ]
+        ],
+        "mouth_center_head_width_units": [
+          [
+            1.03,
+            52.34
+          ]
+        ],
+        "brow_inner_up_degrees": [
+          0.0,
+          -1.5
+        ]
+      },
+      "original_size": [
+        800,
+        800
+      ]
+    },
+    {
+      "id": "4571609391890-06",
+      "side_head_bounds": [
+        197,
+        115,
+        433,
+        353
+      ],
+      "head_median": false,
+      "limitation": "Side view only; paired front width345; pose and perspective prevent exact 3D depth inference.",
+      "coordinate_frame": [
+        600,
+        600
+      ],
+      "uncertainty_px": 5,
+      "source_image": "https://chiikawamarket.jp/cdn/shop/files/4571609391890_3.jpg",
+      "source_page": "https://chiikawamarket.jp/products/4571609391890",
+      "original_size": [
+        1200,
+        1200
+      ]
+    }
+  ]
+}

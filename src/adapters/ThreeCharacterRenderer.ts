@@ -140,8 +140,8 @@ export class ThreeCharacterRenderer implements CharacterRenderer {
     const damping = this.controls.enableDamping;
     this.controls.enableDamping = false;
     this.controls.update();
-    this.camera.position.set(0, 1.99, 8.2);
-    this.controls.target.set(0, 1.53, 0);
+    this.camera.position.set(0, 2.04, 8.2);
+    this.controls.target.set(0, 1.67, 0);
     this.controls.update();
     this.controls.enableDamping = damping;
     this.invalidate();
