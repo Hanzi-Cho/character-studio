@@ -29,7 +29,7 @@ export const DEFAULT_CHARACTER: CharacterDocument = {
   name: "치이카와",
   bodyColor: "#fffdf7",
   cheekColor: "#f3a5b2",
-  earColor: "#f8c1c8",
+  earColor: "#fffdf7",
   bodyWidth: 1,
   bodyHeight: 1,
   earSize: 1,

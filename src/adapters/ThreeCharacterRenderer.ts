@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { ChiikawaModel } from "./ChiikawaModel.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import type { CharacterDocument } from "../domain/character.js";
 import type { CharacterRenderer } from "../application/ports.js";
@@ -12,30 +13,14 @@ export class ThreeCharacterRenderer implements CharacterRenderer {
   private readonly camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
   private readonly renderer: THREE.WebGLRenderer;
   private readonly controls: OrbitControls;
-  private readonly root = new THREE.Group();
-  private readonly sphere = new THREE.SphereGeometry(1, 40, 28);
-  private readonly geometries = new Set<THREE.BufferGeometry>([this.sphere]);
+  private readonly model = new ChiikawaModel();
+  private readonly geometries = new Set<THREE.BufferGeometry>();
   private readonly materials = new Set<THREE.Material>();
-  private readonly bodyMaterial = this.material("#fffdf7");
-  private readonly cheekMaterial = this.material("#f3a5b2");
-  private readonly earMaterial = this.material("#f8c1c8");
-  private readonly ink = this.material("#35312e");
-  private readonly white = this.material("#ffffff");
-  private readonly accessoryMaterial = this.material("#e9a5b5");
-  private readonly outline = new THREE.MeshBasicMaterial({
-    color: "#3a3532",
-    side: THREE.BackSide,
-  });
-  private readonly ears = new THREE.Group();
-  private readonly eyes = new THREE.Group();
-  private readonly expressions = new Map<string, THREE.Group>();
-  private readonly accessories = new Map<string, THREE.Group>();
   private readonly observer: ResizeObserver;
   private frame: number | null = null;
   private disposed = false;
   private frameCount = 0;
   private updateCount = 0;
-  private lastDocument?: CharacterDocument;
   private readonly onVisibility = () => {
     if (!document.hidden) this.invalidate();
   };
@@ -50,7 +35,6 @@ export class ThreeCharacterRenderer implements CharacterRenderer {
     private container: HTMLElement,
     private onError: (message: string) => void,
   ) {
-    this.materials.add(this.outline);
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -109,276 +93,15 @@ export class ThreeCharacterRenderer implements CharacterRenderer {
     floor.position.y = 0.02;
     floor.receiveShadow = true;
     this.scene.add(floor);
-    this.buildCharacter();
-    this.scene.add(this.root);
+    this.scene.add(this.model.root);
     this.observer = new ResizeObserver(this.resize);
     this.observer.observe(container);
     document.addEventListener("visibilitychange", this.onVisibility);
     this.resetView();
     this.resize();
   }
-  private material(color: string) {
-    const result = new THREE.MeshStandardMaterial({
-      color,
-      roughness: 0.84,
-      metalness: 0,
-    });
-    this.materials?.add(result);
-    return result;
-  }
-  private ellipsoid(
-    parent: THREE.Object3D,
-    position: [number, number, number],
-    scale: [number, number, number],
-    material: THREE.Material,
-    outlined = false,
-  ) {
-    const mesh = new THREE.Mesh(this.sphere, material);
-    mesh.position.set(...position);
-    mesh.scale.set(...scale);
-    mesh.castShadow = true;
-    parent.add(mesh);
-    if (outlined) {
-      const border = new THREE.Mesh(this.sphere, this.outline);
-      border.scale.set(1.017, 1.017, 1.035);
-      mesh.add(border);
-    }
-    return mesh;
-  }
-  private faceZ(x: number, y: number, offset = 0.02) {
-    return (
-      0.7 *
-        Math.sqrt(
-          Math.max(0.01, 1 - (x / 1.06) ** 2 - ((y - 1.36) / 1.04) ** 2),
-        ) +
-      offset
-    );
-  }
-  private stroke(
-    parent: THREE.Object3D,
-    points: [number, number][],
-    radius = 0.017,
-  ) {
-    const curve = new THREE.CatmullRomCurve3(
-      points.map(([x, y]) => new THREE.Vector3(x, y, this.faceZ(x, y, 0.035))),
-    );
-    const geometry = new THREE.TubeGeometry(curve, 24, radius, 7, false);
-    this.geometries.add(geometry);
-    parent.add(new THREE.Mesh(geometry, this.ink));
-  }
-  private buildCharacter() {
-    this.ellipsoid(
-      this.root,
-      [0, 1.36, 0],
-      [1.06, 1.04, 0.7],
-      this.bodyMaterial,
-      true,
-    );
-    for (const side of [-1, 1]) {
-      const ear = new THREE.Group();
-      ear.position.set(side * 0.69, 2.28, -0.02);
-      ear.rotation.z = -side * 0.18;
-      this.ellipsoid(
-        ear,
-        [0, 0.1, 0],
-        [0.225, 0.3, 0.19],
-        this.bodyMaterial,
-        true,
-      );
-      this.ellipsoid(
-        ear,
-        [0, 0.12, 0.158],
-        [0.115, 0.178, 0.022],
-        this.earMaterial,
-      );
-      this.ears.add(ear);
-      const arm = this.ellipsoid(
-        this.root,
-        [side * 0.95, 0.87, 0.025],
-        [0.19, 0.32, 0.24],
-        this.bodyMaterial,
-        true,
-      );
-      arm.rotation.z = side * 0.36;
-      this.ellipsoid(
-        this.root,
-        [side * 0.39, 0.21, 0.12],
-        [0.25, 0.19, 0.31],
-        this.bodyMaterial,
-        true,
-      );
-      this.ellipsoid(
-        this.root,
-        [side * 0.66, 1.2, this.faceZ(side * 0.66, 1.2)],
-        [0.18, 0.095, 0.022],
-        this.cheekMaterial,
-      );
-      for (let j = 0; j < 3; j++)
-        this.stroke(
-          this.root,
-          [
-            [side * (0.57 + j * 0.075), 1.24],
-            [side * (0.59 + j * 0.075), 1.17],
-          ],
-          0.008,
-        );
-      const eye = new THREE.Group();
-      eye.position.set(side * 0.34, 1.57, this.faceZ(side * 0.34, 1.57, 0.027));
-      this.ellipsoid(eye, [0, 0, 0], [0.065, 0.094, 0.025], this.ink);
-      this.ellipsoid(
-        eye,
-        [-0.017, 0.033, 0.023],
-        [0.018, 0.022, 0.009],
-        this.white,
-      );
-      this.eyes.add(eye);
-    }
-    this.root.add(this.ears, this.eyes);
-    const gentle = new THREE.Group();
-    this.stroke(
-      gentle,
-      [
-        [-0.39, 1.85],
-        [-0.33, 1.87],
-        [-0.27, 1.91],
-      ],
-      0.014,
-    );
-    this.stroke(
-      gentle,
-      [
-        [0.27, 1.91],
-        [0.33, 1.87],
-        [0.39, 1.85],
-      ],
-      0.014,
-    );
-    this.stroke(
-      gentle,
-      [
-        [-0.15, 1.37],
-        [-0.12, 1.3],
-        [-0.065, 1.29],
-        [0, 1.34],
-        [0.065, 1.29],
-        [0.12, 1.3],
-        [0.15, 1.37],
-      ],
-      0.019,
-    );
-    const happy = new THREE.Group();
-    this.ellipsoid(
-      happy,
-      [0, 1.3, this.faceZ(0, 1.3, 0.031)],
-      [0.14, 0.15, 0.025],
-      this.ink,
-    );
-    this.ellipsoid(
-      happy,
-      [0, 1.23, this.faceZ(0, 1.23, 0.058)],
-      [0.09, 0.055, 0.012],
-      this.cheekMaterial,
-    );
-    for (const side of [-1, 1])
-      this.stroke(
-        happy,
-        [
-          [side * 0.44, 1.57],
-          [side * 0.34, 1.63],
-          [side * 0.24, 1.57],
-        ],
-        0.022,
-      );
-    const surprised = new THREE.Group();
-    this.ellipsoid(
-      surprised,
-      [0, 1.3, this.faceZ(0, 1.3, 0.035)],
-      [0.069, 0.095, 0.022],
-      this.ink,
-    );
-    for (const side of [-1, 1])
-      this.stroke(
-        surprised,
-        [
-          [side * 0.43, 1.92],
-          [side * 0.34, 1.95],
-          [side * 0.26, 1.92],
-        ],
-        0.014,
-      );
-    for (const [name, group] of [
-      ["gentle", gentle],
-      ["happy", happy],
-      ["surprised", surprised],
-    ] as const) {
-      this.expressions.set(name, group);
-      group.visible = name === "gentle";
-      this.root.add(group);
-    }
-    const bow = new THREE.Group();
-    bow.position.set(0, 0.65, 0.58);
-    for (const side of [-1, 1]) {
-      const wing = this.ellipsoid(
-        bow,
-        [side * 0.13, 0, 0],
-        [0.15, 0.12, 0.06],
-        this.accessoryMaterial,
-        true,
-      );
-      wing.rotation.z = side * 0.3;
-    }
-    this.ellipsoid(
-      bow,
-      [0, 0, 0.045],
-      [0.065, 0.07, 0.06],
-      this.cheekMaterial,
-      true,
-    );
-    const star = new THREE.Group();
-    const shape = new THREE.Shape();
-    for (let i = 0; i < 10; i++) {
-      const a = Math.PI / 2 + (i * Math.PI) / 5;
-      const r = i % 2 === 0 ? 0.18 : 0.085;
-      const x = Math.cos(a) * r,
-        y = Math.sin(a) * r;
-      i === 0 ? shape.moveTo(x, y) : shape.lineTo(x, y);
-    }
-    shape.closePath();
-    const starGeometry = new THREE.ExtrudeGeometry(shape, {
-      depth: 0.035,
-      bevelEnabled: true,
-      bevelThickness: 0.008,
-      bevelSize: 0.008,
-      bevelSegments: 2,
-      steps: 1,
-    });
-    this.geometries.add(starGeometry);
-    const starMesh = new THREE.Mesh(starGeometry, this.material("#efcb77"));
-    star.add(starMesh);
-    star.position.set(0.68, 2.38, 0.18);
-    for (const [name, group] of [
-      ["bow", bow],
-      ["star", star],
-    ] as const) {
-      this.accessories.set(name, group);
-      group.visible = false;
-      this.root.add(group);
-    }
-  }
   update(next: CharacterDocument) {
-    if (JSON.stringify(next) === JSON.stringify(this.lastDocument)) return;
-    this.bodyMaterial.color.set(next.bodyColor);
-    this.cheekMaterial.color.set(next.cheekColor);
-    this.earMaterial.color.set(next.earColor);
-    this.root.scale.set(next.bodyWidth, next.bodyHeight, 1);
-    for (const ear of this.ears.children) ear.scale.setScalar(next.earSize);
-    for (const eye of this.eyes.children) eye.scale.setScalar(next.eyeSize);
-    this.eyes.visible = next.expression !== "happy";
-    for (const [name, group] of this.expressions)
-      group.visible = name === next.expression;
-    for (const [name, group] of this.accessories)
-      group.visible = name === next.accessory;
-    this.lastDocument = { ...next };
+    if (!this.model.update(next)) return;
     this.updateCount++;
     this.invalidate();
   }
@@ -417,8 +140,8 @@ export class ThreeCharacterRenderer implements CharacterRenderer {
     const damping = this.controls.enableDamping;
     this.controls.enableDamping = false;
     this.controls.update();
-    this.camera.position.set(0, 2.65, 7.4);
-    this.controls.target.set(0, 1.35, 0);
+    this.camera.position.set(0, 1.99, 8.2);
+    this.controls.target.set(0, 1.53, 0);
     this.controls.update();
     this.controls.enableDamping = damping;
     this.invalidate();
@@ -450,7 +173,10 @@ export class ThreeCharacterRenderer implements CharacterRenderer {
       triangles: this.renderer.info.render.triangles,
       geometries: this.renderer.info.memory.geometries,
       textures: this.renderer.info.memory.textures,
-      geometryIds: [...this.geometries].map((g) => g.id),
+      geometryIds: [
+        ...this.model.getGeometryIds(),
+        ...[...this.geometries].map((g) => g.id),
+      ],
       camera: this.camera.position.toArray(),
       pixelRatio: this.renderer.getPixelRatio(),
       scheduled: this.frame !== null,
@@ -466,6 +192,7 @@ export class ThreeCharacterRenderer implements CharacterRenderer {
       this.onLost,
     );
     this.controls.dispose();
+    this.model.dispose();
     for (const geometry of this.geometries) geometry.dispose();
     for (const material of this.materials) material.dispose();
     this.renderer.dispose();

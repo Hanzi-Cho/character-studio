@@ -67,6 +67,7 @@ docs/                 아키텍처, 원본 코드 연구, 범위/결정, 검증 
 - [Human Atlas 소스 연구](docs/HUMAN-ATLAS-RESEARCH.md)
 - [현재 구현·남은 결정](docs/MVP-STATUS.md)
 - [요구별 테스트와 실제 검증 범위](docs/TESTING.md)
+- [첨부 이미지에 따른 기본 모델 수정](docs/CHARACTER-MODELING.md)
 - [출처와 재사용 구분](THIRD_PARTY_NOTICES.md)
 
 치이카와는 사용자 지정 비공식 절차적 3D 스터디입니다. 공식 모델 파일을 사용하지 않았고 서비스 출시용 독자 캐릭터 생성기 완성을 의미하지 않습니다.
