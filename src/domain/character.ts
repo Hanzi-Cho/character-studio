@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+export const EXPRESSIONS = [
+  "gentle",
+  "happy",
+  "sad",
+  "angry",
+  "surprised",
+  "sleepy",
+] as const;
+export type Expression = (typeof EXPRESSIONS)[number];
+
 const color = z
   .string()
   .regex(/^#[0-9a-fA-F]{6}$/)
@@ -15,7 +25,7 @@ export const CharacterSchema = z
     bodyHeight: z.number().min(0.8).max(1.3),
     earSize: z.number().min(0.6).max(1.8),
     eyeSize: z.number().min(0.65).max(1.4),
-    expression: z.enum(["gentle", "happy", "surprised"]),
+    expression: z.enum(EXPRESSIONS),
     accessory: z.enum(["none", "bow", "star"]),
   })
   .strict();

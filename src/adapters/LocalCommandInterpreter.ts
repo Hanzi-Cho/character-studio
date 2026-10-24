@@ -3,6 +3,7 @@ import {
   type CharacterDocument,
   type CharacterPatch,
   type Command,
+  type Expression,
 } from "../domain/character.js";
 import type { CommandInterpreter } from "../application/ports.js";
 const colors: Record<string, string> = {
@@ -59,8 +60,37 @@ const widthRule = new RegExp(
   "i",
 );
 const expressionRule = new RegExp(
-  String.raw`^(웃는|행복한|놀란|차분한|순한|기본)\s*표정` + suffix + "$",
+  String.raw`^(웃는|웃음|행복한|슬픈|슬픔|우는|화난|화남|화가 난|놀란|놀람|졸린|졸림|잠자는|차분한|순한|기본)\s*표정` +
+    suffix +
+    "$",
 );
+const expressions: Record<string, Expression> = {
+  웃는: "happy",
+  웃음: "happy",
+  행복한: "happy",
+  happy: "happy",
+  smile: "happy",
+  슬픈: "sad",
+  슬픔: "sad",
+  우는: "sad",
+  sad: "sad",
+  화난: "angry",
+  화남: "angry",
+  "화가 난": "angry",
+  angry: "angry",
+  놀란: "surprised",
+  놀람: "surprised",
+  surprised: "surprised",
+  졸린: "sleepy",
+  졸림: "sleepy",
+  잠자는: "sleepy",
+  sleepy: "sleepy",
+  차분한: "gentle",
+  순한: "gentle",
+  기본: "gentle",
+  gentle: "gentle",
+  neutral: "gentle",
+};
 const help =
   "색상, 귀·눈 크기, 체형, 표정, 리본·별을 바꿀 수 있어요. 예: “분홍색으로”, “귀를 크게”, “웃는 표정으로”.";
 export class LocalCommandInterpreter implements CommandInterpreter {
@@ -131,21 +161,13 @@ export class LocalCommandInterpreter implements CommandInterpreter {
             document.bodyWidth + (/통통|chubby/i.test(width[1]) ? 0.1 : -0.1),
         });
       } else if (expression) {
-        assign({
-          expression: /웃는|행복한/.test(expression[1])
-            ? "happy"
-            : expression[1] === "놀란"
-              ? "surprised"
-              : "gentle",
-        });
-      } else if (/^(happy|smile|surprised|gentle)$/i.test(clause)) {
-        assign({
-          expression: /happy|smile/i.test(clause)
-            ? "happy"
-            : /^surprised$/i.test(clause)
-              ? "surprised"
-              : "gentle",
-        });
+        assign({ expression: expressions[expression[1]] });
+      } else if (
+        /^(happy|smile|sad|angry|surprised|sleepy|gentle|neutral)$/i.test(
+          clause,
+        )
+      ) {
+        assign({ expression: expressions[clause.toLowerCase()] });
       } else if (accessory) {
         const remove = /제거|없애|빼/.test(accessory[2]);
         if (accessory[1] === "장식" && !remove)

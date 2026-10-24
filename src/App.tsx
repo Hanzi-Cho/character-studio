@@ -1,10 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { ThreeCharacterRenderer } from "./adapters/ThreeCharacterRenderer.js";
 import { HttpStudioGateway, request } from "./adapters/HttpStudioGateway.js";
-import { CharacterSchema, type Snapshot } from "./domain/character.js";
+import {
+  CharacterSchema,
+  type Snapshot,
+  type Expression,
+} from "./domain/character.js";
 import type { CharacterRenderer } from "./application/ports.js";
 import { Composer } from "./components/Composer.js";
 import { Icon } from "./components/Icon.js";
+import {
+  ExpressionPicker,
+  expressionLabels,
+} from "./components/ExpressionPicker.js";
 
 const gateway = new HttpStudioGateway();
 type Message = { id: number; text: string; reply: string; error: boolean };
@@ -113,6 +121,33 @@ export default function App() {
     anchor.download = name;
     anchor.click();
   };
+  async function selectExpression(expression: Expression) {
+    if (
+      !latest.current ||
+      busyRef.current ||
+      latest.current.document.expression === expression
+    )
+      return;
+    busyRef.current = true;
+    setBusy(true);
+    try {
+      // An expression choice must never reset the user's customized character.
+      accept(await gateway.patch({ expression }, latest.current.revision));
+      setNotice(`${expressionLabels[expression]} 표정을 적용했어요.`);
+    } catch (error) {
+      setNotice(
+        error instanceof Error ? error.message : "표정을 저장하지 못했어요.",
+      );
+      try {
+        accept(await gateway.read());
+      } catch {
+        setConnected(false);
+      }
+    } finally {
+      busyRef.current = false;
+      setBusy(false);
+    }
+  }
   const exportCharacter = () => {
     if (!snapshot) return;
     const url = URL.createObjectURL(
@@ -279,6 +314,11 @@ export default function App() {
         </div>
       </section>
       <section className="chat-dock" aria-label="캐릭터 편집 채팅">
+        <ExpressionPicker
+          value={snapshot?.document.expression}
+          disabled={!snapshot || !connected || busy}
+          onSelect={(expression) => void selectExpression(expression)}
+        />
         {history && (
           <div className="history-panel">
             <div className="history-heading">
@@ -301,7 +341,7 @@ export default function App() {
             ))}
           </div>
         )}
-        {last ? (
+        {last && (
           <div
             className={`last-message ${last.error ? "error" : ""}`}
             aria-live="polite"
@@ -318,20 +358,6 @@ export default function App() {
             >
               <Icon name="history" size={17} />
             </button>
-          </div>
-        ) : (
-          <div className="suggestions">
-            <span>이렇게 시작해 보세요</span>
-            {["분홍색으로", "귀를 조금 크게", "웃는 표정으로"].map((text) => (
-              <button
-                disabled={!connected || busy}
-                key={text}
-                onClick={() => void send(text)}
-              >
-                {text}
-                <span>↗</span>
-              </button>
-            ))}
           </div>
         )}
         <Composer
@@ -378,7 +404,7 @@ export default function App() {
             {[
               ["색상", "몸을 민트색으로, 볼을 분홍색으로"],
               ["크기", "귀를 크게 / 눈을 작게 / 몸을 통통하게"],
-              ["표정", "웃는 표정으로 / 놀란 표정으로 / 기본 표정"],
+              ["표정", "기본 / 웃는 / 슬픈 / 화난 / 놀란 / 졸린 표정으로"],
               ["장식", "리본 달아줘 / 별 달아줘 / 장식 제거"],
               ["이름·복구", "이름을 모찌로 / 되돌리기 / 다시 실행 / 초기화"],
             ].map(([label, text]) => (
@@ -389,9 +415,10 @@ export default function App() {
             ))}
           </div>
           <p className="help-limitation">
-            현재는 정해진 속성을 해석하는 로컬 편집기예요. 외부 AI
-            대화·음성·이미지로 모델 생성은 아직 연결되지 않았어요. 지원하지 않는
-            요청은 변경하지 않고 안내합니다.
+            표정 시안을 누르면 얼굴 표정만 바뀌어요. 색상·체형·장식은 유지되며
+            되돌리기도 가능해요. 현재는 정해진 속성을 해석하는 로컬 편집기예요.
+            외부 AI 대화·음성·이미지로 모델 생성은 아직 연결되지 않았어요.
+            지원하지 않는 요청은 변경하지 않고 안내합니다.
           </p>
           <p className="help-fineprint">
             모습과 최근 50회 변경은 이 PC에 저장됩니다. 채팅 문장은 현재 탭에만

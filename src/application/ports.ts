@@ -1,5 +1,6 @@
 import type {
   CharacterDocument,
+  CharacterPatch,
   Command,
   Snapshot,
 } from "../domain/character.js";
@@ -25,6 +26,7 @@ export interface CharacterRenderer {
 }
 export interface StudioGateway {
   read(): Promise<Snapshot>;
+  patch(patch: CharacterPatch, revision: number): Promise<Snapshot>;
   command(
     text: string,
     revision: number,

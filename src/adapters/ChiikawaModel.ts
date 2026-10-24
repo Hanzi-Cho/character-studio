@@ -2,8 +2,9 @@ import * as THREE from "three";
 import type { CharacterDocument } from "../domain/character.js";
 
 type Profile = readonly (readonly [radius: number, height: number])[];
+const FACE_DROP = 0.16;
 
-/** Reference-driven proportions. Head and torso are separate rounded volumes;
+/** Reference-driven proportions. One continuous head/torso silhouette;
  * face markings are curved meshes on the head surface, not a front-facing image.
  * User references supplied 2026-10-24; see docs/CHARACTER-MODELING.md.
  */
@@ -26,12 +27,18 @@ export class ChiikawaModel {
   private readonly highlight = this.inkMaterial("#fffef9");
   private readonly ribbon = this.surfaceMaterial("#e9a5b5");
   private readonly silhouette = this.inkMaterial("#69645e", THREE.BackSide);
+  private readonly tears = this.inkMaterial("#9bcbdc");
+  private bodyGeometry!: THREE.BufferGeometry;
+  private bodyBase!: Float32Array;
   private readonly headProfile = this.profile([
-    [0, 1.38],
-    [0.39, 1.39],
-    [0.69, 1.44],
-    [0.93, 1.55],
-    [1.09, 1.73],
+    [0, 0.23],
+    [0.4, 0.25],
+    [0.72, 0.4],
+    [0.92, 0.65],
+    [1.035, 0.94],
+    [1.065, 1.25],
+    [1.07, 1.5],
+    [1.12, 1.74],
     [1.16, 1.96],
     [1.145, 2.2],
     [1.055, 2.43],
@@ -45,8 +52,8 @@ export class ChiikawaModel {
 
   constructor() {
     this.root.name = "chiikawa";
+    this.root.scale.y = 0.86;
     this.head.name = "head";
-    this.head.scale.x = 0.98;
     this.torso.name = "torso";
     this.feet.name = "feet";
     this.ears.name = "ears";
@@ -110,44 +117,18 @@ export class ChiikawaModel {
     mesh.scale.set(...scale);
     return mesh;
   }
-  private lathe(
-    parent: THREE.Object3D,
-    points: THREE.Vector2[],
-    depth: number,
-  ) {
-    const geometry = new THREE.LatheGeometry(points, 64);
-    // Bake depth and center silhouette inflation at the volume center, not world zero.
-    geometry.scale(1, 1, depth);
-    geometry.computeBoundingBox();
-    const centerY =
-      (geometry.boundingBox!.max.y + geometry.boundingBox!.min.y) / 2;
-    geometry.translate(0, -centerY, 0);
-    this.geometries.add(geometry);
-    const mesh = this.mesh(parent, geometry, this.fur, true);
-    mesh.position.y = centerY;
-    mesh.receiveShadow = true;
-    return mesh;
-  }
   private buildVolumes() {
-    this.lathe(this.head, this.headProfile, this.headDepth).name =
-      "head-volume";
-    this.lathe(
-      this.torso,
-      this.profile([
-        [0, 0.23],
-        [0.24, 0.25],
-        [0.43, 0.34],
-        [0.57, 0.5],
-        [0.65, 0.71],
-        [0.69, 0.96],
-        [0.68, 1.19],
-        [0.6, 1.39],
-        [0.44, 1.48],
-        [0, 1.5],
-      ]),
-      0.69,
-    ).name = "torso-volume";
-    this.torso.getObjectByName("torso-volume")!.scale.x = 1.08;
+    // A single surface avoids a pinched neck, overlapping shells and a chin seam.
+    // Keep the same GPU buffer when changing the lower body's proportions.
+    this.bodyGeometry = new THREE.LatheGeometry(this.headProfile, 64);
+    this.bodyGeometry.scale(1, 1, this.headDepth);
+    this.geometries.add(this.bodyGeometry);
+    this.bodyBase = new Float32Array(
+      this.bodyGeometry.getAttribute("position").array,
+    );
+    const body = this.mesh(this.root, this.bodyGeometry, this.fur, true);
+    body.name = "body-volume";
+    body.receiveShadow = true;
     this.head.add(this.ears, this.eyes);
     for (const side of [-1, 1]) {
       // Short, white rounded ears grow from a buried pivot on the head.
@@ -165,17 +146,17 @@ export class ChiikawaModel {
       this.ears.add(ear);
       const arm = this.ellipsoid(
         this.torso,
-        [side * 0.8, 1.16, 0.015],
-        [0.255, 0.105, 0.115],
+        [side * 1.075, 1.12, 0.035],
+        [0.18, 0.115, 0.135],
         this.fur,
         true,
       );
       arm.name = side < 0 ? "left-arm" : "right-arm";
-      arm.rotation.z = -side * 0.35;
+      arm.rotation.z = -side * 0.6;
       const foot = this.ellipsoid(
         this.feet,
-        [side * 0.29, 0.2, 0.035],
-        [0.082, 0.18, 0.105],
+        [side * 0.48, 0.2, 0.09],
+        [0.12, 0.18, 0.14],
         this.fur,
         true,
       );
@@ -216,6 +197,7 @@ export class ChiikawaModel {
     offset = 0.014,
     rotation = 0,
   ) {
+    cy -= FACE_DROP;
     const positions: number[] = [],
       indices: number[] = [];
     const rings = 6,
@@ -263,7 +245,7 @@ export class ChiikawaModel {
     offset = 0.029,
   ) {
     const spline = new THREE.SplineCurve(
-      points.map(([x, y]) => new THREE.Vector2(x, y)),
+      points.map(([x, y]) => new THREE.Vector2(x, y - FACE_DROP)),
     );
     const project = (x: number, y: number) => this.faceZ(x, y, offset);
     class SurfaceCurve extends THREE.Curve<THREE.Vector3> {
@@ -359,7 +341,11 @@ export class ChiikawaModel {
         0.18,
       );
       // Local pivot keeps eye-size edits centered rather than shifting facial spacing.
-      const pivot = new THREE.Vector3(x, y, this.faceZ(x, y, 0));
+      const pivot = new THREE.Vector3(
+        x,
+        y - FACE_DROP,
+        this.faceZ(x, y - FACE_DROP, 0),
+      );
       for (const child of eye.children) child.position.sub(pivot);
       eye.position.copy(pivot);
       this.eyes.add(eye);
@@ -395,10 +381,76 @@ export class ChiikawaModel {
     const surprised = new THREE.Group();
     this.eyebrows(surprised, 0.045);
     this.faceEllipse(surprised, 0, 2.07, 0.061, 0.086, this.ink, 0.023);
+    const sad = new THREE.Group();
+    const angry = new THREE.Group();
+    const sleepy = new THREE.Group();
+    for (const side of [-1, 1]) {
+      this.stroke(
+        sad,
+        [
+          [side * 0.48, 2.51],
+          [side * 0.37, 2.54],
+          [side * 0.26, 2.59],
+        ],
+        0.018,
+      );
+      this.faceEllipse(sad, side * 0.41, 2.1, 0.045, 0.1, this.tears, 0.041);
+      this.faceEllipse(
+        sad,
+        side * 0.42,
+        2.13,
+        0.012,
+        0.036,
+        this.highlight,
+        0.05,
+      );
+      // Brows descend towards the nose; the face outline and eye spacing stay fixed.
+      this.stroke(
+        angry,
+        [
+          [side * 0.49, 2.54],
+          [side * 0.37, 2.5],
+          [side * 0.24, 2.44],
+        ],
+        0.024,
+      );
+      this.stroke(
+        sleepy,
+        [
+          [side * 0.47, 2.3],
+          [side * 0.35, 2.26],
+          [side * 0.23, 2.3],
+        ],
+        0.022,
+      );
+    }
+    this.stroke(
+      sad,
+      [
+        [-0.07, 2.01],
+        [0, 2.05],
+        [0.07, 2.01],
+      ],
+      0.019,
+    );
+    this.stroke(
+      angry,
+      [
+        [-0.075, 2.02],
+        [0, 2.055],
+        [0.075, 2.02],
+      ],
+      0.021,
+    );
+    this.eyebrows(sleepy, -0.025);
+    this.faceEllipse(sleepy, 0, 2.07, 0.032, 0.043, this.ink, 0.026);
     for (const [name, group] of [
       ["gentle", gentle],
       ["happy", happy],
+      ["sad", sad],
+      ["angry", angry],
       ["surprised", surprised],
+      ["sleepy", sleepy],
     ] as const) {
       group.name = name + "-expression";
       group.visible = name === "gentle";
@@ -409,7 +461,7 @@ export class ChiikawaModel {
   private buildAccessories() {
     const bow = new THREE.Group();
     bow.name = "bow";
-    bow.position.set(0, 1.28, 0.42);
+    bow.position.set(0, 1.28, 0.69);
     for (const side of [-1, 1]) {
       const wing = this.ellipsoid(
         bow,
@@ -456,14 +508,41 @@ export class ChiikawaModel {
     this.fur.color.set(next.bodyColor);
     this.earFur.color.set(next.earColor);
     this.blush.color.set(next.cheekColor);
-    const torsoHeight = 0.87 * next.bodyHeight;
+    const torsoHeight = next.bodyHeight;
+    const headOffset = 1.37 * (torsoHeight - 1);
+    if (
+      !this.lastDocument ||
+      next.bodyWidth !== this.lastDocument.bodyWidth ||
+      next.bodyHeight !== this.lastDocument.bodyHeight
+    ) {
+      const positions = this.bodyGeometry.getAttribute(
+        "position",
+      ) as THREE.BufferAttribute;
+      for (let i = 0; i < positions.count; i++) {
+        const x = this.bodyBase[i * 3],
+          y = this.bodyBase[i * 3 + 1],
+          z = this.bodyBase[i * 3 + 2];
+        const weight = 1 - THREE.MathUtils.smoothstep(y, 1.25, 1.82);
+        positions.setXYZ(
+          i,
+          x * (1 + (next.bodyWidth - 1) * weight),
+          y >= 1.6 ? y + headOffset : 0.23 + (y - 0.23) * torsoHeight,
+          z,
+        );
+      }
+      positions.needsUpdate = true;
+      this.bodyGeometry.computeVertexNormals();
+      this.bodyGeometry.computeBoundingBox();
+      this.bodyGeometry.computeBoundingSphere();
+    }
     this.torso.scale.set(next.bodyWidth, torsoHeight, 1);
     this.torso.position.y = 0.23 * (1 - torsoHeight);
-    this.head.position.y = 1.2 * (torsoHeight - 1);
+    this.head.position.y = headOffset;
     this.feet.scale.x = next.bodyWidth;
     for (const ear of this.ears.children) ear.scale.setScalar(next.earSize);
     for (const eye of this.eyes.children) eye.scale.setScalar(next.eyeSize);
-    this.eyes.visible = next.expression !== "happy";
+    this.eyes.visible =
+      next.expression !== "happy" && next.expression !== "sleepy";
     for (const [name, group] of this.expressions)
       group.visible = name === next.expression;
     for (const [name, group] of this.accessories)

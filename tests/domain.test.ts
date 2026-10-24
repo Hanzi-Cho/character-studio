@@ -7,6 +7,41 @@ import { applyPatch, DEFAULT_CHARACTER } from "../src/domain/character.js";
 import { LocalCommandInterpreter } from "../src/adapters/LocalCommandInterpreter.js";
 import { CharacterStore, ConflictError } from "../server/store.js";
 const interpreter = new LocalCommandInterpreter();
+
+test("six expression commands preserve every customized non-expression field", () => {
+  const custom = {
+    ...DEFAULT_CHARACTER,
+    name: "모찌",
+    bodyColor: "#b7dfcf",
+    earSize: 1.3,
+    bodyWidth: 1.1,
+    accessory: "star" as const,
+  };
+  for (const [text, expression] of [
+    ["기본 표정", "gentle"],
+    ["웃는 표정으로", "happy"],
+    ["슬픈 표정으로 바꿔줘", "sad"],
+    ["화난 표정으로", "angry"],
+    ["놀란 표정으로", "surprised"],
+    ["졸린 표정으로", "sleepy"],
+    ["화남 표정", "angry"],
+    ["sad", "sad"],
+  ]) {
+    const command = interpreter.interpret(text, custom);
+    assert.equal(command.type, "patch");
+    if (command.type === "patch") {
+      assert.deepEqual(command.patch, { expression });
+      assert.deepEqual(applyPatch(custom, command.patch), {
+        ...custom,
+        expression,
+      });
+    }
+  }
+  assert.throws(() => interpreter.interpret("슬픈 표정으로 하지마", custom));
+  assert.throws(() =>
+    interpreter.interpret("화난 표정으로, 졸린 표정으로", custom),
+  );
+});
 test("domain rejects unknown, infinite, invalid and out-of-bound patches", () => {
   for (const patch of [
     { camera: 3 },
@@ -54,9 +89,23 @@ test("rename, expression and limits", () => {
   );
 });
 test("negation and unknown trailing intent do not produce partial edits", () => {
-  for (const text of ["분홍색으로 하지마", "웃지 마", "분홍색으로 날개 달아줘", "귀를 크게, 귀를 작게", "리본 말고 별 달아줘"])
+  for (const text of [
+    "분홍색으로 하지마",
+    "웃지 마",
+    "분홍색으로 날개 달아줘",
+    "귀를 크게, 귀를 작게",
+    "리본 말고 별 달아줘",
+  ])
     assert.throws(() => interpreter.interpret(text, DEFAULT_CHARACTER));
-  for (const text of ["귀를 조금 크게", "몸을 통통하게", "웃는 표정으로", "기본 표정", "별 달아줘", "장식 제거", "볼을 분홍색으로"])
+  for (const text of [
+    "귀를 조금 크게",
+    "몸을 통통하게",
+    "웃는 표정으로",
+    "기본 표정",
+    "별 달아줘",
+    "장식 제거",
+    "볼을 분홍색으로",
+  ])
     assert.equal(interpreter.interpret(text, DEFAULT_CHARACTER).type, "patch");
 });
 test("durable revision, conflict, undo and redo share one store", () => {

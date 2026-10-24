@@ -1,4 +1,4 @@
-import type { Snapshot } from "../domain/character.js";
+import type { Snapshot, CharacterPatch } from "../domain/character.js";
 import type { StudioGateway } from "../application/ports.js";
 export async function request<T>(url: string, body?: unknown): Promise<T> {
   const response = await fetch(
@@ -18,6 +18,9 @@ export async function request<T>(url: string, body?: unknown): Promise<T> {
 export class HttpStudioGateway implements StudioGateway {
   read() {
     return request<Snapshot>("/api/state");
+  }
+  patch(patch: CharacterPatch, revision: number) {
+    return request<Snapshot>("/api/patch", { patch, revision });
   }
   command(text: string, revision: number) {
     return request<Snapshot & { message: string }>("/api/command", {

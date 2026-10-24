@@ -7,6 +7,7 @@ import { Client } from "@modelcontextprotocol/client";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import { CharacterStore } from "../server/store.js";
 import { createStudioServer } from "../server/http.js";
+import { EXPRESSIONS } from "../src/domain/character.js";
 
 test("HTTP + real stdio MCP: reads, changes, conflicts, persistence and origin boundary", async () => {
   const dir = mkdtempSync(join(tmpdir(), "softform-http-"));
@@ -90,6 +91,44 @@ test("HTTP + real stdio MCP: reads, changes, conflicts, persistence and origin b
     });
     assert.equal(unknown.status, 400);
     assert.equal(new CharacterStore(path).snapshot().revision, 2);
+    // The same expression-only operation is used by the picker and MCP.
+    let saved = await (
+      await fetch(`${base}/api/patch`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          revision: 2,
+          patch: {
+            bodyColor: "#b7dfcf",
+            bodyWidth: 1.2,
+            accessory: "bow",
+            name: "모찌",
+          },
+        }),
+      })
+    ).json();
+    const custom = saved.document;
+    for (const expression of EXPRESSIONS) {
+      const result = await client.callTool({
+        name: "update_character",
+        arguments: { revision: saved.revision, patch: { expression } },
+      });
+      assert.equal(result.isError, undefined);
+      saved = result.structuredContent;
+      assert.deepEqual(saved.document, { ...custom, expression });
+      assert.deepEqual(
+        new CharacterStore(path).snapshot().document,
+        saved.document,
+      );
+    }
+    const restored = await client.callTool({
+      name: "edit_character",
+      arguments: { revision: saved.revision, text: "되돌리기" },
+    });
+    assert.deepEqual((restored.structuredContent as any).document, {
+      ...custom,
+      expression: "surprised",
+    });
   } finally {
     await client?.close();
     server.closeAllConnections();
