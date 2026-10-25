@@ -135,3 +135,14 @@ diagnostics에서 대기 중 `scheduled:false`, frame counter가 상호작용 �
 - 사용자 실제 사용감: 모델 닮음, 귀/눈 비율, 회전 감도, 문법 발견성, 자유 수정 기대 차이를 사용자에게 확인한다.
 
 위 미검증은 제품화/출시 완료를 막는 범위이며, 현재 PC 로컬 데모를 실행한 근거와 혼합하지 않는다.
+
+## 2026-10-25 · GitHub Pages용 정적 데모 / 무작위 추천
+
+- 요구: 설치·Codex 연결 없이 웹 URL로 체험. 추천 첫 문장과 새로고침은 무작위, 번호 숨김, 직전 문장 반복 제외.
+- 구현: BrowserStudioGateway + localStorage 저장소, 디스크/브라우저 공통 characterHistory, Web Locks 편집 직렬화, storage 이벤트 갱신. 로컬 HTTP/AI 연결은 유지.
+- Windows Node 24 런타임: typecheck, 서버·정적 빌드 통과. 테스트 **31/31 통과**. 샌드박스 안에서는 localhost/임시 파일 교체 제한으로 7개 실패했고, 일반 로컬 실행에서 전체 재검증했다.
+- 정적 파일만 제공하는 http.server에서 실제 UI 확인: 추천 새로고침(서로 다른 문장·번호 없음), 적용, 재열기 후 표정 유지, undo, 셔츠+날개+웃음 복합 예문 직접 입력.
+- 390×844 브라우저 화면: 가로 넘침 없음(scrollWidth 390), 편집 컨트롤 표시, 콘솔 오류·경고 없음. 실제 모바일 기기 검증은 미실시. 화면: `docs/evidence/pages-demo/mobile.png`.
+- 정적 번들에 `/api/state`, EventSource, loopback 연결 문자열 없음. 배포 대상은 `dist-web/`만이며 `.data`와 인증 파일은 포함하지 않는다.
+- 실제 GitHub Pages 게시/원격 URL 검증은 배포 후 Linear HAN-186 기록으로 남긴다. 공개 AI 백엔드 배포와 구분한다.
+- PDF: 기존 6쪽에서 2쪽으로 축약, 실제 편집 전후 이미지·5개 핵심 제안·1인 역할·출처·웹 데모 링크. 165,924 bytes, 8개 링크, 두 페이지 Poppler 렌더 시각 검수 완료. 참가 신청 완료·기획서 미제출 상태를 유지한다.

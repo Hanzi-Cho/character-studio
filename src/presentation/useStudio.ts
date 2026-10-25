@@ -41,9 +41,13 @@ export function useStudio(gateway: StudioGateway) {
     gateway
       .read()
       .then(receive)
-      .catch(() => {
+      .catch((error: unknown) => {
         if (active)
-          setNotice("스튜디오에 연결하지 못했어요. 실행 창을 확인해 주세요.");
+          setNotice(
+            error instanceof Error && error.message.length < 200
+              ? error.message
+              : "스튜디오에 연결하지 못했어요. 실행 창을 확인해 주세요.",
+          );
       });
     const unsubscribe = gateway.subscribe(receive, (value) => {
       if (active) setConnected(value);

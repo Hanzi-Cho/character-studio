@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
+    "build:web": "node scripts/build.mjs --web-demo",
     "start": "tsx server/main.ts",
     "demo": "tsx server/main.ts --demo",
     "doctor": "tsx server/doctor.ts",

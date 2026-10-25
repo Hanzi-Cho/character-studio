@@ -46,7 +46,7 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
   return (
     <main className="studio">
       <header className="topbar">
-        <a className="brand" href="/" aria-label="Character Studio 홈">
+        <a className="brand" href="./" aria-label="Character Studio 홈">
           <span className="brand-symbol">
             <span />
             <span />
@@ -58,7 +58,11 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
         <div className="header-actions">
           <span className={`connection ${connected ? "" : "offline"}`}>
             <i />
-            {connected ? "이 기기의 작업 공간" : "연결 확인 중"}
+            {connected
+              ? chatMode === "browser"
+                ? "웹 데모 · 이 브라우저에 저장"
+                : "이 기기의 작업 공간"
+              : "연결 확인 중"}
           </span>
           <button
             className="icon-button help-trigger"
@@ -196,7 +200,11 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
           {notice}
         </div>
       )}
-      <HelpDialog open={help} onClose={() => setHelp(false)} />
+      <HelpDialog
+        open={help}
+        chatMode={chatMode}
+        onClose={() => setHelp(false)}
+      />
     </main>
   );
 }
