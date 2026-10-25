@@ -25,6 +25,13 @@ if (
 export const findCommandExample = (text: string) =>
   byText.get(normalizeExampleText(text));
 
-/** Visit every example before repeating; refreshing never changes character state. */
-export const nextExampleIndex = (index: number) =>
-  (index + 1) % COMMAND_EXAMPLES.length;
+/** Uniform random suggestion, excluding the currently visible example. */
+export function randomExampleIndex(
+  previous = -1,
+  random = Math.random,
+): number {
+  const count = COMMAND_EXAMPLES.length;
+  const exclude = previous >= 0 && previous < count;
+  const candidate = Math.floor(random() * (count - (exclude ? 1 : 0)));
+  return exclude && candidate >= previous ? candidate + 1 : candidate;
+}

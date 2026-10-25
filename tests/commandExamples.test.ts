@@ -6,7 +6,7 @@ import { join, resolve } from "node:path";
 import {
   COMMAND_EXAMPLES,
   findCommandExample,
-  nextExampleIndex,
+  randomExampleIndex,
 } from "../src/domain/commandExamples.js";
 import { DEFAULT_CHARACTER } from "../src/domain/character.js";
 import { ExampleCommandInterpreter } from "../src/adapters/ExampleCommandInterpreter.js";
@@ -98,17 +98,32 @@ test("all 41 serialized examples work over HTTP without invoking a model; save, 
   }
 });
 
-test("recommendations cycle through every example; exact text matching tolerates whitespace only", () => {
-  const visited = new Set<number>();
-  let index = 0;
-  for (let i = 0; i < COMMAND_EXAMPLES.length; i++) {
-    visited.add(index);
-    const next = nextExampleIndex(index);
-    assert.notEqual(index, next);
-    index = next;
+test("random suggestions can reach every other example without repeating the current one", () => {
+  const count = COMMAND_EXAMPLES.length;
+  assert.equal(
+    randomExampleIndex(-1, () => 0),
+    0,
+  );
+  assert.equal(
+    randomExampleIndex(-1, () => 0.999999),
+    count - 1,
+  );
+  for (let previous = 0; previous < count; previous++) {
+    const visited = new Set<number>();
+    for (let bucket = 0; bucket < count - 1; bucket++) {
+      const next = randomExampleIndex(
+        previous,
+        () => (bucket + 0.5) / (count - 1),
+      );
+      assert.notEqual(next, previous);
+      assert.ok(next >= 0 && next < count);
+      visited.add(next);
+    }
+    assert.equal(visited.size, count - 1);
   }
-  assert.equal(visited.size, COMMAND_EXAMPLES.length);
-  assert.equal(index, 0);
+});
+
+test("exact text matching tolerates whitespace only", () => {
   const example = COMMAND_EXAMPLES[0];
   assert.equal(
     findCommandExample(`  ${example.text.replaceAll(" ", "  ")}  `)?.id,

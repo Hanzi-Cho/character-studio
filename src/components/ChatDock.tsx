@@ -92,7 +92,24 @@ export function ChatDock({
         {chatMode === "codex"
           ? "추천 예문은 로컬 적용, 그 외 채팅은 AI로 전송돼요."
           : "추천 예문을 누르거나 그대로 입력해 보세요."}
-        <span className="desktop-only"> 모습은 이 PC에 저장돼요.</span>
+        <span className="desktop-only">
+          {" "}
+          {chatMode === "browser"
+            ? "모습은 이 브라우저에 저장돼요."
+            : "모습은 이 PC에 저장돼요."}
+        </span>
+        {chatMode === "browser" && (
+          <>
+            {" "}
+            <a
+              href="https://github.com/Hanzi-Cho/character-studio#자신의-codex로-자유롭게-채팅하기"
+              target="_blank"
+              rel="noreferrer"
+            >
+              AI 채팅 실행 방법 ↗
+            </a>
+          </>
+        )}
       </p>
     </section>
   );

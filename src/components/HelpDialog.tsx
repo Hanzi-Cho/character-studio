@@ -3,9 +3,11 @@ import { Icon } from "./Icon.js";
 export function HelpDialog({
   open,
   onClose,
+  chatMode,
 }: {
   open: boolean;
   onClose: () => void;
+  chatMode: string;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
@@ -67,10 +69,13 @@ export function HelpDialog({
           전송되며, 로컬 모드에서는 지원하는 속성 명령만 처리합니다.
         </p>
         <p className="help-fineprint">
-          모습과 최근 50회 변경은 이 PC에 저장됩니다. 채팅 문장은 현재 탭에만
-          남습니다. AI 모드의 자유 입력은 채팅과 현재 캐릭터 설정을 로그인한
-          Codex로 보냅니다. + 버튼은 캐릭터 JSON 불러오기입니다. 비공식 치이카와
-          절차적 3D 스터디이며 원본 모델 파일을 사용하지 않습니다.
+          {chatMode === "browser"
+            ? "웹 데모는 AI 연결 없이 동작하며 모습과 최근 50회 변경을 이 브라우저에 저장합니다. 사이트 데이터를 삭제하면 작업도 사라지므로 JSON으로 내보내 보관하세요. 자유로운 AI 채팅은 GitHub의 로컬 실행 안내를 따라 이용할 수 있습니다."
+            : "모습과 최근 50회 변경은 이 PC에 저장됩니다."}{" "}
+          채팅 문장은 현재 탭에만 남습니다. AI 모드의 자유 입력은 채팅과 현재
+          캐릭터 설정을 로그인한 Codex로 보냅니다. + 버튼은 캐릭터 JSON
+          불러오기입니다. 비공식 치이카와 절차적 3D 스터디이며 원본 모델 파일을
+          사용하지 않습니다.
         </p>
         <button className="help-done" onClick={() => onClose()}>
           만들어 볼게요 <span>↗</span>

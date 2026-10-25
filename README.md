@@ -6,6 +6,16 @@ PC 브라우저에서 치이카와 한 모델을 돌려 보고 하단 채팅으�
 
 Codex 없이도 **41개 추천 예문**으로 색상·옷·장식·표정을 바꿀 수 있습니다. 예문마다 편집 명령을 JSON으로 저장해 두었으며 모델 호출 없이 같은 검증·저장·되돌리기 경로를 사용합니다. [예문과 실행 방식](docs/features/offline-command-examples.md) · [사전 직렬화 JSON](src/domain/command-examples.json).
 
+## 설치 없이 웹에서 체험하기
+
+**[Character Studio 웹 데모 열기 ↗](https://hanzi-cho.github.io/character-studio/)**
+
+로그인·설치·API 키 없이 접속해 추천 문장의 **바로 적용**을 누르세요. 새로고침은 다른 문장을 무작위로 추천하며 번호는 표시하지 않습니다. PC·모바일 브라우저에서 회전, 표정·옷·장식 편집, 되돌리기, PNG/JSON 저장을 체험할 수 있습니다.
+
+웹 데모는 저장된 예문과 일부 규칙 명령을 처리합니다. 자유로운 AI 해석은 아래의 로컬 Codex 실행으로 이용하세요. 웹 데모의 캐릭터와 최근 50개 변경은 **각 방문자의 브라우저**에 저장되고 서버나 AI로 전송되지 않습니다. 사이트 데이터 삭제 시 사라지므로 JSON으로 내보내 보관하세요. 최신 브라우저의 WebGL·localStorage·Web Locks가 필요하며, 모바일 실기기 검증은 아직 남아 있습니다.
+
+`pnpm build:web`로 정적 파일을 `dist-web/`에 생성합니다. main 변경 시 GitHub Actions가 테스트 후 이 폴더만 Pages에 게시합니다. `.data`, 서버, 로그인 정보는 배포물에 포함하지 않습니다. [배포 구조](docs/features/github-pages-demo.md).
+
 ![모델 없이 예문으로 셔츠와 날개 적용](docs/evidence/offline-examples/desktop.png)
 
 Meta Model API는 접근 승인 후 연결할 후속 경로입니다. 모델 학습·파인튜닝을 수행하지 않습니다. [실제 AI 구현과 녹화 순서](docs/features/codex-character-editing.md), [문서 교정에 설치한 Humanizer](docs/WRITING.md)를 참고하세요.
@@ -23,9 +33,9 @@ pnpm build
 pnpm demo
 ```
 
-[http://127.0.0.1:4317](http://127.0.0.1:4317)을 열고 **바로 적용**을 누르세요. 새로고침 아이콘은 다음 예문을 보여주며 캐릭터는 바꾸지 않습니다. 전체 41개를 순서대로 살펴볼 수 있습니다. Windows에서는 설치·빌드 후 `Start-Demo.cmd`로 다시 열 수 있습니다.
+[http://127.0.0.1:4317](http://127.0.0.1:4317)을 열고 **바로 적용**을 누르세요. 새로고침 아이콘은 다른 예문을 무작위로 보여주며 캐릭터는 바꾸지 않습니다. Windows에서는 설치·빌드 후 `Start-Demo.cmd`로 다시 열 수 있습니다.
 
-GitHub 링크는 코드를 공유하는 주소입니다. 앱은 각자의 PC에서 실행합니다. Windows 실기기에서 검증했으며 macOS/Linux의 전체 설치·화면 동작은 아직 검증하지 않았습니다.
+저장소는 실행 가능한 코드를 공유하며 Pages 주소는 설치 없는 예문 데모입니다. 자유로운 AI 채팅 앱은 각자의 PC에서 실행합니다. Windows 실기기에서 검증했으며 macOS/Linux의 전체 설치·화면 동작은 아직 검증하지 않았습니다.
 
 ## 자신의 Codex로 자유롭게 채팅하기
 
