@@ -10,6 +10,7 @@
 - 별도 4318 / `.data/publication-demo`에서 존재하지 않는 Codex 경로를 지정하고 데모 모드 실행. 복합 예문 버튼 → 추천 새로고침 → 색 적용 → undo → 새싹 예문 직접 입력 → 초기화/undo → 페이지 재열기를 확인했다. 실제 CLI가 없는 다른 PC의 검증을 대신하지는 않는다.
 - 1280×720 PC 및 390×844 viewport 확인. 390px에서 가로·세로 overflow 없음, 예문과 적용/새로고침 버튼 표시. 물리 휴대폰 터치 검증은 아니다. 브라우저 error/warn 0개. [PC](evidence/offline-examples/desktop.png) · [390px](evidence/offline-examples/mobile-390.png).
 - 수정한 Codex 경로로 예문 목록에 없는 자유 입력을 실제 호출: 본체/귀 `#a8d5ba` + 놀람, 5,883ms, 기대 명령 일치. [모델 응답](evidence/offline-examples/codex-smoke.json). 단일 해석 시험이며 평균 지연이나 사용자별 모델 접근 보장은 아니다.
+- commit `730f21a`를 `.data/publication-clean`에 Git 파일만 새로 복제해 frozen-lockfile 설치·빌드·타입 검사·27개 테스트를 모두 통과했다. 기존 앱의 node_modules와 사용자 데이터를 복사하지 않았으며, 같은 Windows의 pnpm 패키지 캐시는 재사용했다. 별도 PC·새 OS·빈 다운로드 캐시 검증은 아니다.
 
 
 ## 2026-10-25 · 실제 Codex 채팅과 조합형 장식
