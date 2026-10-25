@@ -1,6 +1,11 @@
 import { AiConnectionDialog } from "./components/AiConnectionDialog.js";
+import { CharacterLibraryDialog } from "./components/CharacterLibraryDialog.js";
+import { characterJson } from "./application/characterLibrary.js";
 import { BASE_CATALOG } from "./domain/baseProfile.js";
-import { characterFromBase } from "./domain/character.js";
+import {
+  characterFromBase,
+  type CharacterDocument,
+} from "./domain/character.js";
 import { useState } from "react";
 import { Icon } from "./components/Icon.js";
 import { HelpDialog } from "./components/HelpDialog.js";
@@ -30,6 +35,7 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
   );
   const { ChatPanel } = runtime;
   const [aiOpen, setAiOpen] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(false);
   const [help, setHelp] = useState(false);
   const download = (href: string, name: string) => {
     const anchor = document.createElement("a");
@@ -37,10 +43,9 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
     anchor.download = name;
     anchor.click();
   };
-  const exportCharacter = () => {
-    if (!snapshot) return;
+  const exportCharacter = (document: CharacterDocument) => {
     const url = URL.createObjectURL(
-      new Blob([JSON.stringify(snapshot.document, null, 2)], {
+      new Blob([characterJson(document)], {
         type: "application/json",
       }),
     );
@@ -61,6 +66,13 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
           </span>
         </a>
         <div className="header-actions">
+          <button
+            className="ai-trigger library-trigger"
+            disabled={busy || !snapshot || !connected}
+            onClick={() => setLibraryOpen(true)}
+          >
+            내 캐릭터 보관함
+          </button>
           <button
             className="ai-trigger"
             disabled={busy}
@@ -205,7 +217,7 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
           <button
             className="icon-button"
             disabled={!snapshot}
-            onClick={exportCharacter}
+            onClick={() => snapshot && exportCharacter(snapshot.document)}
             title="캐릭터 JSON 저장"
             aria-label="캐릭터 파일 저장"
           >
@@ -247,6 +259,20 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
         onClose={() => setAiOpen(false)}
         connection={runtime.ai}
         onChanged={() => void refreshCapabilities()}
+      />
+      <CharacterLibraryDialog
+        open={libraryOpen}
+        onClose={() => setLibraryOpen(false)}
+        library={runtime.library}
+        current={snapshot?.document}
+        busy={busy || !connected}
+        onExport={exportCharacter}
+        onLoad={async ({ schemaVersion, ...value }) =>
+          patch(
+            value,
+            "보관함에서 불러왔어요. 이어서 꾸미거나 되돌리기로 이전 모습으로 돌아갈 수 있어요.",
+          )
+        }
       />
       <HelpDialog
         storage={runtime.storage}

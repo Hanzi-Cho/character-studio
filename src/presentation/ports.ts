@@ -1,4 +1,5 @@
 import type { AiConnection } from "../application/aiConnection.js";
+import type { CharacterLibrary } from "../application/characterLibrary.js";
 import type { ReferenceImage } from "../domain/referenceImages.js";
 import type { ComponentType } from "react";
 import type { CharacterRenderer, StudioGateway } from "../application/ports.js";
@@ -26,6 +27,7 @@ export interface ChatPanelProps {
   onHelp: () => void;
 }
 export interface StudioRuntime {
+  library: CharacterLibrary;
   storage: "browser" | "local";
   ai: AiConnection;
   gateway: StudioGateway;
