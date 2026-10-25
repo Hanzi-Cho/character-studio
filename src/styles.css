@@ -7,6 +7,43 @@
   -webkit-font-smoothing: antialiased;
   font-size: 14px;
 }
+.prompt-suggestions {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.prompt-suggestions button {
+  background: #fff9;
+  border: 1px solid #dedfd7;
+  border-radius: 18px;
+  padding: 7px 12px;
+  font-size: 11px;
+  color: #656c61;
+}
+.prompt-suggestions button:hover {
+  background: white;
+  border-color: #9daa91;
+}
+.ai-progress {
+  text-align: center;
+  color: #66785d;
+  font-size: 12px;
+  margin: 10px 0 0;
+}
+.edit-details {
+  font-size: 11px;
+  color: #767b71;
+}
+.edit-details pre {
+  white-space: pre-wrap;
+  max-height: 210px;
+  overflow: auto;
+  padding: 12px;
+  background: #f0f0e9;
+  border-radius: 10px;
+}
 * {
   box-sizing: border-box;
 }

@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { CharacterParts } from "./CharacterParts.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import type { CharacterDocument } from "../domain/character.js";
 import {
@@ -22,6 +23,7 @@ type Profile = readonly (readonly [radius: number, height: number])[];
  * User references supplied 2026-10-24; see docs/CHARACTER-MODELING.md.
  */
 export class ChiikawaModel {
+  private readonly parts = new CharacterParts();
   readonly root = new THREE.Group();
   private readonly head = new THREE.Group();
   private readonly torso = new THREE.Group();
@@ -59,6 +61,7 @@ export class ChiikawaModel {
     this.ears.name = "ears";
     this.eyes.name = "eyes";
     this.root.add(this.torso, this.feet, this.head);
+    this.root.add(this.parts.root);
     this.cheekPigment.alphaMap = this.blushTexture;
     this.cheekPigment.transparent = true;
     this.cheekPigment.depthWrite = false;
@@ -778,13 +781,17 @@ export class ChiikawaModel {
       group.visible = name === next.expression;
     for (const [name, group] of this.accessories)
       group.visible = name === next.accessory;
-    this.lastDocument = { ...next };
+    this.parts.update(next);
+    this.lastDocument = structuredClone(next);
     return true;
   }
   getGeometryIds() {
-    return [...this.geometries].map((geometry) => geometry.id);
+    return [...this.geometries]
+      .map((geometry) => geometry.id)
+      .concat(this.parts.geometryIds());
   }
   dispose() {
+    this.parts.dispose();
     this.blushTexture.dispose();
     for (const geometry of this.geometries) geometry.dispose();
     for (const material of this.materials) material.dispose();

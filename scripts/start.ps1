@@ -6,6 +6,11 @@ if (-not (Test-Path -LiteralPath $studioNode)) { throw 'Node.js 24 이상을 설
 $studioUrl = 'http://127.0.0.1:4317'
 try { $studioStatus = Invoke-RestMethod -Uri "$studioUrl/api/state" -TimeoutSec 2 } catch { $studioStatus = $null }
 if (-not $studioStatus.document) {
+  if (-not $env:CHARACTER_CODEX_PATH -and $env:CHARACTER_CHAT_MODE -ne 'local') {
+    $studioCodex = Get-Command codex -ErrorAction SilentlyContinue
+    if (-not $studioCodex) { throw 'Codex CLI 설치와 ChatGPT 로그인이 필요합니다. 설치 후 codex login을 실행해 주세요.' }
+    $env:CHARACTER_CODEX_PATH = $studioCodex.Source
+  }
   if (-not (Test-Path -LiteralPath (Join-Path $studioRoot 'node_modules\tsx'))) { throw '먼저 프로젝트 폴더에서 pnpm install과 pnpm build를 실행해 주세요.' }
   if (-not (Test-Path -LiteralPath (Join-Path $studioRoot 'dist\index.html'))) {
     Push-Location $studioRoot

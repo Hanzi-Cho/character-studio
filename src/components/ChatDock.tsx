@@ -5,6 +5,7 @@ import { Icon } from "./Icon.js";
 import type { ChatPanelProps } from "../presentation/ports.js";
 
 export function ChatDock({
+  chatMode = "local",
   expression,
   busy,
   disabled,
@@ -41,6 +42,12 @@ export function ChatDock({
               <p className={message.error ? "reply error" : "reply"}>
                 {message.reply}
               </p>
+              {!!message.audit && (
+                <details className="edit-details">
+                  <summary>적용한 편집 명령</summary>
+                  <pre>{JSON.stringify(message.audit, null, 2)}</pre>
+                </details>
+              )}
             </div>
           ))}
         </div>
@@ -65,16 +72,42 @@ export function ChatDock({
         </div>
       )}
       <Composer
+        modeLabel={chatMode === "codex" ? "Codex AI" : "로컬 편집"}
         busy={busy}
         disabled={disabled}
         onSubmit={onSubmit}
         onImport={onImport}
         onHelp={onHelp}
       />
+      {busy && (
+        <p className="ai-progress" role="status">
+          원하는 모습을 해석하고 있어요. 잠시만 기다려 주세요.
+        </p>
+      )}
+      {!messages.length && !busy && chatMode === "codex" && (
+        <div className="prompt-suggestions">
+          {[
+            "하늘색 셔츠를 입히고 웃는 표정으로",
+            "금색 왕관과 작은 하얀 날개를 달아줘",
+            "분홍색 안경을 만들어줘",
+          ].map((text) => (
+            <button
+              key={text}
+              disabled={disabled}
+              onClick={() => void onSubmit(text)}
+            >
+              {text}
+            </button>
+          ))}
+        </div>
+      )}
       <p className="composer-note">
-        <span>로컬 편집</span>
-        <span className="note-dot">·</span>색상, 크기, 표정부터 바꿔보세요.
-        <span className="desktop-only"> 모든 변경은 이 PC에 저장돼요.</span>
+        <span>{chatMode === "codex" ? "Codex AI 연결" : "로컬 편집"}</span>
+        <span className="note-dot">·</span>
+        {chatMode === "codex"
+          ? "채팅과 현재 캐릭터 설정을 AI에 보냅니다."
+          : "색상, 크기, 표정을 바꿔보세요."}
+        <span className="desktop-only"> 모습은 이 PC에 저장돼요.</span>
       </p>
     </section>
   );

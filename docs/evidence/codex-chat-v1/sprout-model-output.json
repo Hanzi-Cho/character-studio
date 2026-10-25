@@ -1,0 +1,127 @@
+{
+  "provider": "codex",
+  "model": "gpt-6.1-sol",
+  "durationMs": 10830,
+  "plan": {
+    "action": "edit",
+    "message": "왕관을 빼고 머리 위에 연두색 줄기 하나와 잎 두 장의 새싹 장식을 달았어요. 셔츠는 그대로 두고 날개 크기를 지금의 1.5배로 키웠어요.",
+    "operations": [
+      {
+        "op": "remove_part",
+        "id": "gold_crown"
+      },
+      {
+        "op": "upsert_part",
+        "part": {
+          "id": "green_sprout",
+          "label": "연두색 새싹",
+          "kind": "custom",
+          "anchor": "head",
+          "color": "#A8D95B",
+          "accentColor": "#A8D95B",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "components": [
+            {
+              "shape": "cylinder",
+              "color": "#A8D95B",
+              "position": [
+                0,
+                0.24,
+                0
+              ],
+              "rotation": [
+                0,
+                0,
+                0
+              ],
+              "scale": [
+                0.09,
+                0.48,
+                0.09
+              ]
+            },
+            {
+              "shape": "sphere",
+              "color": "#A8D95B",
+              "position": [
+                -0.2,
+                0.46,
+                0
+              ],
+              "rotation": [
+                0,
+                0,
+                -30
+              ],
+              "scale": [
+                0.27,
+                0.11,
+                0.13
+              ]
+            },
+            {
+              "shape": "sphere",
+              "color": "#A8D95B",
+              "position": [
+                0.2,
+                0.46,
+                0
+              ],
+              "rotation": [
+                0,
+                0,
+                30
+              ],
+              "scale": [
+                0.27,
+                0.11,
+                0.13
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "op": "upsert_part",
+        "part": {
+          "id": "white_wings",
+          "label": "작은 하얀 날개",
+          "kind": "wings",
+          "anchor": "back",
+          "color": "#FFFFFF",
+          "accentColor": "#F0F0F0",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            0.975,
+            0.975,
+            0.975
+          ],
+          "components": []
+        }
+      }
+    ]
+  }
+}

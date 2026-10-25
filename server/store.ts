@@ -14,6 +14,7 @@ export { ConflictError } from "../src/domain/errors.js";
 import {
   applyPatch,
   CharacterSchema,
+  CharacterImportSchema,
   DEFAULT_CHARACTER,
   type CharacterDocument,
   type Snapshot,
@@ -22,11 +23,11 @@ import {
 
 const StoreSchema = z
   .object({
-    document: CharacterSchema,
+    document: CharacterImportSchema,
     revision: z.number().int().min(0),
     updatedAt: z.string(),
-    past: z.array(CharacterSchema).max(50),
-    future: z.array(CharacterSchema).max(50),
+    past: z.array(CharacterImportSchema).max(50),
+    future: z.array(CharacterImportSchema).max(50),
   })
   .strict();
 export class CharacterStore implements CharacterRepository {

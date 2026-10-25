@@ -1,6 +1,7 @@
 export function Icon({ name, size = 20 }: { name: string; size?: number }) {
   const paths: Record<string, React.ReactNode> = {
     plus: <path d="M12 5v14M5 12h14" />,
+    reset: <path d="M3 4v5h5M3 9a9 9 0 1 1 1 8" />,
     send: (
       <>
         <path d="m6 10 6-6 6 6M12 4v16" />

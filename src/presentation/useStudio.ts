@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { StudioGateway } from "../application/ports.js";
 import {
-  CharacterSchema,
+  CharacterImportSchema,
   type CharacterPatch,
   type Snapshot,
 } from "../domain/character.js";
@@ -12,6 +12,7 @@ export function useStudio(gateway: StudioGateway) {
   const [snapshot, setSnapshot] = useState<Snapshot>();
   const latest = useRef<Snapshot | undefined>(undefined);
   const [connected, setConnected] = useState(false);
+  const [chatMode, setChatMode] = useState("local");
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -31,6 +32,12 @@ export function useStudio(gateway: StudioGateway) {
     latest.current = undefined;
     setSnapshot(undefined);
     setConnected(false);
+    gateway
+      .capabilities?.()
+      .then((info) => {
+        if (active) setChatMode(info.chatMode);
+      })
+      .catch(() => {});
     gateway
       .read()
       .then(receive)
@@ -80,15 +87,23 @@ export function useStudio(gateway: StudioGateway) {
       setBusy(false);
     }
   }
-  const append = (text: string, reply: string, error: boolean) => {
+  const append = (
+    text: string,
+    reply: string,
+    error: boolean,
+    audit?: unknown,
+  ) => {
     const id = ++messageId.current;
-    setMessages((items) => [...items.slice(-19), { id, text, reply, error }]);
+    setMessages((items) => [
+      ...items.slice(-19),
+      { id, text, reply, error, audit },
+    ]);
   };
   const send = (text: string) =>
     mutate(
       async (revision) => {
         const result = await gateway.command(text, revision);
-        append(text, result.message, false);
+        append(text, result.message, false, result.audit);
         return result;
       },
       (message) => append(text, message, true),
@@ -106,13 +121,13 @@ export function useStudio(gateway: StudioGateway) {
       return result;
     });
   const importCharacter = (file: File) => {
-    if (file.size > 16384) {
-      setNotice("16KB 이하의 캐릭터 JSON 파일을 선택해 주세요.");
+    if (file.size > 131072) {
+      setNotice("128KB 이하의 캐릭터 JSON 파일을 선택해 주세요.");
       return Promise.resolve(false);
     }
     // Capture revision before reading the file; a concurrent edit must conflict.
     return mutate(async (revision) => {
-      const { schemaVersion, ...value } = CharacterSchema.parse(
+      const { schemaVersion, ...value } = CharacterImportSchema.parse(
         JSON.parse(await file.text()),
       );
       const result = await gateway.patch(value, revision);
@@ -124,6 +139,7 @@ export function useStudio(gateway: StudioGateway) {
   };
   return {
     snapshot,
+    chatMode,
     connected,
     busy,
     messages,

@@ -4,6 +4,7 @@ import type {
   Command,
   Snapshot,
 } from "../domain/character.js";
+import type { EditPlan } from "../domain/editPlan.js";
 
 /** No React or Three.js types cross these boundaries. */
 export interface CommandInterpreter {
@@ -25,12 +26,13 @@ export interface CharacterRenderer {
   dispose(): void;
 }
 export interface StudioGateway {
+  capabilities?(): Promise<{ chatMode: string; model: string }>;
   read(): Promise<Snapshot>;
   patch(patch: CharacterPatch, revision: number): Promise<Snapshot>;
   command(
     text: string,
     revision: number,
-  ): Promise<Snapshot & { message: string }>;
+  ): Promise<Snapshot & { message: string; audit?: unknown }>;
   action(
     action: "undo" | "redo" | "reset",
     revision: number,
@@ -43,6 +45,7 @@ export interface StudioGateway {
 
 /** Transport-independent application boundary shared by HTTP and future AI tools. */
 export interface CharacterApplication {
+  applyPlan(plan: EditPlan, revision: number): Snapshot & { message: string };
   read(): Snapshot;
   patch(patch: CharacterPatch, revision: number): Snapshot;
   command(

@@ -1,14 +1,14 @@
 # Character Studio
 
-대화로 여러 종류의 3D 캐릭터를 만들고 수정하는 스튜디오입니다. 기존 작업명과 앱 표기는 **Softform Studio**이며, 공개 저장소는 [Hanzi-Cho/character-studio](https://github.com/Hanzi-Cho/character-studio)입니다.
+대화로 3D 캐릭터의 옷·장식·표정을 바꾸는 스튜디오입니다. 공개 저장소는 [Hanzi-Cho/character-studio](https://github.com/Hanzi-Cho/character-studio)입니다. 예전 작업명 Softform Studio는 로컬 폴더와 일부 내부 식별자에 남아 있습니다.
 
-PC에서 3D 치이카와를 돌려 보고, 하단 채팅으로 색상·비율·표정·장식을 바꾸는 로컬 웹 MVP입니다. React + TypeScript + Three.js로 구현했습니다. 외부 AI 없이 동작하는 **제한된 명령 편집기**와 **실제 stdio MCP 서버**가 있습니다. Gemini·Claude·GPT 앱 연결이나 임의의 3D 생성은 아직 구현/검증하지 않았습니다.
+PC 브라우저에서 치이카와 한 모델을 돌려 보고 하단 채팅으로 편집합니다. React + TypeScript + Three.js를 사용합니다. **Codex CLI의 ChatGPT 로그인**으로 실제 AI 요청을 처리하고, 여러 편집 명령을 검증한 뒤 한 번에 저장합니다. 셔츠·날개·왕관 등 9개 장식 유형과 기본 도형을 조합한 새 장식을 지원합니다. 자유로운 고품질 메시 생성이나 Blender 작업은 아직 지원하지 않습니다.
 
-다음 단계는 **Meta Model API**를 연결해 자연어 요청을 검증된 캐릭터 편집 명령으로 변환하는 것입니다. 여러 기본 캐릭터, 날개·새 장식과 모바일 확장은 계획이며, 현재 API 연동이나 자유로운 3D 생성이 구현되었다는 뜻은 아닙니다.
+Meta Model API는 접근 승인 후 같은 편집 계약으로 연결할 후속 경로입니다. 오늘은 Codex를 먼저 사용하며 모델 학습·파인튜닝을 수행하지 않습니다. [현재 구현과 녹화 순서](docs/features/codex-character-editing.md), [문서 교정에 설치한 Humanizer](docs/WRITING.md)를 참고하세요.
 
 ## 이 PC에서 열기
 
-Node.js 24 이상과 pnpm을 준비한 뒤 아래 명령으로 의존성을 설치하고 빌드합니다. Windows에서는 이후 `Start-Studio.cmd`로 서버 확인/시작 후 `http://127.0.0.1:4317`을 열 수 있습니다. 실행 파일 배포본이나 자동 업데이트 앱은 아닙니다.
+Node.js 24 이상, pnpm, Codex CLI와 `codex login`으로 로그인한 ChatGPT 계정이 필요합니다. Codex 계정의 사용 한도가 적용됩니다. Windows에서는 빌드 후 `Start-Studio.cmd`를 실행하면 `http://127.0.0.1:4317`이 열립니다. 실행 파일 배포본이나 자동 업데이트 앱은 아닙니다.
 
 개발 실행:
 
@@ -25,7 +25,7 @@ pnpm start
 ## 사용법
 
 - 마우스로 드래그: 모든 방향 회전. 휠: 확대/축소. 장면에 키보드 초점을 두면 방향키 회전, Home 정면.
-- 채팅 예: `몸을 민트색으로, 귀를 크게, 리본 달아줘`, `웃는 표정으로`, `이름을 모찌로`.
+- 채팅 예: `하늘색 셔츠와 작은 하얀 날개를 달고 웃는 표정으로`, `머리 위에 줄기 하나와 잎 두 장으로 새싹 장식을 만들어줘`, `셔츠만 분홍색으로`.
 - 얼굴 시안에서 **기본·웃음·슬픔·화남·놀람·졸림**을 선택하면 표정만 바뀝니다. `슬픈 표정으로`, `화난 표정으로`, `졸린 표정으로`도 지원합니다. 색상·체형·이름·장식은 유지되고 되돌릴 수 있습니다.
 - [치이카와 57개 스티커 관찰 기록](docs/CHIIKAWA-REFERENCE-REVIEW.md) · [31장 추가 사진과 부위별 실측 수치](docs/CHIIKAWA-MEASUREMENTS.md) · [최신 모델링 변경과 확인 범위](docs/CHARACTER-MODELING.md)
 - `되돌리기`, `다시 실행`, `초기화`. 최근 50개 변경을 저장합니다. 미지원 문장·부정문·상충 속성은 적용하지 않습니다.
@@ -37,13 +37,13 @@ pnpm start
 
 ```text
 src/bootstrap.ts      gateway / renderer / model / ChatPanel 구현 조립
-src/domain/           CharacterDocument v1, 허용 속성·범위와 patch 검증
+src/domain/           CharacterDocument v2, parts·EditPlan 스키마와 원자적 명령 컴파일
 src/application/      편집 서비스 + 렌더러 / 해석기 / 저장소 / gateway 계약
 src/presentation/     화면 상태·명령/복구, 렌더 수명과 교체용 UI 계약
 src/adapters/         Three.js, 인스턴스 배치, 로컬 해석기, HTTP/SSE
 src/components/       교체 가능한 ChatDock, Composer, 표정 시안, 도움말
 src/dev/              반복 메시 배칭 검증 화면
-server/               단일 저장소 + loopback HTTP + stdio MCP
+server/               Codex 해석기 + 단일 저장소 + loopback HTTP + stdio MCP
 tests/                도메인·영속화·경계·실제 MCP 통합·배치 회귀
 docs/                 아키텍처, 원본 코드 연구, 범위/결정, 검증 근거
 .data/                이 PC의 캐릭터·이력·이전 저장본 (Git 제외)
@@ -53,7 +53,9 @@ docs/                 아키텍처, 원본 코드 연구, 범위/결정, 검증 
 
 서버는 **127.0.0.1**에만 바인딩합니다. 데이터는 `.data/character.json`에 저장되고 직전 저장본은 `.bak`입니다. 임시 파일 기록 후 교체하며, 손상된 파일을 기본값으로 조용히 덮어쓰지 않습니다. 복구는 서버를 멈춘 뒤 현재 파일을 따로 보관하고 검증된 `.bak`를 복사하는 수동 절차입니다. 전원 중단/디스크 장애 복구와 다중 서버 writer는 아직 검증하지 않았습니다.
 
-하나의 로컬 사용자와 하나의 writer 서버를 전제로 합니다. Host/Origin 검사와 JSON 검증이 있지만 로그인/RBAC는 없습니다. 같은 PC의 프로세스·컴퓨터 소유자의 파일 접근을 차단하지 않습니다. AI 전송이나 원격 공개는 현재 하지 않습니다. 채팅 문장은 현재 탭 메모리에만 남습니다. 이름과 변경한 모습·최근 이력은 디스크에 남습니다.
+하나의 로컬 사용자와 하나의 writer 서버를 전제로 합니다. Host/Origin 검사와 JSON 검증이 있지만 로그인/RBAC는 없습니다. 같은 PC의 프로세스·컴퓨터 소유자의 파일 접근을 차단하지 않습니다. **채팅과 현재 캐릭터 설정을 Codex 모델에 전송**합니다. 앱의 채팅 내역은 현재 탭 메모리에 남고, 캐릭터와 최근 50개 변경 이력은 디스크에 남습니다. CLI는 ephemeral 모드로 실행하며 임시 입력/출력 파일을 요청 후 지웁니다. 공급자 측 보존 정책까지 앱이 통제하지는 않습니다. 인증 파일이나 API 키는 프로젝트에 복사하지 않습니다.
+
+기본값은 `CHARACTER_CHAT_MODE=codex`, `CHARACTER_CODEX_MODEL=gpt-6.1-sol`입니다. CLI 경로는 `CHARACTER_CODEX_PATH`로 지정할 수 있습니다. `CHARACTER_CHAT_MODE=local`은 외부 AI 없이 기존 색상·비율·표정·리본/별 명령만 처리하는 별도 제한 모드입니다. AI 오류 시 이 모드로 조용히 전환하지 않습니다. v1 저장본과 변경 이력은 읽을 때 v2로 변환됩니다.
 
 ## MCP 개발 연결
 
@@ -69,7 +71,7 @@ docs/                 아키텍처, 원본 코드 연구, 범위/결정, 검증 
 }
 ```
 
-이 JSON은 프로세스 실행 정보입니다. 특정 호스트의 설정 파일 형식/지원 보장이나 사용자 앱 설정 변경이 아닙니다. 도구는 `get_character`, `update_character`, `edit_character`입니다. 변경 전 최신 revision을 읽고 충돌 시 재조회합니다. 브라우저는 SSE로 MCP 변경을 수신합니다. 일반 사용자용 원클릭 연결·호스트 안의 3D 임베드·OAuth·모바일 브리지는 후속 작업입니다.
+이 PC의 Codex에는 `character-studio` stdio MCP를 등록했습니다. 다른 PC에서는 해당 환경에 맞춰 등록해야 합니다. 도구는 `get_character`, `update_character`, `edit_character`, `apply_edit_plan`, `get_model_capabilities`입니다. 변경 전 최신 revision을 읽고 충돌 시 재조회합니다. 호스트 모델은 `apply_edit_plan`으로 직접 직렬화해 추가 AI 호출 없이 적용할 수 있습니다. 브라우저는 SSE로 변경을 수신합니다. 현재 Codex 채팅의 도구 목록은 새 세션에서 갱신될 수 있습니다. 일반 사용자용 원클릭 연결·호스트 안의 3D 임베드·OAuth·모바일 브리지는 후속 작업입니다.
 
 ## 문서
 

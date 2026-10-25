@@ -12,4 +12,4 @@ await build({
   define: { "process.env.NODE_ENV": '"production"' },
 });
 await copyFile("index.html", "dist/index.html");
-console.log("Built Softform Studio → dist");
+console.log("Built Character Studio → dist");

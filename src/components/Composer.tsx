@@ -1,12 +1,14 @@
 import { useRef, useState } from "react";
 import { Icon } from "./Icon.js";
 export function Composer({
+  modeLabel = "Codex AI",
   busy,
   disabled,
   onSubmit,
   onImport,
   onHelp,
 }: {
+  modeLabel?: string;
   busy: boolean;
   disabled: boolean;
   onSubmit: (text: string) => Promise<boolean>;
@@ -76,10 +78,10 @@ export function Composer({
       <button
         type="button"
         className="mode-button"
-        title="로컬 편집 명령 도움말"
+        title="채팅 편집 도움말"
         onClick={onHelp}
       >
-        빠른 편집
+        {modeLabel}
         <Icon name="chevron" size={14} />
       </button>
       <button

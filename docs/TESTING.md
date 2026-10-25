@@ -1,4 +1,17 @@
-# 검증 기록 — 2026-10-24
+# 검증 기록
+
+## 2026-10-25 · 실제 Codex 채팅과 조합형 장식
+
+- Windows PC, Codex CLI 0.163.0-alpha.10.2 / ChatGPT 로그인 / gpt-6.1-sol. 외부 API 키 신규 발급 없음. 앱 채팅으로 실제 모델 호출, MCP 5도구 등록. 등록 확인과 현재 대화의 동적 도구 발견 여부는 구분한다.
+- 타입 검사·빌드 성공, 자동 테스트 **23/23 통과**, 실패·skip 0. HTTP + 실제 stdio MCP에서 apply_edit_plan의 복합 편집·저장·충돌·잘못된 마지막 작업의 원자적 거부·undo 검증. v1 저장본/이력 마이그레이션, 장식 geometry 재사용/dispose 회귀 포함.
+- 실제 UI: 전체 초기화 → 셔츠/날개/왕관/웃음 동시 적용 → 왕관 제거/새싹 새로 조합/날개 1.5배 → 셔츠만 분홍색/놀람. 새싹과 날개·본체 색 유지. 드래그/방향키 회전, undo/redo, 초기화 후 undo 확인.
+- 새싹 응답은 원통 1개 + 구 2개, 3개 작업, 10,830ms. [실제 모델 응답](evidence/codex-chat-v1/sprout-model-output.json). 별도 단일 해석 시험은 약 7,918ms. 평균·p95 성능이나 30개 정확도 평가가 아니다.
+- 10초 걷기 애니메이션 요청은 미지원 안내, 입력 유지, 저장 문서 무변경. 최종 revision 76의 문서가 [부분 변경 직후 문서](evidence/codex-chat-v1/final-character.json)와 같음을 대조했다.
+- [새싹 화면](evidence/codex-chat-v1/03-generated-sprout.png), [부분 색/표정](evidence/codex-chat-v1/04-partial-edit.png), [회전](evidence/codex-chat-v1/05-rotated.png). 실제 화면은 642×510 IAB viewport이며 모바일 실기기 증거가 아니다.
+- 기존 사용자 저장본은 `.data/character.before-v2.json`에 보관했다. 현재 작업 공간에는 이번 데모 캐릭터가 저장돼 있다. 이 파일과 CLI 인증 정보는 Git 제외다.
+- 최신 서버 재시작 후 revision 76, 저장 파일 SHA256 완전 일치. 시작 스크립트 PowerShell 구문 검사 통과.
+- PDF 초안 6쪽, 221,320 bytes. 전체 6쪽을 PNG로 렌더해 한글·줄바꿈·이미지·여백을 확인했다. 파일 생성은 대회 제출 완료가 아니다.
+- 후속: 정상 20/실패 10 요청 평가, 실제 Codex 데스크톱 채팅의 새 MCP 도구 발견, 사용 한도/네트워크 장애·취소 UX, 다른 PC 설치, 실제 휴대폰, 정밀 메시·Blender, 5명 사용성, 자산 권리와 제출 완료. 프로젝트 MVP 단계 유지.
 
 ## 2026-10-24 · v4 닮음 개선 및 전체 구조 리팩터링
 

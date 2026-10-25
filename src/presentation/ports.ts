@@ -7,8 +7,10 @@ export type ChatMessage = {
   text: string;
   reply: string;
   error: boolean;
+  audit?: unknown;
 };
 export interface ChatPanelProps {
+  chatMode?: string;
   expression?: Expression;
   busy: boolean;
   disabled: boolean;
