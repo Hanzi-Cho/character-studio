@@ -1,0 +1,1030 @@
+[
+  {
+    "id": "sky-outfit",
+    "category": "함께 바꾸기",
+    "text": "하늘색 셔츠와 작은 하얀 날개를 달고 웃는 표정으로",
+    "plan": {
+      "action": "edit",
+      "message": "하늘색 셔츠, 작은 하얀 날개와 웃는 표정을 적용했어요.",
+      "operations": [
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-shirt",
+            "label": "shirt",
+            "kind": "shirt",
+            "anchor": "body",
+            "color": "#87ceeb",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "components": []
+          }
+        },
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-wings",
+            "label": "wings",
+            "kind": "wings",
+            "anchor": "back",
+            "color": "#fffdf7",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [0.65, 0.65, 0.65],
+            "components": []
+          }
+        },
+        {
+          "op": "set",
+          "key": "expression",
+          "value": "happy"
+        }
+      ]
+    }
+  },
+  {
+    "id": "color-pink",
+    "category": "색상",
+    "text": "전체 색을 분홍색으로 바꿔줘",
+    "plan": {
+      "action": "edit",
+      "message": "몸과 귀를 분홍색으로 바꿨어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "bodyColor",
+          "value": "#f4b5c5"
+        },
+        {
+          "op": "set",
+          "key": "earColor",
+          "value": "#f4b5c5"
+        }
+      ]
+    }
+  },
+  {
+    "id": "color-mint",
+    "category": "색상",
+    "text": "전체 색을 민트색으로 바꿔줘",
+    "plan": {
+      "action": "edit",
+      "message": "몸과 귀를 민트색으로 바꿨어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "bodyColor",
+          "value": "#b7dfcf"
+        },
+        {
+          "op": "set",
+          "key": "earColor",
+          "value": "#b7dfcf"
+        }
+      ]
+    }
+  },
+  {
+    "id": "color-sky",
+    "category": "색상",
+    "text": "전체 색을 하늘색으로 바꿔줘",
+    "plan": {
+      "action": "edit",
+      "message": "몸과 귀를 하늘색으로 바꿨어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "bodyColor",
+          "value": "#b3d8ed"
+        },
+        {
+          "op": "set",
+          "key": "earColor",
+          "value": "#b3d8ed"
+        }
+      ]
+    }
+  },
+  {
+    "id": "color-lavender",
+    "category": "색상",
+    "text": "전체 색을 라벤더색으로 바꿔줘",
+    "plan": {
+      "action": "edit",
+      "message": "몸과 귀를 라벤더색으로 바꿨어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "bodyColor",
+          "value": "#c8b5ed"
+        },
+        {
+          "op": "set",
+          "key": "earColor",
+          "value": "#c8b5ed"
+        }
+      ]
+    }
+  },
+  {
+    "id": "color-yellow",
+    "category": "색상",
+    "text": "전체 색을 노란색으로 바꿔줘",
+    "plan": {
+      "action": "edit",
+      "message": "몸과 귀를 노란색으로 바꿨어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "bodyColor",
+          "value": "#f5dc91"
+        },
+        {
+          "op": "set",
+          "key": "earColor",
+          "value": "#f5dc91"
+        }
+      ]
+    }
+  },
+  {
+    "id": "color-peach",
+    "category": "색상",
+    "text": "전체 색을 복숭아색으로 바꿔줘",
+    "plan": {
+      "action": "edit",
+      "message": "몸과 귀를 복숭아색으로 바꿨어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "bodyColor",
+          "value": "#f1b788"
+        },
+        {
+          "op": "set",
+          "key": "earColor",
+          "value": "#f1b788"
+        }
+      ]
+    }
+  },
+  {
+    "id": "color-white",
+    "category": "색상",
+    "text": "전체 색을 크림색으로 바꿔줘",
+    "plan": {
+      "action": "edit",
+      "message": "몸과 귀를 크림색으로 바꿨어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "bodyColor",
+          "value": "#fffdf7"
+        },
+        {
+          "op": "set",
+          "key": "earColor",
+          "value": "#fffdf7"
+        }
+      ]
+    }
+  },
+  {
+    "id": "color-gray",
+    "category": "색상",
+    "text": "전체 색을 회색으로 바꿔줘",
+    "plan": {
+      "action": "edit",
+      "message": "몸과 귀를 회색으로 바꿨어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "bodyColor",
+          "value": "#b4b7be"
+        },
+        {
+          "op": "set",
+          "key": "earColor",
+          "value": "#b4b7be"
+        }
+      ]
+    }
+  },
+  {
+    "id": "face-gentle",
+    "category": "표정",
+    "text": "기본 표정으로 바꿔줘",
+    "plan": {
+      "action": "edit",
+      "message": "기본 표정을 적용했어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "expression",
+          "value": "gentle"
+        }
+      ]
+    }
+  },
+  {
+    "id": "face-happy",
+    "category": "표정",
+    "text": "웃는 표정으로 바꿔줘",
+    "plan": {
+      "action": "edit",
+      "message": "웃는 표정을 적용했어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "expression",
+          "value": "happy"
+        }
+      ]
+    }
+  },
+  {
+    "id": "face-sad",
+    "category": "표정",
+    "text": "슬픈 표정으로 바꿔줘",
+    "plan": {
+      "action": "edit",
+      "message": "슬픈 표정을 적용했어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "expression",
+          "value": "sad"
+        }
+      ]
+    }
+  },
+  {
+    "id": "face-angry",
+    "category": "표정",
+    "text": "화난 표정으로 바꿔줘",
+    "plan": {
+      "action": "edit",
+      "message": "화난 표정을 적용했어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "expression",
+          "value": "angry"
+        }
+      ]
+    }
+  },
+  {
+    "id": "face-surprised",
+    "category": "표정",
+    "text": "놀란 표정으로 바꿔줘",
+    "plan": {
+      "action": "edit",
+      "message": "놀란 표정을 적용했어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "expression",
+          "value": "surprised"
+        }
+      ]
+    }
+  },
+  {
+    "id": "face-sleepy",
+    "category": "표정",
+    "text": "졸린 표정으로 바꿔줘",
+    "plan": {
+      "action": "edit",
+      "message": "졸린 표정을 적용했어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "expression",
+          "value": "sleepy"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ears-big",
+    "category": "비율",
+    "text": "귀를 기본보다 20% 크게 해줘",
+    "plan": {
+      "action": "edit",
+      "message": "귀를 기본보다 20% 크게 바꿨어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "earSize",
+          "value": 1.2
+        }
+      ]
+    }
+  },
+  {
+    "id": "ears-small",
+    "category": "비율",
+    "text": "귀를 기본보다 20% 작게 해줘",
+    "plan": {
+      "action": "edit",
+      "message": "귀를 기본보다 20% 작게 바꿨어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "earSize",
+          "value": 0.8
+        }
+      ]
+    }
+  },
+  {
+    "id": "eyes-big",
+    "category": "비율",
+    "text": "눈을 기본보다 15% 크게 해줘",
+    "plan": {
+      "action": "edit",
+      "message": "눈을 기본보다 15% 크게 바꿨어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "eyeSize",
+          "value": 1.15
+        }
+      ]
+    }
+  },
+  {
+    "id": "eyes-small",
+    "category": "비율",
+    "text": "눈을 기본보다 15% 작게 해줘",
+    "plan": {
+      "action": "edit",
+      "message": "눈을 기본보다 15% 작게 바꿨어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "eyeSize",
+          "value": 0.85
+        }
+      ]
+    }
+  },
+  {
+    "id": "body-wide",
+    "category": "비율",
+    "text": "몸통을 기본보다 10% 넓게 해줘",
+    "plan": {
+      "action": "edit",
+      "message": "몸통을 기본보다 10% 넓게 바꿨어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "bodyWidth",
+          "value": 1.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "body-tall",
+    "category": "비율",
+    "text": "몸을 기본보다 10% 길게 해줘",
+    "plan": {
+      "action": "edit",
+      "message": "몸을 기본보다 10% 길게 바꿨어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "bodyHeight",
+          "value": 1.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "part-shirt",
+    "category": "옷과 장식",
+    "text": "하늘색 셔츠를 입혀줘",
+    "plan": {
+      "action": "edit",
+      "message": "하늘색 셔츠를 입혀 적용했어요.",
+      "operations": [
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-shirt",
+            "label": "shirt",
+            "kind": "shirt",
+            "anchor": "body",
+            "color": "#87ceeb",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "components": []
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "part-wings",
+    "category": "옷과 장식",
+    "text": "작은 하얀 날개를 달아줘",
+    "plan": {
+      "action": "edit",
+      "message": "작은 하얀 날개를 달아 적용했어요.",
+      "operations": [
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-wings",
+            "label": "wings",
+            "kind": "wings",
+            "anchor": "back",
+            "color": "#fffdf7",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [0.65, 0.65, 0.65],
+            "components": []
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "part-cape",
+    "category": "옷과 장식",
+    "text": "보라색 망토를 달아줘",
+    "plan": {
+      "action": "edit",
+      "message": "보라색 망토를 달아 적용했어요.",
+      "operations": [
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-cape",
+            "label": "cape",
+            "kind": "cape",
+            "anchor": "back",
+            "color": "#b197dc",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "components": []
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "part-hat",
+    "category": "옷과 장식",
+    "text": "베이지색 모자를 씌워줘",
+    "plan": {
+      "action": "edit",
+      "message": "베이지색 모자를 씌워 적용했어요.",
+      "operations": [
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-hat",
+            "label": "hat",
+            "kind": "hat",
+            "anchor": "head",
+            "color": "#cfb58c",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "components": []
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "part-crown",
+    "category": "옷과 장식",
+    "text": "금색 왕관을 씌워줘",
+    "plan": {
+      "action": "edit",
+      "message": "금색 왕관을 씌워 적용했어요.",
+      "operations": [
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-crown",
+            "label": "crown",
+            "kind": "crown",
+            "anchor": "head",
+            "color": "#f3cb61",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "components": []
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "part-glasses",
+    "category": "옷과 장식",
+    "text": "분홍색 안경을 씌워줘",
+    "plan": {
+      "action": "edit",
+      "message": "분홍색 안경을 씌워 적용했어요.",
+      "operations": [
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-glasses",
+            "label": "glasses",
+            "kind": "glasses",
+            "anchor": "face",
+            "color": "#ef9bb8",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "components": []
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "part-scarf",
+    "category": "옷과 장식",
+    "text": "빨간색 목도리를 둘러줘",
+    "plan": {
+      "action": "edit",
+      "message": "빨간색 목도리를 둘러 적용했어요.",
+      "operations": [
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-scarf",
+            "label": "scarf",
+            "kind": "scarf",
+            "anchor": "neck",
+            "color": "#cf665d",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "components": []
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "part-bow",
+    "category": "옷과 장식",
+    "text": "분홍색 리본을 달아줘",
+    "plan": {
+      "action": "edit",
+      "message": "분홍색 리본을 달아 적용했어요.",
+      "operations": [
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-bow",
+            "label": "bow",
+            "kind": "bow",
+            "anchor": "neck",
+            "color": "#efa6bf",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "components": []
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "part-star",
+    "category": "옷과 장식",
+    "text": "오른쪽 귀에 노란 별을 달아줘",
+    "plan": {
+      "action": "edit",
+      "message": "오른쪽 귀에 노란 별을 달아 적용했어요.",
+      "operations": [
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-star",
+            "label": "star",
+            "kind": "star",
+            "anchor": "rightEar",
+            "color": "#f3cb61",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "components": []
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "custom-sprout",
+    "category": "도형 장식",
+    "text": "머리 위에 줄기 하나와 잎 두 장의 새싹을 달아줘",
+    "plan": {
+      "action": "edit",
+      "message": "줄기 하나와 잎 두 장으로 만든 새싹을 달았어요.",
+      "operations": [
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-sprout",
+            "label": "새싹",
+            "kind": "custom",
+            "anchor": "head",
+            "color": "#89bf76",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "components": [
+              {
+                "shape": "cylinder",
+                "color": "#709f59",
+                "position": [0, 0.26, 0],
+                "scale": [0.07, 0.45, 0.07],
+                "rotation": [0, 0, 0]
+              },
+              {
+                "shape": "sphere",
+                "color": "#a0ce85",
+                "position": [-0.12, 0.43, 0],
+                "scale": [0.18, 0.07, 0.09],
+                "rotation": [0, 0, -25]
+              },
+              {
+                "shape": "sphere",
+                "color": "#a0ce85",
+                "position": [0.12, 0.48, 0],
+                "scale": [0.18, 0.07, 0.09],
+                "rotation": [0, 0, 25]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "custom-halo",
+    "category": "도형 장식",
+    "text": "머리 위에 금색 천사 고리를 띄워줘",
+    "plan": {
+      "action": "edit",
+      "message": "머리 위에 금색 고리를 띄웠어요.",
+      "operations": [
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-halo",
+            "label": "천사 고리",
+            "kind": "custom",
+            "anchor": "head",
+            "color": "#f5cf72",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "components": [
+              {
+                "shape": "torus",
+                "color": "#f5cf72",
+                "position": [0, 0.43, 0],
+                "scale": [0.8, 0.8, 0.6],
+                "rotation": [90, 0, 0]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "custom-party",
+    "category": "도형 장식",
+    "text": "머리 위에 분홍색 고깔모자와 노란 방울을 달아줘",
+    "plan": {
+      "action": "edit",
+      "message": "고깔과 방울을 조합한 파티 모자를 달았어요.",
+      "operations": [
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-party",
+            "label": "파티 고깔",
+            "kind": "custom",
+            "anchor": "head",
+            "color": "#e9a9c6",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "components": [
+              {
+                "shape": "cone",
+                "color": "#e9a9c6",
+                "position": [0, 0.32, 0],
+                "scale": [0.8, 0.8, 0.8],
+                "rotation": [0, 0, 0]
+              },
+              {
+                "shape": "sphere",
+                "color": "#f5d777",
+                "position": [0, 0.76, 0],
+                "scale": [0.09, 0.09, 0.09],
+                "rotation": [0, 0, 0]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "royal-outfit",
+    "category": "함께 바꾸기",
+    "text": "금색 왕관과 보라색 망토를 달고 놀란 표정으로",
+    "plan": {
+      "action": "edit",
+      "message": "왕관, 망토와 놀란 표정을 적용했어요.",
+      "operations": [
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-crown",
+            "label": "crown",
+            "kind": "crown",
+            "anchor": "head",
+            "color": "#f3cb61",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "components": []
+          }
+        },
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-cape",
+            "label": "cape",
+            "kind": "cape",
+            "anchor": "back",
+            "color": "#b197dc",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "components": []
+          }
+        },
+        {
+          "op": "set",
+          "key": "expression",
+          "value": "surprised"
+        }
+      ]
+    }
+  },
+  {
+    "id": "mint-sprout",
+    "category": "함께 바꾸기",
+    "text": "몸과 귀를 민트색으로 바꾸고 새싹을 달아줘",
+    "plan": {
+      "action": "edit",
+      "message": "몸과 귀를 민트색으로 바꾸고 새싹을 달았어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "bodyColor",
+          "value": "#b7dfcf"
+        },
+        {
+          "op": "set",
+          "key": "earColor",
+          "value": "#b7dfcf"
+        },
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-sprout",
+            "label": "새싹",
+            "kind": "custom",
+            "anchor": "head",
+            "color": "#89bf76",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "components": [
+              {
+                "shape": "cylinder",
+                "color": "#709f59",
+                "position": [0, 0.26, 0],
+                "scale": [0.07, 0.45, 0.07],
+                "rotation": [0, 0, 0]
+              },
+              {
+                "shape": "sphere",
+                "color": "#a0ce85",
+                "position": [-0.12, 0.43, 0],
+                "scale": [0.18, 0.07, 0.09],
+                "rotation": [0, 0, -25]
+              },
+              {
+                "shape": "sphere",
+                "color": "#a0ce85",
+                "position": [0.12, 0.48, 0],
+                "scale": [0.18, 0.07, 0.09],
+                "rotation": [0, 0, 25]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "angel-outfit",
+    "category": "함께 바꾸기",
+    "text": "하얀 날개와 금색 고리를 달고 기본 표정으로",
+    "plan": {
+      "action": "edit",
+      "message": "작은 날개, 금색 고리와 기본 표정을 적용했어요.",
+      "operations": [
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-wings",
+            "label": "wings",
+            "kind": "wings",
+            "anchor": "back",
+            "color": "#fffdf7",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [0.65, 0.65, 0.65],
+            "components": []
+          }
+        },
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-halo",
+            "label": "천사 고리",
+            "kind": "custom",
+            "anchor": "head",
+            "color": "#f5cf72",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "components": [
+              {
+                "shape": "torus",
+                "color": "#f5cf72",
+                "position": [0, 0.43, 0],
+                "scale": [0.8, 0.8, 0.6],
+                "rotation": [90, 0, 0]
+              }
+            ]
+          }
+        },
+        {
+          "op": "set",
+          "key": "expression",
+          "value": "gentle"
+        }
+      ]
+    }
+  },
+  {
+    "id": "winter-outfit",
+    "category": "함께 바꾸기",
+    "text": "노란 셔츠와 빨간 목도리를 입히고 졸린 표정으로",
+    "plan": {
+      "action": "edit",
+      "message": "노란 셔츠, 빨간 목도리와 졸린 표정을 적용했어요.",
+      "operations": [
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-shirt",
+            "label": "shirt",
+            "kind": "shirt",
+            "anchor": "body",
+            "color": "#f5dc91",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "components": []
+          }
+        },
+        {
+          "op": "upsert_part",
+          "part": {
+            "id": "sample-scarf",
+            "label": "scarf",
+            "kind": "scarf",
+            "anchor": "neck",
+            "color": "#cf665d",
+            "accentColor": "#fffdf7",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1],
+            "components": []
+          }
+        },
+        {
+          "op": "set",
+          "key": "expression",
+          "value": "sleepy"
+        }
+      ]
+    }
+  },
+  {
+    "id": "cheeks-rose",
+    "category": "색상",
+    "text": "볼만 진한 장밋빛으로 바꿔줘",
+    "plan": {
+      "action": "edit",
+      "message": "볼을 장밋빛으로 바꿨어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "cheekColor",
+          "value": "#db7e95"
+        }
+      ]
+    }
+  },
+  {
+    "id": "name-mochi",
+    "category": "이름",
+    "text": "이름을 모찌로 바꿔줘",
+    "plan": {
+      "action": "edit",
+      "message": "이름을 모찌로 바꿨어요.",
+      "operations": [
+        {
+          "op": "set",
+          "key": "name",
+          "value": "모찌"
+        }
+      ]
+    }
+  },
+  {
+    "id": "clear-accessories",
+    "category": "정리",
+    "text": "옷과 장식을 모두 지워줘",
+    "plan": {
+      "action": "edit",
+      "message": "옷과 장식을 모두 지웠어요. 색과 표정은 유지돼요.",
+      "operations": [
+        {
+          "op": "clear_parts"
+        },
+        {
+          "op": "set",
+          "key": "accessory",
+          "value": "none"
+        }
+      ]
+    }
+  },
+  {
+    "id": "reset-all",
+    "category": "복구",
+    "text": "캐릭터 전체를 초기 모습으로 되돌려줘",
+    "plan": {
+      "action": "reset",
+      "message": "처음 모습으로 돌아왔어요. 되돌리기로 복구할 수 있어요.",
+      "operations": []
+    }
+  }
+]

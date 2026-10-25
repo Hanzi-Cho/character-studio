@@ -5,9 +5,12 @@ import { createStudioServer } from "./http.js";
 import { CharacterService } from "../src/application/CharacterService.js";
 import { LocalCommandInterpreter } from "../src/adapters/LocalCommandInterpreter.js";
 import { CodexCommandInterpreter } from "./CodexCommandInterpreter.js";
+import { ExampleCommandInterpreter } from "../src/adapters/ExampleCommandInterpreter.js";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const port = Number(process.env.SOFTFORM_PORT ?? 4317);
-const mode = process.env.CHARACTER_CHAT_MODE ?? "codex";
+const mode = process.argv.includes("--demo")
+  ? "local"
+  : (process.env.CHARACTER_CHAT_MODE ?? "codex");
 const model = process.env.CHARACTER_CODEX_MODEL ?? "gpt-6.1-sol";
 const server = createStudioServer(
   new CharacterService(
@@ -17,13 +20,15 @@ const server = createStudioServer(
         "character.json",
       ),
     ),
-    mode === "local"
-      ? new LocalCommandInterpreter()
-      : new CodexCommandInterpreter({
-          executable: process.env.CHARACTER_CODEX_PATH ?? "codex",
-          model,
-          runtimeDirectory: resolve(root, ".data/ai-runtime"),
-        }),
+    new ExampleCommandInterpreter(
+      mode === "local"
+        ? new LocalCommandInterpreter()
+        : new CodexCommandInterpreter({
+            executable: process.env.CHARACTER_CODEX_PATH ?? "codex",
+            model,
+            runtimeDirectory: resolve(root, ".data/ai-runtime"),
+          }),
+    ),
   ),
   resolve(root, "dist"),
   { chatMode: mode === "local" ? "local" : "codex", model },

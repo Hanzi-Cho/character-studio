@@ -2,6 +2,8 @@
 
 ## 2026-10-25 현재 범위
 
+추가 합의: GitHub 코드 공개 후 각자 PC의 Codex 로그인으로 실행한다. 원격 AI 웹 배포는 이번 범위에서 제외한다. Codex 없이 `pnpm demo`로 실행하는 41개 예문, 추천 새로고침·바로 적용을 추가했고 전체 자동 테스트 27개를 통과했다. 실제 자유 입력 Codex 호출도 유지된다. [예문 정의](features/offline-command-examples.md), [실행 안내](../README.md), [최신 검증](TESTING.md) 참조.
+
 사용자가 실제 Codex 채팅, 색상·옷·장식·표정, 한 문장의 여러 작업 직렬화, PDF 초안과 Humanizer 교정을 요청했다. Blender는 추후로 결정했다. 이 항목이 아래 2026-10-24 구현 기록과 당시 미결정보다 우선한다.
 
 - 치이카와 한 모델과 PC 웹. Codex CLI의 ChatGPT 로그인 / gpt-6.1-sol 실제 호출 성공. 앱 채팅 → EditPlan → 전체 검증 → 단일 저장 → SSE → 3D 갱신.

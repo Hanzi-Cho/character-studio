@@ -4,23 +4,49 @@
 
 PC 브라우저에서 치이카와 한 모델을 돌려 보고 하단 채팅으로 편집합니다. React + TypeScript + Three.js를 사용합니다. **Codex CLI의 ChatGPT 로그인**으로 실제 AI 요청을 처리하고, 여러 편집 명령을 검증한 뒤 한 번에 저장합니다. 셔츠·날개·왕관 등 9개 장식 유형과 기본 도형을 조합한 새 장식을 지원합니다. 자유로운 고품질 메시 생성이나 Blender 작업은 아직 지원하지 않습니다.
 
-Meta Model API는 접근 승인 후 같은 편집 계약으로 연결할 후속 경로입니다. 오늘은 Codex를 먼저 사용하며 모델 학습·파인튜닝을 수행하지 않습니다. [현재 구현과 녹화 순서](docs/features/codex-character-editing.md), [문서 교정에 설치한 Humanizer](docs/WRITING.md)를 참고하세요.
+Codex 없이도 **41개 추천 예문**으로 색상·옷·장식·표정을 바꿀 수 있습니다. 예문마다 편집 명령을 JSON으로 저장해 두었으며 모델 호출 없이 같은 검증·저장·되돌리기 경로를 사용합니다. [예문과 실행 방식](docs/features/offline-command-examples.md) · [사전 직렬화 JSON](src/domain/command-examples.json).
 
-## 이 PC에서 열기
+![모델 없이 예문으로 셔츠와 날개 적용](docs/evidence/offline-examples/desktop.png)
 
-Node.js 24 이상, pnpm, Codex CLI와 `codex login`으로 로그인한 ChatGPT 계정이 필요합니다. Codex 계정의 사용 한도가 적용됩니다. Windows에서는 빌드 후 `Start-Studio.cmd`를 실행하면 `http://127.0.0.1:4317`이 열립니다. 실행 파일 배포본이나 자동 업데이트 앱은 아닙니다.
+Meta Model API는 접근 승인 후 연결할 후속 경로입니다. 모델 학습·파인튜닝을 수행하지 않습니다. [실제 AI 구현과 녹화 순서](docs/features/codex-character-editing.md), [문서 교정에 설치한 Humanizer](docs/WRITING.md)를 참고하세요.
 
-개발 실행:
+## 내려받아 체험하기 — Codex 불필요
+
+Git과 Node.js 24 이상을 설치하세요. 다음 명령으로 프로젝트를 내려받고 실행합니다. 이 모드는 ChatGPT 계정·Codex·API 키가 필요 없습니다. 처음 패키지를 설치할 때는 인터넷이 필요합니다.
 
 ```sh
+npm install -g pnpm@11.25.0
 git clone https://github.com/Hanzi-Cho/character-studio.git
 cd character-studio
 pnpm install --frozen-lockfile
 pnpm build
+pnpm demo
+```
+
+[http://127.0.0.1:4317](http://127.0.0.1:4317)을 열고 **바로 적용**을 누르세요. 새로고침 아이콘은 다음 예문을 보여주며 캐릭터는 바꾸지 않습니다. 전체 41개를 순서대로 살펴볼 수 있습니다. Windows에서는 설치·빌드 후 `Start-Demo.cmd`로 다시 열 수 있습니다.
+
+GitHub 링크는 코드를 공유하는 주소입니다. 앱은 각자의 PC에서 실행합니다. Windows 실기기에서 검증했으며 macOS/Linux의 전체 설치·화면 동작은 아직 검증하지 않았습니다.
+
+## 자신의 Codex로 자유롭게 채팅하기
+
+[공식 CLI 설치 안내](https://learn.chatgpt.com/docs/cli)를 따라 최신 Codex CLI를 설치하고, 본인 계정으로 로그인하세요. 기존 데모 서버를 터미널에서 `Ctrl+C`로 종료한 뒤 실행합니다.
+
+```sh
+codex login
+codex login status
+pnpm doctor
 pnpm start
 ```
 
-검증: `pnpm typecheck`, `pnpm test`. 소스 변경 후 `pnpm build`, 브라우저 새로고침. 서버 코드 변경은 서버 재시작이 필요합니다.
+`pnpm doctor`는 Node, 빌드 파일, CLI 옵션과 ChatGPT 로그인을 확인합니다. 모델 호출은 하지 않습니다. Windows에서는 `Start-Studio.cmd`로도 시작할 수 있습니다. npm의 Windows 실행 래퍼와 독립 실행형 CLI를 지원합니다.
+
+기본 모델은 `gpt-6.1-sol`이며 계정의 모델 접근 권한·잔여 한도가 적용됩니다. 앱은 ChatGPT 로그인만 사용하고 API 키 방식으로 자동 전환하지 않습니다. 인증 파일은 각자의 Codex가 관리하며 프로젝트에 넣지 않습니다. [OpenAI 인증 안내](https://learn.chatgpt.com/docs/auth).
+
+`하늘색 셔츠를 입히고 왕관 대신 새싹을 달아줘`처럼 목록에 없는 요청은 실제 AI로 해석합니다. 41개 예문과 정확히 같은 문장은 Codex 모드에서도 로컬로 처리합니다. AI 실패 시 오류를 보여주고 현재 모습을 보존합니다.
+
+문제가 생기면 `pnpm doctor`를 먼저 실행하세요. CLI 경로를 찾지 못하면 `CHARACTER_CODEX_PATH`에 설치 경로를 지정합니다. 모델 접근 오류는 `CHARACTER_CODEX_MODEL`에 본인이 사용할 수 있는 모델을 지정한 뒤 재시작합니다. 포트 충돌은 기존 서버를 종료하거나 `SOFTFORM_PORT`를 변경하세요. PowerShell에서 스크립트 실행 정책 오류가 나면 `pnpm.cmd`, `codex.cmd`를 사용할 수 있습니다.
+
+검증: `pnpm typecheck`, `pnpm test`. 소스 변경 후 `pnpm build`, 브라우저 새로고침. 서버 코드 변경은 서버 재시작이 필요합니다. 서버 중지 후 폴더의 `.data`를 보관하면 저장한 캐릭터와 이력을 유지할 수 있습니다.
 
 ## 사용법
 
@@ -53,9 +79,9 @@ docs/                 아키텍처, 원본 코드 연구, 범위/결정, 검증 
 
 서버는 **127.0.0.1**에만 바인딩합니다. 데이터는 `.data/character.json`에 저장되고 직전 저장본은 `.bak`입니다. 임시 파일 기록 후 교체하며, 손상된 파일을 기본값으로 조용히 덮어쓰지 않습니다. 복구는 서버를 멈춘 뒤 현재 파일을 따로 보관하고 검증된 `.bak`를 복사하는 수동 절차입니다. 전원 중단/디스크 장애 복구와 다중 서버 writer는 아직 검증하지 않았습니다.
 
-하나의 로컬 사용자와 하나의 writer 서버를 전제로 합니다. Host/Origin 검사와 JSON 검증이 있지만 로그인/RBAC는 없습니다. 같은 PC의 프로세스·컴퓨터 소유자의 파일 접근을 차단하지 않습니다. **채팅과 현재 캐릭터 설정을 Codex 모델에 전송**합니다. 앱의 채팅 내역은 현재 탭 메모리에 남고, 캐릭터와 최근 50개 변경 이력은 디스크에 남습니다. CLI는 ephemeral 모드로 실행하며 임시 입력/출력 파일을 요청 후 지웁니다. 공급자 측 보존 정책까지 앱이 통제하지는 않습니다. 인증 파일이나 API 키는 프로젝트에 복사하지 않습니다.
+하나의 로컬 사용자와 하나의 writer 서버를 전제로 합니다. Host/Origin 검사와 JSON 검증이 있지만 로그인/RBAC는 없습니다. 같은 PC의 프로세스·컴퓨터 소유자의 파일 접근을 차단하지 않습니다. **Codex 모드의 자유 입력과 현재 캐릭터 설정을 모델에 전송**합니다. 저장된 예문은 로컬에서 처리합니다. 앱의 채팅 내역은 현재 탭 메모리에 남고, 캐릭터와 최근 50개 변경 이력은 디스크에 남습니다. CLI는 ephemeral 모드로 실행하며 임시 입력/출력 파일을 요청 후 지웁니다. 공급자 측 보존 정책까지 앱이 통제하지는 않습니다. 인증 파일이나 API 키는 프로젝트에 복사하지 않습니다.
 
-기본값은 `CHARACTER_CHAT_MODE=codex`, `CHARACTER_CODEX_MODEL=gpt-6.1-sol`입니다. CLI 경로는 `CHARACTER_CODEX_PATH`로 지정할 수 있습니다. `CHARACTER_CHAT_MODE=local`은 외부 AI 없이 기존 색상·비율·표정·리본/별 명령만 처리하는 별도 제한 모드입니다. AI 오류 시 이 모드로 조용히 전환하지 않습니다. v1 저장본과 변경 이력은 읽을 때 v2로 변환됩니다.
+기본값은 `CHARACTER_CHAT_MODE=codex`, `CHARACTER_CODEX_MODEL=gpt-6.1-sol`입니다. CLI 경로는 `CHARACTER_CODEX_PATH`로 지정할 수 있습니다. `CHARACTER_CHAT_MODE=local` 또는 `pnpm demo`는 41개 예문과 기존 색상·비율·표정·리본/별 규칙 명령을 외부 AI 없이 처리합니다. AI 오류 시 이 모드로 조용히 전환하지 않습니다. v1 저장본과 변경 이력은 읽을 때 v2로 변환됩니다.
 
 ## MCP 개발 연결
 
@@ -63,10 +89,10 @@ docs/                 아키텍처, 원본 코드 연구, 범위/결정, 검증 
 
 ```json
 {
-  "command": "C:/Users/whwog/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+  "command": "node",
   "args": [
-    "C:/Users/whwog/Documents/ChatGPT/developer_/softform-studio/node_modules/tsx/dist/cli.mjs",
-    "C:/Users/whwog/Documents/ChatGPT/developer_/softform-studio/server/mcp.ts"
+    "C:/your/path/character-studio/node_modules/tsx/dist/cli.mjs",
+    "C:/your/path/character-studio/server/mcp.ts"
   ]
 }
 ```

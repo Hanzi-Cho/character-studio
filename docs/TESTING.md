@@ -1,5 +1,17 @@
 # 검증 기록
 
+## 2026-10-25 · 공개 실행과 41개 오프라인 예문
+
+- 사용자 결정: 공개 GitHub에서 코드를 내려받아 각자 PC·Codex 로그인으로 사용. 원격 AI 웹 호스팅은 이번 범위에서 제외. Codex 없는 체험도 추가 요청했다.
+- `pnpm demo`, `Start-Demo.cmd`, 41개 JSON 예문, 추천 한 문장·새로고침·바로 적용을 추가했다. AI 모드에서도 정확히 일치하는 예문은 모델 호출을 건너뛴다.
+- 타입 검사·빌드 성공, 자동 테스트 **27/27 통과**. 예문 전체를 실제 HTTP로 적용하고 파일 재조회·undo를 검증했다. 모델 대체 함수 호출 0회, 부정문 추가/오래된 revision/잘못된 Origin 거부와 상태 보존을 확인했다.
+- Windows npm shim을 Node로 직접 실행해 공백·`&`가 포함된 경로와 인자를 검증했다. shell 실행을 사용하지 않는다. 독립 실행형 경로와 누락된 npm entry 실패도 확인했다.
+- `pnpm doctor`: Node 24.19.0, Codex 0.163.0-alpha.10.2의 필요한 CLI 옵션, ChatGPT 로그인, 화면 빌드 모두 통과. 초회 로그인 점검의 잘못된 CLI 옵션을 수정한 뒤 재실행했다. doctor는 모델을 호출하지 않는다.
+- 별도 4318 / `.data/publication-demo`에서 존재하지 않는 Codex 경로를 지정하고 데모 모드 실행. 복합 예문 버튼 → 추천 새로고침 → 색 적용 → undo → 새싹 예문 직접 입력 → 초기화/undo → 페이지 재열기를 확인했다. 실제 CLI가 없는 다른 PC의 검증을 대신하지는 않는다.
+- 1280×720 PC 및 390×844 viewport 확인. 390px에서 가로·세로 overflow 없음, 예문과 적용/새로고침 버튼 표시. 물리 휴대폰 터치 검증은 아니다. 브라우저 error/warn 0개. [PC](evidence/offline-examples/desktop.png) · [390px](evidence/offline-examples/mobile-390.png).
+- 수정한 Codex 경로로 예문 목록에 없는 자유 입력을 실제 호출: 본체/귀 `#a8d5ba` + 놀람, 5,883ms, 기대 명령 일치. [모델 응답](evidence/offline-examples/codex-smoke.json). 단일 해석 시험이며 평균 지연이나 사용자별 모델 접근 보장은 아니다.
+
+
 ## 2026-10-25 · 실제 Codex 채팅과 조합형 장식
 
 - Windows PC, Codex CLI 0.163.0-alpha.10.2 / ChatGPT 로그인 / gpt-6.1-sol. 외부 API 키 신규 발급 없음. 앱 채팅으로 실제 모델 호출, MCP 5도구 등록. 등록 확인과 현재 대화의 동적 도구 발견 여부는 구분한다.

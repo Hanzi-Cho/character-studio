@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Composer } from "./Composer.js";
 import { ExpressionPicker } from "./ExpressionPicker.js";
 import { Icon } from "./Icon.js";
+import { ExampleSuggestion } from "./ExampleSuggestion.js";
 import type { ChatPanelProps } from "../presentation/ports.js";
 
 export function ChatDock({
@@ -24,6 +25,7 @@ export function ChatDock({
         disabled={disabled || busy}
         onSelect={onExpression}
       />
+      <ExampleSuggestion disabled={disabled || busy} onApply={onSubmit} />
       {history && (
         <div className="history-panel">
           <div className="history-heading">
@@ -72,7 +74,7 @@ export function ChatDock({
         </div>
       )}
       <Composer
-        modeLabel={chatMode === "codex" ? "Codex AI" : "로컬 편집"}
+        modeLabel={chatMode === "codex" ? "Codex AI" : "예문 체험"}
         busy={busy}
         disabled={disabled}
         onSubmit={onSubmit}
@@ -81,32 +83,15 @@ export function ChatDock({
       />
       {busy && (
         <p className="ai-progress" role="status">
-          원하는 모습을 해석하고 있어요. 잠시만 기다려 주세요.
+          편집을 처리하고 있어요. 잠시만 기다려 주세요.
         </p>
       )}
-      {!messages.length && !busy && chatMode === "codex" && (
-        <div className="prompt-suggestions">
-          {[
-            "하늘색 셔츠를 입히고 웃는 표정으로",
-            "금색 왕관과 작은 하얀 날개를 달아줘",
-            "분홍색 안경을 만들어줘",
-          ].map((text) => (
-            <button
-              key={text}
-              disabled={disabled}
-              onClick={() => void onSubmit(text)}
-            >
-              {text}
-            </button>
-          ))}
-        </div>
-      )}
       <p className="composer-note">
-        <span>{chatMode === "codex" ? "Codex AI 연결" : "로컬 편집"}</span>
+        <span>{chatMode === "codex" ? "Codex AI" : "모델 연결 없음"}</span>
         <span className="note-dot">·</span>
         {chatMode === "codex"
-          ? "채팅과 현재 캐릭터 설정을 AI에 보냅니다."
-          : "색상, 크기, 표정을 바꿔보세요."}
+          ? "추천 예문은 로컬 적용, 그 외 채팅은 AI로 전송돼요."
+          : "추천 예문을 누르거나 그대로 입력해 보세요."}
         <span className="desktop-only"> 모습은 이 PC에 저장돼요.</span>
       </p>
     </section>
