@@ -1,9 +1,29 @@
 # Character Studio 제안서 문안
 
-2026-10-25 · 2쪽 간결본
+2026-10-25 · 표지 포함 3쪽
 
-대화로 만드는
-나만의 3D 캐릭터
+대화로 만드는 나만의 3D 캐릭터
+
+Character Studio
+
+나만의 캐릭터를 채팅으로 꾸미고, 원하는 모습으로 수정하는 웹 기반 3D 편집 도구
+
+지금 바로 사용해 볼 수 있는 웹 데모
+
+[웹 데모 열기  →  hanzi-cho.github.io/character-studio/](https://hanzi-cho.github.io/character-studio/)
+
+설치 없이 접속해 41개 예문으로 색·옷·장식·표정을 바꾸고,
+3D 회전·PNG/JSON 다운로드·브라우저 저장을 직접 확인할 수 있습니다.
+
+공개 배포된 동작 화면입니다. 자유로운 AI 채팅은 자신의 PC에서 Codex를 연결해 사용합니다.
+
+실제 편집 결과 · 셔츠, 날개, 새싹, 웃는 표정
+
+개인 참여 · 조재현
+
+팀명 · 캐릭터스튜디오   |   기획·구현·자료 조사
+
+사용자와 핵심 기능
 
 SNS 프로필과 GitHub·커뮤니티에서 나를 표현할 캐릭터를
 채팅으로 꾸미고, 원하는 모습으로 계속 수정하는 서비스입니다.
@@ -69,6 +89,8 @@ PNG 이미지를 프로필에 쓰고, 캐릭터 설정 JSON을 내려받아 다�
 
 05  외부 자료·오픈소스·AI 도구 출처
 
+파란색 밑줄을 누르면 해당 자료나 웹페이지가 열립니다.
+
 [Codex: 코드 구현·편집 명령 해석](https://learn.chatgpt.com/docs/cli)
 
 [React·Three.js·Zod 등: 앱 구성](https://github.com/Hanzi-Cho/character-studio/blob/main/package.json)
@@ -83,6 +105,6 @@ PNG 이미지를 프로필에 쓰고, 캐릭터 설정 JSON을 내려받아 다�
 
 화면의 치이카와는 원작을 참고해 코드로 만든 비공식 3D 스터디입니다. 공식 모델 파일은 사용하지 않았으며, 공개 서비스용 자산은 자체 제작 또는 이용 허락을 받은 캐릭터로 준비할 계획입니다.
 
-[웹 데모  hanzi-cho.github.io/character-studio/](https://hanzi-cho.github.io/character-studio/)
+[지금 바로 웹 데모 체험  →  hanzi-cho.github.io/character-studio/](https://hanzi-cho.github.io/character-studio/)
 
 [공개 코드·AI 실행 안내  github.com/Hanzi-Cho/character-studio](https://github.com/Hanzi-Cho/character-studio)

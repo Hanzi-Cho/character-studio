@@ -1,4 +1,4 @@
-"""Build a concise two-page proposal from actual product screenshots."""
+"""Build a three-page proposal with a live-demo cover and product evidence."""
 from pathlib import Path
 from xml.sax.saxutils import escape
 from reportlab.pdfgen import canvas
@@ -19,11 +19,14 @@ W, H, M = 595.276, 841.89, 42
 CW = W - 2 * M
 INK, MUTED, GREEN, PAPER, LINE = map(HexColor,
     ["#25362D", "#647268", "#3F654C", "#FBFCF8", "#DCE4D9"])
+LINK = HexColor("#1C58A6")
+DEMO_URL = "https://hanzi-cho.github.io/character-studio/"
+PAGE_COUNT = 3
 c = canvas.Canvas(str(OUT), pagesize=(W, H), pageCompression=1)
 c.setTitle("Character Studio | AI Platform Build Challenge 제안서")
-c.setAuthor("Character Studio")
+c.setAuthor("조재현 · 캐릭터스튜디오")
 c.setSubject("대화로 3D 캐릭터를 개인화하는 서비스 제안")
-copy_log = ["# Character Studio 제안서 문안", "2026-10-25 · 2쪽 간결본"]
+copy_log = ["# Character Studio 제안서 문안", "2026-10-25 · 표지 포함 3쪽"]
 
 def para(text, x, top, width, size=11, bold=False, color=INK, leading=None, log=True):
     style = ParagraphStyle("copy", fontName="MalgunBold" if bold else "Malgun",
@@ -42,15 +45,15 @@ def page(number):
     c.rect(0, 0, W, H, fill=1, stroke=0)
     c.setFillColor(GREEN)
     c.setFont("MalgunBold", 9)
-    c.drawString(M, H - 32, "CHARACTER / STUDIO")
+    c.drawString(M, H - 32, "Character Studio")
     c.setFillColor(MUTED)
     c.setFont("Malgun", 8)
     c.drawRightString(W - M, H - 32, "AI PLATFORM BUILD CHALLENGE")
     c.setStrokeColor(LINE)
     c.line(M, H - 45, W - M, H - 45)
     c.setFont("Malgun", 8)
-    c.drawString(M, 26, "2026.10.25  |  예선 서비스 제안서")
-    c.drawRightString(W - M, 26, f"{number} / 2")
+    c.drawString(M, 26, "2026.10.25  |  서비스 제안서")
+    c.drawRightString(W - M, 26, f"{number} / {PAGE_COUNT}")
 
 def section(title, body, top, size=11):
     top = para(title, M, top, CW, 13, True, leading=20) - 6
@@ -67,13 +70,48 @@ def shot(name, x, top, width):
     return top - height
 
 def link(label, url, x, top, width, size=8.8):
-    bottom = para(label, x, top, width, size, color=GREEN, log=False)
+    style = ParagraphStyle("link", fontName="MalgunBold", fontSize=size,
+        leading=size * 1.55, textColor=LINK, wordWrap="CJK")
+    paragraph = Paragraph(f"<u>{escape(label)}</u>", style)
+    _, height = paragraph.wrap(width, H)
+    bottom = top - height
+    if bottom < 43:
+        raise ValueError(f"Page {c.getPageNumber()} link overflow: {label}")
+    paragraph.drawOn(c, x, bottom)
     c.linkURL(url, (x, bottom, x + width, top), relative=0, thickness=0)
     copy_log.append(f"[{label}]({url})")
     return bottom
 
 page(1)
-top = para("대화로 만드는\n나만의 3D 캐릭터", M, H - 72, CW, 28, True, leading=37) - 12
+para("대화로 만드는 나만의 3D 캐릭터", M, H - 82, CW, 19, True, color=GREEN)
+para("Character Studio", M, H - 124, CW, 40, True, leading=50)
+purpose = "나만의 캐릭터를 채팅으로 꾸미고, 원하는 모습으로 수정하는 웹 기반 3D 편집 도구"
+assert pdfmetrics.stringWidth(purpose, "Malgun", 11.2) <= CW
+para(purpose, M, H - 190, CW, 11.2, leading=18)
+
+c.setFillColor(HexColor("#EAF0E5"))
+c.roundRect(M, H - 357, CW, 117, 10, fill=1, stroke=0)
+para("지금 바로 사용해 볼 수 있는 웹 데모", M + 18, H - 253, CW - 36, 14, True)
+link("웹 데모 열기  →  hanzi-cho.github.io/character-studio/",
+     DEMO_URL, M + 18, H - 282, CW - 36, 11)
+para("설치 없이 접속해 41개 예문으로 색·옷·장식·표정을 바꾸고,\n"
+     "3D 회전·PNG/JSON 다운로드·브라우저 저장을 직접 확인할 수 있습니다.",
+     M + 18, H - 310, CW - 36, 10, leading=16)
+para("공개 배포된 동작 화면입니다. 자유로운 AI 채팅은 자신의 PC에서 Codex를 연결해 사용합니다.",
+     M, H - 371, CW, 9, color=MUTED, leading=15)
+
+cover_width = 270
+cover_bottom = shot("03-generated-sprout.png", (W - cover_width) / 2, H - 414, cover_width)
+para("실제 편집 결과 · 셔츠, 날개, 새싹, 웃는 표정", (W - cover_width) / 2,
+     cover_bottom - 7, cover_width, 8.5, color=MUTED)
+c.setStrokeColor(LINE)
+c.line(M, 150, W - M, 150)
+para("개인 참여 · 조재현", M, 131, CW, 13, True)
+para("팀명 · 캐릭터스튜디오   |   기획·구현·자료 조사", M, 104, CW, 10, color=MUTED)
+c.showPage()
+
+page(2)
+top = para("사용자와 핵심 기능", M, H - 68, CW, 28, True, leading=37) - 12
 top = para("SNS 프로필과 GitHub·커뮤니티에서 나를 표현할 캐릭터를\n채팅으로 꾸미고, 원하는 모습으로 계속 수정하는 서비스입니다.",
            M, top, CW, 11.5, color=MUTED, leading=18) - 24
 top = para("01  해결하려는 문제와 주요 사용자", M, top, CW, 13, True) - 8
@@ -103,7 +141,7 @@ para("현재 체험: 웹 데모에서 치이카와 1종과 41개 예문을 바�
      M, top - 1, CW, 9, color=MUTED)
 c.showPage()
 
-page(2)
+page(3)
 top = para("대화가 3D에 반영되는 과정", M, H - 72, CW, 23, True, leading=32) - 16
 top = para("03  AI 적용 방식·데이터·기술", M, top, CW, 13, True) - 7
 top = para("자연어를 정해진 편집 명령으로 바꾸고, 검증된 설정만 3D에 반영합니다. "
@@ -165,7 +203,9 @@ top = para("현재: 로컬 Codex 채팅 편집·저장·복구와 설치 없는 
 top = para("1인으로 기획·구현·자료 조사·제출 자료를 담당하며 Codex를 활용합니다. "
            "3D 도구의 학습 부담을 줄이고, SNS·GitHub·커뮤니티에서 나만의 캐릭터로 표현하도록 돕습니다.",
            M, top, CW, 9.8, leading=15) - 16
-top = para("05  외부 자료·오픈소스·AI 도구 출처", M, top, CW, 13, True) - 10
+top = para("05  외부 자료·오픈소스·AI 도구 출처", M, top, CW, 13, True) - 4
+top = para("파란색 밑줄을 누르면 해당 자료나 웹페이지가 열립니다.",
+           M, top, CW, 8, color=LINK, leading=12) - 6
 refs = [
     ("Codex: 코드 구현·편집 명령 해석", "https://learn.chatgpt.com/docs/cli"),
     ("React·Three.js·Zod 등: 앱 구성", "https://github.com/Hanzi-Cho/character-studio/blob/main/package.json"),
@@ -183,12 +223,12 @@ top -= 1
 top = para("화면의 치이카와는 원작을 참고해 코드로 만든 비공식 3D 스터디입니다. "
            "공식 모델 파일은 사용하지 않았으며, 공개 서비스용 자산은 자체 제작 또는 이용 허락을 받은 캐릭터로 준비할 계획입니다.",
            M, top, CW, 8.8, color=MUTED) - 12
-top = link("웹 데모  hanzi-cho.github.io/character-studio/",
-     "https://hanzi-cho.github.io/character-studio/", M, top, CW, 9.2) - 5
+top = link("지금 바로 웹 데모 체험  →  hanzi-cho.github.io/character-studio/",
+     DEMO_URL, M, top, CW, 9.2) - 5
 link("공개 코드·AI 실행 안내  github.com/Hanzi-Cho/character-studio",
      "https://github.com/Hanzi-Cho/character-studio", M, top, CW, 9.2)
 c.showPage()
 c.save()
 (ROOT / "docs/hackathon-proposal-copy.md").write_text("\n\n".join(copy_log) + "\n", encoding="utf-8")
 assert OUT.stat().st_size < 20_000_000
-print(f"{OUT}\n{OUT.stat().st_size:,} bytes / 2 pages")
+print(f"{OUT}\n{OUT.stat().st_size:,} bytes / {PAGE_COUNT} pages")
