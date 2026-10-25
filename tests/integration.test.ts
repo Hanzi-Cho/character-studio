@@ -5,6 +5,8 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { Client } from "@modelcontextprotocol/client";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
+import { CharacterService } from "../src/application/CharacterService.js";
+import { LocalCommandInterpreter } from "../src/adapters/LocalCommandInterpreter.js";
 import { CharacterStore } from "../server/store.js";
 import { createStudioServer } from "../server/http.js";
 import { EXPRESSIONS } from "../src/domain/character.js";
@@ -12,7 +14,11 @@ import { EXPRESSIONS } from "../src/domain/character.js";
 test("HTTP + real stdio MCP: reads, changes, conflicts, persistence and origin boundary", async () => {
   const dir = mkdtempSync(join(tmpdir(), "softform-http-"));
   const path = join(dir, "character.json");
-  const server = createStudioServer(new CharacterStore(path), resolve("dist"));
+  const service = new CharacterService(
+    new CharacterStore(path),
+    new LocalCommandInterpreter(),
+  );
+  const server = createStudioServer(service, resolve("dist"));
   await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
   const address = server.address();
   assert.ok(address && typeof address === "object");
@@ -129,6 +135,29 @@ test("HTTP + real stdio MCP: reads, changes, conflicts, persistence and origin b
       ...custom,
       expression: "surprised",
     });
+    const reset = await fetch(`${base}/api/action`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "reset",
+        revision: (restored.structuredContent as any).revision,
+      }),
+    });
+    assert.equal(reset.status, 200);
+    assert.equal((await reset.json()).document.accessory, "none");
+    const abort = new AbortController();
+    const stream = await fetch(`${base}/api/events`, { signal: abort.signal });
+    const reader = stream.body!.getReader();
+    await reader.read(); // initial snapshot
+    const baseline = service.read();
+    service.patch({ name: "direct application edit" }, baseline.revision);
+    const event = await reader.read();
+    assert.match(
+      new TextDecoder().decode(event.value),
+      /direct application edit/,
+    );
+    abort.abort();
+    await reader.cancel().catch(() => {});
   } finally {
     await client?.close();
     server.closeAllConnections();

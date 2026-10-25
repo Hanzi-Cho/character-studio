@@ -4,6 +4,87 @@ import * as THREE from "three";
 import { ChiikawaModel } from "../src/adapters/ChiikawaModel.js";
 import { DEFAULT_CHARACTER, EXPRESSIONS } from "../src/domain/character.js";
 
+test("cranial cheek/chin contour follows reference bands instead of stretching into a capsule", () => {
+  const model = new ChiikawaModel();
+  try {
+    model.update(DEFAULT_CHARACTER);
+    const body = model.root.getObjectByName("body-volume") as THREE.Mesh;
+    const p = body.geometry.getAttribute("position");
+    const rows: { y: number; radius: number }[] = [];
+    for (let i = 0; i < 97; i++) {
+      let radius = 0;
+      for (let j = 0; j < 65; j++)
+        radius = Math.max(radius, Math.abs(p.getX(j * 97 + i)));
+      rows.push({ y: p.getY(i), radius });
+    }
+    for (const [v, reference] of [
+      [0.17, 0.743],
+      [0.25, 0.8523],
+      [0.3, 0.9014],
+      [0.45, 0.9883],
+      [0.6, 0.9953],
+      [0.75, 0.921],
+      [0.85, 0.7921],
+      [0.9, 0.6855],
+      [0.95, 0.5061],
+    ]) {
+      const y = 3.1 - v * 1.76;
+      const index = rows.findIndex((row) => row.y >= y);
+      const a = rows[index - 1],
+        b = rows[index];
+      const measured =
+        THREE.MathUtils.lerp(a.radius, b.radius, (y - a.y) / (b.y - a.y)) /
+        1.16;
+      assert.ok(
+        Math.abs(measured - reference) < 0.025,
+        `v=${v}: ${measured} vs ${reference}`,
+      );
+    }
+  } finally {
+    model.dispose();
+  }
+});
+
+test("eye-size extremes stay attached to real curved head triangles without allocating new geometry", () => {
+  const model = new ChiikawaModel();
+  try {
+    const ids = model.getGeometryIds();
+    for (const eyeSize of [0.65, 1, 1.4]) {
+      model.update({ ...DEFAULT_CHARACTER, eyeSize });
+      model.root.updateMatrixWorld(true);
+      const body = model.root.getObjectByName("body-volume") as THREE.Mesh;
+      for (const name of [
+        "left-eye-ink",
+        "right-eye-ink",
+        "left-upper-highlight",
+        "right-crescent-highlight",
+      ]) {
+        const mesh = model.root.getObjectByName(name) as THREE.Mesh;
+        const p = mesh.geometry.getAttribute("position");
+        for (let i = 0; i < p.count; i += Math.ceil(p.count / 12)) {
+          const vertex = new THREE.Vector3()
+            .fromBufferAttribute(p, i)
+            .applyMatrix4(mesh.matrixWorld);
+          const ray = new THREE.Raycaster(
+            new THREE.Vector3(vertex.x, vertex.y, 4),
+            new THREE.Vector3(0, 0, -1),
+          );
+          const hit = ray.intersectObject(body, false)[0];
+          assert.ok(hit, "all eye vertices must overlap the head");
+          const relief = vertex.z - hit.point.z;
+          assert.ok(
+            relief > 0 && relief < 0.03,
+            `${name} eyeSize=${eyeSize} relief=${relief}`,
+          );
+        }
+      }
+      assert.deepEqual(model.getGeometryIds(), ids);
+    }
+  } finally {
+    model.dispose();
+  }
+});
+
 test("world-space head remains round and facial landmarks match the measured coordinate frame", () => {
   const model = new ChiikawaModel();
   try {
@@ -79,7 +160,7 @@ test("all six eyebrow angles are measured from the rendered tube endpoints", () 
           return sum.divideScalar(8);
         };
         const outer = center(0),
-          inner = center(p.count - 9);
+          inner = center(brow.geometry.userData.strokeEndRing);
         const degrees = THREE.MathUtils.radToDeg(
           Math.atan2(inner.y - outer.y, Math.abs(inner.x - outer.x)),
         );
@@ -121,7 +202,7 @@ test("default face is only slightly wider than torso; body edits preserve face a
         );
         assert.ok(f.min.y >= 0 && f.min.y < 0.03);
         for (let i = 0; i < positions.count; i++) {
-          if (initial[i * 3 + 1] >= 1.34) {
+          if (i < body.geometry.userData.cranialVertexCount) {
             assert.equal(
               positions.getX(i),
               initial[i * 3],

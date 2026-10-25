@@ -2,14 +2,19 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { CharacterStore } from "./store.js";
 import { createStudioServer } from "./http.js";
+import { CharacterService } from "../src/application/CharacterService.js";
+import { LocalCommandInterpreter } from "../src/adapters/LocalCommandInterpreter.js";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const port = Number(process.env.SOFTFORM_PORT ?? 4317);
 const server = createStudioServer(
-  new CharacterStore(
-    resolve(
-      process.env.SOFTFORM_DATA_DIR ?? resolve(root, ".data"),
-      "character.json",
+  new CharacterService(
+    new CharacterStore(
+      resolve(
+        process.env.SOFTFORM_DATA_DIR ?? resolve(root, ".data"),
+        "character.json",
+      ),
     ),
+    new LocalCommandInterpreter(),
   ),
   resolve(root, "dist"),
 );

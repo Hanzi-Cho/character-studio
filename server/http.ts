@@ -2,13 +2,9 @@ import { createServer, type ServerResponse } from "node:http";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
-import { CharacterStore, ConflictError } from "./store.js";
-import { LocalCommandInterpreter } from "../src/adapters/LocalCommandInterpreter.js";
+import { ConflictError } from "../src/domain/errors.js";
 import { PatchSchema } from "../src/domain/character.js";
-import type {
-  CharacterRepository,
-  CommandInterpreter,
-} from "../src/application/ports.js";
+import type { CharacterApplication } from "../src/application/ports.js";
 
 const requestSchema = z
   .object({
@@ -20,11 +16,16 @@ const patchRequestSchema = z
   .object({ patch: PatchSchema, revision: z.number().int().min(0) })
   .strict();
 export function createStudioServer(
-  store: CharacterRepository,
+  service: CharacterApplication,
   staticDirectory: string,
-  interpreter: CommandInterpreter = new LocalCommandInterpreter(),
 ) {
   const clients = new Set<ServerResponse>();
+  const unsubscribe = service.subscribe((snapshot) => {
+    for (const client of clients) {
+      if (!client.destroyed)
+        client.write(`data: ${JSON.stringify(snapshot)}\n\n`);
+    }
+  });
   const server = createServer(async (req, res) => {
     const address = server.address();
     const port = typeof address === "object" && address ? address.port : 0;
@@ -48,14 +49,14 @@ export function createStudioServer(
     const pathname = new URL(req.url ?? "/", `http://127.0.0.1:${port}`)
       .pathname;
     if (req.method === "GET" && pathname === "/api/state")
-      return json(200, store.snapshot());
+      return json(200, service.read());
     if (req.method === "GET" && pathname === "/api/events") {
       res.writeHead(200, {
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-store",
         Connection: "keep-alive",
       });
-      res.write(`data: ${JSON.stringify(store.snapshot())}\n\n`);
+      res.write(`data: ${JSON.stringify(service.read())}\n\n`);
       clients.add(res);
       const heartbeat = setInterval(() => res.write(": keepalive\n\n"), 20000);
       req.on("close", () => {
@@ -66,7 +67,7 @@ export function createStudioServer(
     }
     if (
       req.method === "POST" &&
-      ["/api/command", "/api/patch"].includes(pathname)
+      ["/api/command", "/api/patch", "/api/action"].includes(pathname)
     ) {
       if (!req.headers["content-type"]?.startsWith("application/json"))
         return json(415, { error: "JSON 요청이 필요합니다." });
@@ -84,21 +85,22 @@ export function createStudioServer(
         let snapshot;
         if (pathname === "/api/command") {
           const data = requestSchema.parse(input);
-          const command = await interpreter.interpret(
-            data.text,
-            store.snapshot().document,
-          );
-          message = command.summary;
-          snapshot = store.execute(command, data.revision);
+          snapshot = await service.command(data.text, data.revision);
+          message = snapshot.message;
+        } else if (pathname === "/api/action") {
+          const data = z
+            .object({
+              action: z.enum(["undo", "redo", "reset"]),
+              revision: z.number().int().min(0),
+            })
+            .strict()
+            .parse(input);
+          snapshot = service.action(data.action, data.revision);
+          message = snapshot.message;
         } else {
           const data = patchRequestSchema.parse(input);
-          snapshot = store.execute(
-            { type: "patch", patch: data.patch, summary: message },
-            data.revision,
-          );
+          snapshot = service.patch(data.patch, data.revision);
         }
-        for (const client of clients)
-          client.write(`data: ${JSON.stringify(snapshot)}\n\n`);
         return json(200, { ...snapshot, message });
       } catch (error) {
         return json(error instanceof ConflictError ? 409 : 400, {
@@ -146,6 +148,7 @@ export function createStudioServer(
     json(404, { error: "찾을 수 없습니다." });
   });
   server.on("close", () => {
+    unsubscribe();
     for (const client of clients) client.end();
   });
   return server;

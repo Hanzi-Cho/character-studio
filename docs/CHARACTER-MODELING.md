@@ -1,5 +1,7 @@
 # 기본 치이카와 모델 수정 · 2026-10-24
 
+> 이 문서는 이전 모델 변경 이력이다. 현재 v4의 수치/형상 정본은 [초기 캐릭터 렌더 생성](features/initial-character-render-generation.md), 개선 결과는 [v4 개선 기록](reviews/chiikawa-fidelity-improvement.md)을 따른다.
+
 ## 현재 모델 · 3차 실측 교정
 
 [실측 비교와 전체 수치](CHIIKAWA-MEASUREMENTS.md)가 현재 정본이다. 이번 공식 사진 38파일 중 중복/다른 캐릭터를 제외한 31장을 관찰하고, 12장에 좌표를 남겼다. 독립 정면 5개 표본의 머리 세로/가로 중앙값은 0.7493이다.

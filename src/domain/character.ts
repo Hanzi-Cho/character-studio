@@ -53,13 +53,14 @@ export function applyPatch(
 ): CharacterDocument {
   return CharacterSchema.parse({ ...document, ...PatchSchema.parse(input) });
 }
-export type Snapshot = {
-  document: CharacterDocument;
-  revision: number;
-  canUndo: boolean;
-  canRedo: boolean;
-  updatedAt: string;
-};
+export const SnapshotSchema = z.object({
+  document: CharacterSchema,
+  revision: z.number().int().min(0),
+  canUndo: z.boolean(),
+  canRedo: z.boolean(),
+  updatedAt: z.string(),
+});
+export type Snapshot = z.infer<typeof SnapshotSchema>;
 export type Command =
   | { type: "patch"; patch: CharacterPatch; summary: string }
   | { type: "undo"; summary: string }

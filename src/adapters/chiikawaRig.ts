@@ -7,15 +7,22 @@ import type { CharacterDocument } from "../domain/character.js";
  */
 export const CHIIKAWA_RIG = {
   head: { width: 2.32, height: 1.76, top: 3.1, bottom: 1.34, depthRatio: 0.7 },
-  torso: { bottom: 0.23, top: 1.34, width: 2.15, blendStart: 1.03 },
+  torso: {
+    bottom: 0.23,
+    top: 1.34,
+    width: 2.15,
+    crown: 1.79,
+    depth: 1.28,
+    z: -0.08,
+  },
   ear: {
-    x: 0.65,
-    y: 2.924,
+    x: 0.69,
+    y: 2.95,
     z: -0.03,
-    lift: 0.12,
-    width: 0.34,
+    lift: 0.125,
+    width: 0.37,
     height: 0.4,
-    depth: 0.29,
+    depth: 0.34,
     outwardDegrees: 18,
   },
   arm: {
@@ -37,7 +44,7 @@ export const CHIIKAWA_RIG = {
     outwardDegrees: 4,
   },
   eye: { x: 0.16, v: 0.51, width: 0.125, height: 0.13 },
-  cheek: { x: 0.3, v: 0.61, width: 0.17, height: 0.115 },
+  cheek: { x: 0.3, v: 0.61, width: 0.18, height: 0.125 },
   mouth: { width: 0.14, v: 0.67 },
 } as const;
 
@@ -63,35 +70,28 @@ export function facePoint(u: number, v: number): [number, number] {
   ];
 }
 
-/** Radius/height samples, normalized so changing the rig cannot leave the
- * facial coordinate frame out of sync with its supporting surface. */
-export function bodyProfile(): [number, number][] {
-  const { head, torso } = CHIIKAWA_RIG;
-  const lower = [
-    [0, 0],
-    [0.3721, 0.018],
-    [0.6698, 0.1441],
-    [0.893, 0.3423],
-    [1, 0.6036],
-    [0.986, 0.8198],
-  ].map(([r, h]): [number, number] => [
-    (r * torso.width) / 2,
-    torso.bottom + h * (torso.top - torso.bottom),
-  ]);
+/** Closed cranial contour. Lower cheeks and chin follow the measured Kitan
+ * face silhouette; the torso overlaps behind the chin without stretching it. */
+export function cranialProfile(): [number, number][] {
+  const { head } = CHIIKAWA_RIG;
   const upper = [
-    [0.8922, 1],
-    [0.9397, 0.8807],
-    [0.9871, 0.7386],
-    [1, 0.5682],
-    [0.9741, 0.4545],
-    [0.8836, 0.3125],
-    [0.6897, 0.1705],
-    [0.4138, 0.0682],
-    [0.2069, 0.017],
+    [0, 1],
+    [0.5, 0.95],
+    [0.69, 0.9],
+    [0.8, 0.85],
+    [0.925, 0.75],
+    [1, 0.6],
+    [0.99, 0.45],
+    [0.9, 0.3],
+    [0.85, 0.25],
+    [0.75, 0.17],
+    [0.64, 0.08],
+    [0.4, 0.025],
+    [0.21, 0.004],
     [0, 0],
   ].map(([r, v]): [number, number] => [
     (r * head.width) / 2,
     head.top - v * head.height,
   ]);
-  return [...lower, ...upper];
+  return upper;
 }

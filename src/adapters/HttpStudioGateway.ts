@@ -1,6 +1,11 @@
-import type { Snapshot, CharacterPatch } from "../domain/character.js";
+import {
+  SnapshotSchema,
+  type Snapshot,
+  type CharacterPatch,
+} from "../domain/character.js";
+import { z } from "zod";
 import type { StudioGateway } from "../application/ports.js";
-export async function request<T>(url: string, body?: unknown): Promise<T> {
+async function request(url: string, body?: unknown): Promise<unknown> {
   const response = await fetch(
     url,
     body
@@ -16,24 +21,41 @@ export async function request<T>(url: string, body?: unknown): Promise<T> {
   return data;
 }
 export class HttpStudioGateway implements StudioGateway {
-  read() {
-    return request<Snapshot>("/api/state");
+  async read() {
+    return SnapshotSchema.parse(await request("/api/state"));
   }
-  patch(patch: CharacterPatch, revision: number) {
-    return request<Snapshot>("/api/patch", { patch, revision });
+  async patch(patch: CharacterPatch, revision: number) {
+    return SnapshotSchema.parse(
+      await request("/api/patch", { patch, revision }),
+    );
   }
-  command(text: string, revision: number) {
-    return request<Snapshot & { message: string }>("/api/command", {
-      text,
-      revision,
-    });
+  async command(text: string, revision: number) {
+    return SnapshotSchema.extend({ message: z.string() }).parse(
+      await request("/api/command", {
+        text,
+        revision,
+      }),
+    );
+  }
+  async action(action: "undo" | "redo" | "reset", revision: number) {
+    return SnapshotSchema.extend({ message: z.string() }).parse(
+      await request("/api/action", { action, revision }),
+    );
   }
   subscribe(
     listener: (snapshot: Snapshot) => void,
     onConnection: (connected: boolean) => void,
   ) {
     const events = new EventSource("/api/events");
-    events.onmessage = (event) => listener(JSON.parse(event.data));
+    events.onmessage = (event) => {
+      try {
+        const snapshot = SnapshotSchema.parse(JSON.parse(event.data));
+        listener(snapshot);
+        onConnection(true);
+      } catch {
+        onConnection(false);
+      }
+    };
     events.onopen = () => onConnection(true);
     events.onerror = () => onConnection(false);
     return () => events.close();

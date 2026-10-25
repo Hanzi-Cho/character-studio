@@ -1,14 +1,20 @@
-# Softform Studio
+# Character Studio
+
+대화로 여러 종류의 3D 캐릭터를 만들고 수정하는 스튜디오입니다. 기존 작업명과 앱 표기는 **Softform Studio**이며, 공개 저장소는 [Hanzi-Cho/character-studio](https://github.com/Hanzi-Cho/character-studio)입니다.
 
 PC에서 3D 치이카와를 돌려 보고, 하단 채팅으로 색상·비율·표정·장식을 바꾸는 로컬 웹 MVP입니다. React + TypeScript + Three.js로 구현했습니다. 외부 AI 없이 동작하는 **제한된 명령 편집기**와 **실제 stdio MCP 서버**가 있습니다. Gemini·Claude·GPT 앱 연결이나 임의의 3D 생성은 아직 구현/검증하지 않았습니다.
 
+다음 단계는 **Meta Model API**를 연결해 자연어 요청을 검증된 캐릭터 편집 명령으로 변환하는 것입니다. 여러 기본 캐릭터, 날개·새 장식과 모바일 확장은 계획이며, 현재 API 연동이나 자유로운 3D 생성이 구현되었다는 뜻은 아닙니다.
+
 ## 이 PC에서 열기
 
-`Start-Studio.cmd`를 실행하면 서버 확인/시작 후 `http://127.0.0.1:4317`을 엽니다. 현재 빌드와 의존성이 설치되어 있습니다. Node.js 24 이상을 사용하며, 이 PC에 설치된 Codex Node 런타임도 찾습니다. 실행 파일 배포본이나 자동 업데이트 앱은 아닙니다.
+Node.js 24 이상과 pnpm을 준비한 뒤 아래 명령으로 의존성을 설치하고 빌드합니다. Windows에서는 이후 `Start-Studio.cmd`로 서버 확인/시작 후 `http://127.0.0.1:4317`을 열 수 있습니다. 실행 파일 배포본이나 자동 업데이트 앱은 아닙니다.
 
 개발 실행:
 
 ```sh
+git clone https://github.com/Hanzi-Cho/character-studio.git
+cd character-studio
 pnpm install --frozen-lockfile
 pnpm build
 pnpm start
@@ -30,10 +36,12 @@ pnpm start
 ## 구성
 
 ```text
+src/bootstrap.ts      gateway / renderer / model / ChatPanel 구현 조립
 src/domain/           CharacterDocument v1, 허용 속성·범위와 patch 검증
-src/application/      렌더러 / 명령 해석 / 저장소 / UI gateway 포트
+src/application/      편집 서비스 + 렌더러 / 해석기 / 저장소 / gateway 계약
+src/presentation/     화면 상태·명령/복구, 렌더 수명과 교체용 UI 계약
 src/adapters/         Three.js, 인스턴스 배치, 로컬 해석기, HTTP/SSE
-src/components/       도메인에 독립적인 최소 Composer / Icon
+src/components/       교체 가능한 ChatDock, Composer, 표정 시안, 도움말
 src/dev/              반복 메시 배칭 검증 화면
 server/               단일 저장소 + loopback HTTP + stdio MCP
 tests/                도메인·영속화·경계·실제 MCP 통합·배치 회귀
@@ -65,6 +73,13 @@ docs/                 아키텍처, 원본 코드 연구, 범위/결정, 검증 
 
 ## 문서
 
+- [기능 정의 문서 영역](docs/features/README.md)
+- [초기 캐릭터 렌더 생성: 제작 과정·수치·수용 기준](docs/features/initial-character-render-generation.md)
+- [v4 닮음 개선: 고정한 10점 기준과 반복 검증](docs/reviews/chiikawa-fidelity-improvement.md)
+- [전체 파일 구조·결합도 점검·실제 리팩터링](docs/reviews/architecture-and-replaceability-review.md)
+- [12종 기본 모델·채팅 부위 추가·초기화·저장 전략](docs/features/character-catalog-and-customization-strategy.md)
+- [개선 전 v3 닮음 피드백](docs/reviews/chiikawa-render-fidelity-review.md)
+- [채팅 구현 계획: ChatKit·AI 서비스·Configuration as Code](docs/features/character-chat-implementation-plan.md)
 - [아키텍처 선택과 어댑터 경계](docs/ADR-001-ARCHITECTURE.md)
 - [Human Atlas 소스 연구](docs/HUMAN-ATLAS-RESEARCH.md)
 - [현재 구현·남은 결정](docs/MVP-STATUS.md)

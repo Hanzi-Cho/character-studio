@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { ChiikawaModel } from "./ChiikawaModel.js";
+import type { ThreeCharacterModel } from "./ThreeCharacterModel.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import type { CharacterDocument } from "../domain/character.js";
 import type { CharacterRenderer } from "../application/ports.js";
@@ -13,7 +13,6 @@ export class ThreeCharacterRenderer implements CharacterRenderer {
   private readonly camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
   private readonly renderer: THREE.WebGLRenderer;
   private readonly controls: OrbitControls;
-  private readonly model = new ChiikawaModel();
   private readonly geometries = new Set<THREE.BufferGeometry>();
   private readonly materials = new Set<THREE.Material>();
   private readonly observer: ResizeObserver;
@@ -34,6 +33,7 @@ export class ThreeCharacterRenderer implements CharacterRenderer {
   constructor(
     private container: HTMLElement,
     private onError: (message: string) => void,
+    private readonly model: ThreeCharacterModel,
   ) {
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,

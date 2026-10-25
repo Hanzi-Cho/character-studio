@@ -1,0 +1,268 @@
+{
+  "source": "https://kitan.jp/wp-content/uploads/2024/12/normal.jpg",
+  "sha256": "01db1a0eb7ee8df41d1aaa6cd760f89c4c9b39ae7eba46f8e3353a52c5971e59",
+  "sourceSize": [
+    800,
+    800
+  ],
+  "manualBBoxIn600Frame": [
+    30,
+    100,
+    565,
+    519
+  ],
+  "method": "PIL luminance < threshold, three consecutive pixels; horizontal range, normalized by manual head width; not semantic segmentation",
+  "uncertainty": "White product/background boundary and ears are ambiguous. v=.10 excluded. Threshold sweep is sensitivity, not a statistical confidence interval. Manual bbox remains roughly +/-5px in 600-frame.",
+  "rows": [
+    {
+      "v": 0.1,
+      "y": 189,
+      "estimates": [
+        {
+          "threshold": 240,
+          "left": 144,
+          "right": 656,
+          "widthOverHead": 0.7177570093457945
+        },
+        {
+          "threshold": 245,
+          "left": 144,
+          "right": 657,
+          "widthOverHead": 0.719158878504673
+        },
+        {
+          "threshold": 250,
+          "left": 144,
+          "right": 657,
+          "widthOverHead": 0.719158878504673
+        }
+      ],
+      "useForContour": false
+    },
+    {
+      "v": 0.17,
+      "y": 228,
+      "estimates": [
+        {
+          "threshold": 240,
+          "left": 131,
+          "right": 659,
+          "widthOverHead": 0.7401869158878506
+        },
+        {
+          "threshold": 245,
+          "left": 130,
+          "right": 660,
+          "widthOverHead": 0.7429906542056075
+        },
+        {
+          "threshold": 250,
+          "left": 130,
+          "right": 660,
+          "widthOverHead": 0.7429906542056075
+        }
+      ],
+      "useForContour": true
+    },
+    {
+      "v": 0.25,
+      "y": 273,
+      "estimates": [
+        {
+          "threshold": 240,
+          "left": 92,
+          "right": 699,
+          "widthOverHead": 0.8509345794392524
+        },
+        {
+          "threshold": 245,
+          "left": 91,
+          "right": 699,
+          "widthOverHead": 0.852336448598131
+        },
+        {
+          "threshold": 250,
+          "left": 91,
+          "right": 699,
+          "widthOverHead": 0.852336448598131
+        }
+      ],
+      "useForContour": true
+    },
+    {
+      "v": 0.3,
+      "y": 301,
+      "estimates": [
+        {
+          "threshold": 240,
+          "left": 75,
+          "right": 717,
+          "widthOverHead": 0.9000000000000001
+        },
+        {
+          "threshold": 245,
+          "left": 74,
+          "right": 717,
+          "widthOverHead": 0.9014018691588787
+        },
+        {
+          "threshold": 250,
+          "left": 74,
+          "right": 718,
+          "widthOverHead": 0.9028037383177571
+        }
+      ],
+      "useForContour": true
+    },
+    {
+      "v": 0.45,
+      "y": 385,
+      "estimates": [
+        {
+          "threshold": 240,
+          "left": 44,
+          "right": 748,
+          "widthOverHead": 0.9869158878504674
+        },
+        {
+          "threshold": 245,
+          "left": 43,
+          "right": 748,
+          "widthOverHead": 0.9883177570093459
+        },
+        {
+          "threshold": 250,
+          "left": 43,
+          "right": 748,
+          "widthOverHead": 0.9883177570093459
+        }
+      ],
+      "useForContour": true
+    },
+    {
+      "v": 0.6,
+      "y": 469,
+      "estimates": [
+        {
+          "threshold": 240,
+          "left": 41,
+          "right": 751,
+          "widthOverHead": 0.9953271028037384
+        },
+        {
+          "threshold": 245,
+          "left": 41,
+          "right": 751,
+          "widthOverHead": 0.9953271028037384
+        },
+        {
+          "threshold": 250,
+          "left": 40,
+          "right": 751,
+          "widthOverHead": 0.9967289719626169
+        }
+      ],
+      "useForContour": true
+    },
+    {
+      "v": 0.75,
+      "y": 552,
+      "estimates": [
+        {
+          "threshold": 240,
+          "left": 68,
+          "right": 724,
+          "widthOverHead": 0.9196261682242992
+        },
+        {
+          "threshold": 245,
+          "left": 68,
+          "right": 725,
+          "widthOverHead": 0.9210280373831776
+        },
+        {
+          "threshold": 250,
+          "left": 68,
+          "right": 725,
+          "widthOverHead": 0.9210280373831776
+        }
+      ],
+      "useForContour": true
+    },
+    {
+      "v": 0.85,
+      "y": 608,
+      "estimates": [
+        {
+          "threshold": 240,
+          "left": 115,
+          "right": 680,
+          "widthOverHead": 0.7920560747663552
+        },
+        {
+          "threshold": 245,
+          "left": 115,
+          "right": 680,
+          "widthOverHead": 0.7920560747663552
+        },
+        {
+          "threshold": 250,
+          "left": 114,
+          "right": 680,
+          "widthOverHead": 0.7934579439252337
+        }
+      ],
+      "useForContour": true
+    },
+    {
+      "v": 0.9,
+      "y": 636,
+      "estimates": [
+        {
+          "threshold": 240,
+          "left": 155,
+          "right": 643,
+          "widthOverHead": 0.6841121495327104
+        },
+        {
+          "threshold": 245,
+          "left": 154,
+          "right": 643,
+          "widthOverHead": 0.6855140186915889
+        },
+        {
+          "threshold": 250,
+          "left": 154,
+          "right": 643,
+          "widthOverHead": 0.6855140186915889
+        }
+      ],
+      "useForContour": true
+    },
+    {
+      "v": 0.95,
+      "y": 664,
+      "estimates": [
+        {
+          "threshold": 240,
+          "left": 221,
+          "right": 581,
+          "widthOverHead": 0.5046728971962617
+        },
+        {
+          "threshold": 245,
+          "left": 220,
+          "right": 581,
+          "widthOverHead": 0.5060747663551403
+        },
+        {
+          "threshold": 250,
+          "left": 218,
+          "right": 582,
+          "widthOverHead": 0.5102803738317757
+        }
+      ],
+      "useForContour": true
+    }
+  ]
+}

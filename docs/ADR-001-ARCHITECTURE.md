@@ -18,14 +18,18 @@ React Native + 별도 3D 런타임은 모바일 네이티브가 첫 목적일 �
 
 ## 흐름과 교체 지점
 
+v4 구조 정리: 브라우저는 `bootstrap.ts`, 서버는 `server/main.ts`에서 구현을 조립한다. UI는 주입받은 ChatPanel/gateway/renderer factory만 사용한다. HTTP는 CharacterApplication을 받고, CharacterService가 interpreter/repository 및 커밋 이벤트를 소유한다. Three renderer도 모델 포트를 주입받는다. [전체 구조/실제 수정/파일 트리](reviews/architecture-and-replaceability-review.md)가 최신 상세 정본이다.
+
+
 ```mermaid
 flowchart LR
   UI[React Composer] --> GW[StudioGateway: HTTP / SSE]
   GW --> API[Local API]
   MCP[stdio MCP tools] --> API
-  API --> INT[CommandInterpreter]
+  API --> SVC[CharacterService]
+  SVC --> INT[CommandInterpreter]
   INT --> CMD[Validated command]
-  API --> REPO[CharacterRepository]
+  SVC --> REPO[CharacterRepository]
   CMD --> REPO
   REPO --> DOC[CharacterDocument v1 + revision]
   DOC --> GW
@@ -34,7 +38,7 @@ flowchart LR
 
 - **도메인**은 React/Three 타입을 모르며 JSON 문서·허용 속성·범위만 가진다. 좌표·mesh·material은 저장하지 않는다. geometry와 세계관 데이터를 바꾸려면 문서 schema 버전과 renderer mapper를 함께 설계한다.
 - **CommandInterpreter**는 동기 또는 비동기 구현으로 교체 가능하다. 현재 엄격한 전체 문장 패턴을 쓰는 로컬 어댑터다. 향후 공급자가 만든 patch도 같은 schema/revision 검증을 거쳐야 한다. 임의 코드·파일 경로를 받아 실행하는 도구는 없다.
-- **CharacterRepository**는 HTTP 생성 함수에 주입된다. 현재 단일 writer 파일 저장소이며 향후 SQLite·기기 저장·서버 구현으로 교체할 수 있다. 동시 쓰기 충돌은 revision으로 드러낸다. 파일 저장을 다중 사용자용 DB라고 부르지 않는다.
+- **CharacterRepository**는 CharacterService 생성자에 주입된다. 현재 단일 writer 파일 저장소이며 향후 SQLite·기기 저장·서버 구현으로 교체할 수 있다. 동시 쓰기 충돌은 revision으로 드러낸다. 파일 저장을 다중 사용자용 DB라고 부르지 않는다.
 - **CharacterRenderer**는 생성 후 유지된다. React 대화·이름·상태 갱신이 WebGL 재생성으로 이어지지 않는다. 색·transform·표정 group visibility만 변경하고 공용 sphere와 재질을 재사용한다. pointer/resize/control 변화가 있을 때만 RAF를 예약하며 damping 종료 후 예약을 멈춘다. DPR 2 상한, dispose, WebGL context-loss 안내, 키보드 회전과 reduced-motion 설정을 포함한다.
 - **InstancedPartLayer**는 의미 없는 `RenderPart {id,position,scale,color}`를 받는다. 반복 geometry의 4,096개 인스턴스 실험에 사용했다. 수정한 instance의 buffer range만 표시하고 불변 값은 업로드하지 않는다. Human Atlas의 전체 O(N) 순회를 그대로 복사하지 않았다. spatial chunk/culling/가변 geometry/선택/삭제 API는 후속이다.
 - **MCP**는 별도 writer가 되지 않고 HTTP 애플리케이션 서비스를 호출한다. UI와 같은 validation/undo/revision/SSE 경로다. Host UI 임베딩과 표준 MCP 도구 호출을 별개로 취급한다.

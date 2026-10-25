@@ -1,16 +1,23 @@
 import * as THREE from "three";
+import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import type { CharacterDocument } from "../domain/character.js";
+import {
+  curvedPatch,
+  roundedStroke,
+  blushFalloff,
+  type FacePoint,
+} from "./faceGeometry.js";
 
 import {
   CHIIKAWA_RIG as RIG,
   EXPRESSION_BROWS,
   facePoint,
-  bodyProfile,
+  cranialProfile,
 } from "./chiikawaRig.js";
 
 type Profile = readonly (readonly [radius: number, height: number])[];
 
-/** Reference-driven proportions. One continuous head/torso silhouette;
+/** Reference-driven proportions. A rounded cranium over an inset torso;
  * face markings are curved meshes on the head surface, not a front-facing image.
  * User references supplied 2026-10-24; see docs/CHARACTER-MODELING.md.
  */
@@ -25,18 +32,21 @@ export class ChiikawaModel {
   private readonly accessories = new Map<string, THREE.Group>();
   private readonly sphere = new THREE.SphereGeometry(1, 36, 24);
   private readonly geometries = new Set<THREE.BufferGeometry>([this.sphere]);
+  private readonly eyeBases = new Map<THREE.BufferGeometry, Float32Array>();
   private readonly materials = new Set<THREE.Material>();
   private readonly fur = this.surfaceMaterial("#fffdf7");
   private readonly earFur = this.surfaceMaterial("#fffdf7");
-  private readonly blush = this.inkMaterial("#f3a5b2");
-  private readonly ink = this.inkMaterial("#393833");
+  private readonly ink = this.inkMaterial("#252825");
   private readonly highlight = this.inkMaterial("#fffef9");
   private readonly ribbon = this.surfaceMaterial("#e9a5b5");
   private readonly silhouette = this.inkMaterial("#69645e", THREE.BackSide);
   private readonly tears = this.inkMaterial("#9bcbdc");
+  private readonly blushTexture = blushFalloff();
+  private readonly cheekPigment = this.inkMaterial("#f3a5b2");
   private bodyGeometry!: THREE.BufferGeometry;
   private bodyBase!: Float32Array;
-  private readonly headProfile = this.profile(bodyProfile());
+  private cranialVertexCount = 0;
+  private readonly headProfile = this.profile(cranialProfile());
   private readonly headDepth = RIG.head.depthRatio;
   private lastDocument?: CharacterDocument;
 
@@ -49,6 +59,9 @@ export class ChiikawaModel {
     this.ears.name = "ears";
     this.eyes.name = "eyes";
     this.root.add(this.torso, this.feet, this.head);
+    this.cheekPigment.alphaMap = this.blushTexture;
+    this.cheekPigment.transparent = true;
+    this.cheekPigment.depthWrite = false;
     this.buildVolumes();
     this.buildFace();
     this.buildAccessories();
@@ -108,15 +121,24 @@ export class ChiikawaModel {
     return mesh;
   }
   private buildVolumes() {
-    // A single surface avoids a pinched neck, overlapping shells and a chin seam.
-    // Keep the same GPU buffer when changing the lower body's proportions.
-    this.bodyGeometry = new THREE.LatheGeometry(this.headProfile, 64);
-    this.bodyGeometry.scale(1, 1, this.headDepth);
+    // Keep a closed chin contour instead of stretching the face into the torso.
+    // The inset body overlaps at the neck. Both surfaces share one GPU buffer.
+    const cranium = new THREE.LatheGeometry(this.headProfile, 64);
+    cranium.scale(1, 1, this.headDepth);
+    this.cranialVertexCount = cranium.getAttribute("position").count;
+    const belly = new THREE.SphereGeometry(1, 48, 32);
+    const torsoHeight = RIG.torso.crown - RIG.torso.bottom;
+    belly.scale(RIG.torso.width / 2, torsoHeight / 2, RIG.torso.depth / 2);
+    belly.translate(0, RIG.torso.bottom + torsoHeight / 2, RIG.torso.z);
+    this.bodyGeometry = mergeGeometries([cranium, belly])!;
+    this.bodyGeometry.userData.cranialVertexCount = this.cranialVertexCount;
+    cranium.dispose();
+    belly.dispose();
     this.geometries.add(this.bodyGeometry);
     this.bodyBase = new Float32Array(
       this.bodyGeometry.getAttribute("position").array,
     );
-    const body = this.mesh(this.root, this.bodyGeometry, this.fur, true);
+    const body = this.mesh(this.root, this.bodyGeometry, this.fur);
     body.name = "body-volume";
     body.receiveShadow = true;
     this.head.add(this.ears, this.eyes);
@@ -173,7 +195,8 @@ export class ChiikawaModel {
       }
     }
     return (
-      this.headDepth * Math.sqrt(Math.max(0, radius * radius - x * x)) + offset
+      this.headDepth * Math.sqrt(Math.max(0, radius * radius - x * x)) +
+      offset * 0.4
     );
   }
 
@@ -189,6 +212,7 @@ export class ChiikawaModel {
     rotation = 0,
   ) {
     const positions: number[] = [],
+      uvs: number[] = [],
       indices: number[] = [];
     const rings = 6,
       segments = 48;
@@ -207,6 +231,10 @@ export class ChiikawaModel {
           this.faceZ(cx + dx, cy + dy, offset + 0.006 * (1 - radius * radius)) -
             originZ,
         );
+        uvs.push(
+          0.5 + (Math.cos(a) * radius) / 2,
+          0.5 + (Math.sin(a) * radius) / 2,
+        );
         if (ring < rings && segment < segments) {
           const a = ring * (segments + 1) + segment,
             b = a + segments + 1;
@@ -220,6 +248,7 @@ export class ChiikawaModel {
       new THREE.Float32BufferAttribute(positions, 3),
     );
     geometry.setIndex(indices);
+    geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
     geometry.computeVertexNormals();
     this.geometries.add(geometry);
     const mesh = this.mesh(parent, geometry, material);
@@ -247,12 +276,33 @@ export class ChiikawaModel {
         return target.set(p.x, p.y, project(p.x, p.y));
       }
     }
-    const geometry = new THREE.TubeGeometry(
-      new SurfaceCurve(),
-      32,
-      radius,
-      8,
-      false,
+    const geometry = roundedStroke(new SurfaceCurve(), radius);
+    // Keep the rounded ink silhouette but flatten its relief onto the curved skin.
+    // Cylindrical tubes otherwise look like floating rods from the side.
+    const positions = geometry.getAttribute("position");
+    const normals = geometry.getAttribute("normal");
+    for (let i = 0; i < positions.count; i++)
+      positions.setZ(
+        i,
+        project(positions.getX(i), positions.getY(i)) + normals.getZ(i) * 0.001,
+      );
+    geometry.computeVertexNormals();
+    this.geometries.add(geometry);
+    const mesh = this.mesh(parent, geometry, material);
+    mesh.castShadow = false;
+    return mesh;
+  }
+  private patch(
+    parent: THREE.Object3D,
+    contour: readonly FacePoint[],
+    material: THREE.Material = this.ink,
+    offset = 0.025,
+  ) {
+    const geometry = curvedPatch(
+      contour,
+      facePoint,
+      (x, y, d) => this.faceZ(x, y, d),
+      offset,
     );
     this.geometries.add(geometry);
     const mesh = this.mesh(parent, geometry, material);
@@ -299,15 +349,15 @@ export class ChiikawaModel {
   }
   private muzzle(parent: THREE.Object3D, lift = 0) {
     const lip: [number, number][] = [
-      [-0.07, 0.655 + lift],
-      [-0.065, 0.68 + lift],
-      [-0.044, 0.691 + lift],
-      [-0.022, 0.682 + lift],
+      [-0.067, 0.654 + lift],
+      [-0.059, 0.676 + lift],
+      [-0.038, 0.685 + lift],
+      [-0.015, 0.679 + lift],
       [0, 0.655 + lift],
-      [0.022, 0.682 + lift],
-      [0.044, 0.691 + lift],
-      [0.065, 0.68 + lift],
-      [0.07, 0.655 + lift],
+      [0.014, 0.68 + lift],
+      [0.039, 0.686 + lift],
+      [0.061, 0.675 + lift],
+      [0.069, 0.655 + lift],
     ];
     this.line(
       parent,
@@ -315,15 +365,15 @@ export class ChiikawaModel {
         (u * RIG.mouth.width) / 0.14,
         v + RIG.mouth.v - 0.67,
       ]),
+      0.011,
     ).name = "muzzle";
-    this.mark(
+    this.line(
       parent,
-      0,
-      RIG.mouth.v - 0.02 + lift,
-      0.022,
-      0.016,
-      this.ink,
-      0.03,
+      [
+        [0, 0.656 + lift],
+        [0.001, 0.637 + lift],
+      ],
+      0.0105,
     );
   }
   private eyebrows(
@@ -337,15 +387,103 @@ export class ChiikawaModel {
     for (const side of [-1, 1]) {
       const brow = this.line(
         parent,
-        [
-          [side * 0.205, v + rise / 2],
-          [side * 0.165, v - 0.01],
-          [side * 0.125, v - rise / 2],
-        ],
-        expression === "angry" ? 0.009 : 0.007,
+        expression === "sad"
+          ? [
+              [side * 0.205, v + rise / 2],
+              [side * 0.18, v + 0.02],
+              [side * 0.15, v - 0.025],
+              [side * 0.125, v - rise / 2],
+            ]
+          : [
+              [side * 0.205, v + rise / 2],
+              [side * 0.165, v - 0.01],
+              [side * 0.125, v - rise / 2],
+            ],
+        expression === "angry" ? 0.01 : 0.008,
       );
       brow.name = side < 0 ? "left-brow" : "right-brow";
     }
+  }
+  private buildOpenEye(
+    side: number,
+    style: "gentle" | "sad" | "angry" | "surprised",
+  ) {
+    const eye = new THREE.Group();
+    const label = side < 0 ? "left" : "right";
+    eye.name = style === "gentle" ? label + "-eye" : `${label}-${style}-eye`;
+    eye.userData.expression = style;
+    const u = side * RIG.eye.x,
+      v = RIG.eye.v;
+    const width = RIG.eye.width,
+      height = RIG.eye.height * (style === "surprised" ? 1.1 : 1);
+    const map = (points: readonly FacePoint[], tilt = false): FacePoint[] =>
+      points.map(([x, y]) => [
+        u + x * width,
+        v +
+          (y * height * RIG.head.width) / RIG.head.height +
+          (tilt && style === "angry" && y < 0 ? -side * x * 0.035 : 0),
+      ]);
+    this.patch(
+      eye,
+      map(
+        [
+          [0, -0.5],
+          [0.3, -0.43],
+          [0.47, -0.2],
+          [0.49, 0.12],
+          [0.34, 0.41],
+          [0.06, 0.5],
+          [-0.27, 0.44],
+          [-0.47, 0.18],
+          [-0.49, -0.12],
+          [-0.33, -0.39],
+        ],
+        true,
+      ),
+    ).name = label + "-eye-ink";
+    this.patch(
+      eye,
+      map(
+        [
+          [-0.05, -0.34],
+          [0.18, -0.28],
+          [0.27, -0.12],
+          [0.11, 0.025],
+          [-0.14, 0.035],
+          [-0.25, -0.105],
+          [-0.17, -0.26],
+        ],
+        true,
+      ),
+      this.highlight,
+      0.041,
+    ).name = label + "-upper-highlight";
+    this.patch(
+      eye,
+      map([
+        [-0.28, 0.17],
+        [-0.1, 0.225],
+        [0.09, 0.22],
+        [0.29, 0.14],
+        [0.205, 0.335],
+        [0.015, 0.385],
+        [-0.18, 0.33],
+      ]),
+      this.highlight,
+      0.041,
+    ).name = label + "-crescent-highlight";
+    const [px, py] = facePoint(u, v);
+    const pivot = new THREE.Vector3(px, py, this.faceZ(px, py, 0));
+    for (const child of eye.children) {
+      child.position.sub(pivot);
+      if (child instanceof THREE.Mesh)
+        this.eyeBases.set(
+          child.geometry,
+          new Float32Array(child.geometry.getAttribute("position").array),
+        );
+    }
+    eye.position.copy(pivot);
+    this.eyes.add(eye);
   }
   private buildFace() {
     for (const side of [-1, 1]) {
@@ -356,7 +494,7 @@ export class ChiikawaModel {
         RIG.cheek.v,
         RIG.cheek.width,
         RIG.cheek.height,
-        this.blush,
+        this.cheekPigment,
         0.012,
       ).name = side < 0 ? "left-cheek" : "right-cheek";
       // Three short diagonal blush marks, as in the clear official face studies.
@@ -368,41 +506,13 @@ export class ChiikawaModel {
             [x - 0.01, RIG.cheek.v + 0.025],
             [x + 0.009, RIG.cheek.v - 0.024],
           ],
-          0.004,
+          0.0055,
           this.ink,
           0.026,
         );
       }
-      const eye = new THREE.Group();
-      eye.name = side < 0 ? "left-eye" : "right-eye";
-      const x = side * RIG.eye.x,
-        v = RIG.eye.v;
-      this.mark(eye, x, v, RIG.eye.width, RIG.eye.height, this.ink);
-      this.mark(
-        eye,
-        x - 0.006,
-        v - 0.034,
-        0.063,
-        0.03,
-        this.highlight,
-        0.034,
-        0.16,
-      );
-      this.mark(
-        eye,
-        x + 0.01,
-        v + 0.031,
-        0.047,
-        0.02,
-        this.highlight,
-        0.034,
-        0.12,
-      );
-      const [px, py] = facePoint(x, v);
-      const pivot = new THREE.Vector3(px, py, this.faceZ(px, py, 0));
-      for (const child of eye.children) child.position.sub(pivot);
-      eye.position.copy(pivot);
-      this.eyes.add(eye);
+      for (const style of ["gentle", "sad", "angry", "surprised"] as const)
+        this.buildOpenEye(side, style);
     }
     const gentle = new THREE.Group();
     this.eyebrows(gentle, "gentle");
@@ -410,38 +520,97 @@ export class ChiikawaModel {
     this.line(
       gentle,
       [
-        [-0.025, 0.743],
-        [-0.01, 0.755],
-        [0.012, 0.755],
-        [0.025, 0.744],
+        [-0.024, 0.737],
+        [-0.008, 0.744],
+        [0.012, 0.743],
+        [0.024, 0.735],
       ],
-      0.007,
+      0.009,
     );
 
     const happy = new THREE.Group();
     this.eyebrows(happy, "happy");
     // Open mouth is drawn first; W-shaped lip stays legible above it.
-    this.mark(happy, 0, 0.697, 0.082, 0.112, this.ink, 0.019);
-    this.mark(happy, 0, 0.691, 0.046, 0.075, this.highlight, 0.034);
-    this.mark(happy, 0, 0.733, 0.043, 0.023, this.blush, 0.04);
-    this.muzzle(happy, -0.05);
+    this.patch(
+      happy,
+      [
+        [-0.044, 0.653],
+        [-0.033, 0.749],
+        [0, 0.79],
+        [0.031, 0.757],
+        [0.043, 0.654],
+      ],
+      this.ink,
+      0.019,
+    );
+    this.patch(
+      happy,
+      [
+        [-0.024, 0.674],
+        [-0.02, 0.743],
+        [0, 0.763],
+        [0.018, 0.741],
+        [0.023, 0.674],
+      ],
+      this.highlight,
+      0.035,
+    );
+    this.muzzle(happy, -0.025);
+    this.line(
+      happy,
+      [
+        [-0.023, 0.825],
+        [0, 0.835],
+        [0.023, 0.824],
+      ],
+      0.008,
+    );
     for (const side of [-1, 1])
       this.line(
         happy,
         [
-          [side * 0.215, 0.49],
-          [side * 0.16, 0.467],
-          [side * 0.105, 0.49],
+          [side * 0.208, 0.51],
+          [side * 0.16, 0.493],
+          [side * 0.113, 0.508],
         ],
-        0.01,
+        0.012,
       );
 
     const sad = new THREE.Group();
     this.eyebrows(sad, "sad");
     this.muzzle(sad);
     for (const side of [-1, 1]) {
-      this.mark(sad, side * 0.178, 0.615, 0.035, 0.088, this.tears, 0.041);
-      this.mark(sad, side * 0.174, 0.598, 0.01, 0.029, this.highlight, 0.052);
+      const u = side * 0.16;
+      this.patch(
+        sad,
+        [
+          [u - 0.035, 0.61],
+          [u - 0.014, 0.657],
+          [u - 0.007, 0.701],
+          [u + 0.019, 0.701],
+          [u + 0.034, 0.638],
+          [u + 0.032, 0.608],
+        ],
+        this.tears,
+        0.038,
+      );
+      this.line(
+        sad,
+        [
+          [u - 0.036, 0.6],
+          [u - 0.032, 0.627],
+          [u - 0.012, 0.652],
+          [u - 0.009, 0.689],
+          [u + 0.008, 0.709],
+          [u + 0.028, 0.69],
+          [u + 0.031, 0.651],
+          [u + 0.041, 0.622],
+        ],
+        0.008,
+        this.ink,
+        0.046,
+      );
+      this.mark(sad, side * 0.235, 0.54, 0.01, 0.037, this.ink, 0.032);
     }
     this.line(
       sad,
@@ -450,7 +619,7 @@ export class ChiikawaModel {
         [0, 0.741],
         [0.027, 0.757],
       ],
-      0.0075,
+      0.009,
     );
 
     const angry = new THREE.Group();
@@ -463,7 +632,7 @@ export class ChiikawaModel {
         [0, 0.737],
         [0.028, 0.752],
       ],
-      0.008,
+      0.009,
     );
 
     const surprised = new THREE.Group();
@@ -547,7 +716,7 @@ export class ChiikawaModel {
       return false;
     this.fur.color.set(next.bodyColor);
     this.earFur.color.set(next.earColor);
-    this.blush.color.set(next.cheekColor);
+    this.cheekPigment.color.set(next.cheekColor);
     const torsoHeight = next.bodyHeight;
     const headOffset = (RIG.torso.top - RIG.torso.bottom) * (torsoHeight - 1);
     if (
@@ -562,13 +731,11 @@ export class ChiikawaModel {
         const x = this.bodyBase[i * 3],
           y = this.bodyBase[i * 3 + 1],
           z = this.bodyBase[i * 3 + 2];
-        const weight =
-          1 -
-          THREE.MathUtils.smoothstep(y, RIG.torso.blendStart, RIG.torso.top);
+        const cranial = i < this.cranialVertexCount;
         positions.setXYZ(
           i,
-          x * (1 + (next.bodyWidth - 1) * weight),
-          y >= RIG.torso.top
+          cranial ? x : x * next.bodyWidth,
+          cranial
             ? y + headOffset
             : RIG.torso.bottom + (y - RIG.torso.bottom) * torsoHeight,
           z,
@@ -584,7 +751,27 @@ export class ChiikawaModel {
     this.head.position.y = headOffset;
     this.feet.scale.x = next.bodyWidth;
     for (const ear of this.ears.children) ear.scale.setScalar(next.earSize);
-    for (const eye of this.eyes.children) eye.scale.setScalar(next.eyeSize);
+    for (const eye of this.eyes.children) {
+      if (!this.lastDocument || next.eyeSize !== this.lastDocument.eyeSize) {
+        for (const child of eye.children) {
+          if (!(child instanceof THREE.Mesh)) continue;
+          const base = this.eyeBases.get(child.geometry)!;
+          const positions = child.geometry.getAttribute("position");
+          for (let i = 0; i < positions.count; i++) {
+            const x = base[i * 3],
+              y = base[i * 3 + 1];
+            const px = eye.position.x + (x - eye.position.x) * next.eyeSize;
+            const py = eye.position.y + (y - eye.position.y) * next.eyeSize;
+            const relief = base[i * 3 + 2] - this.faceZ(x, y, 0);
+            positions.setXYZ(i, px, py, this.faceZ(px, py, 0) + relief);
+          }
+          positions.needsUpdate = true;
+          child.geometry.computeVertexNormals();
+          child.geometry.computeBoundingSphere();
+        }
+      }
+      eye.visible = eye.userData.expression === next.expression;
+    }
     this.eyes.visible =
       next.expression !== "happy" && next.expression !== "sleepy";
     for (const [name, group] of this.expressions)
@@ -598,6 +785,7 @@ export class ChiikawaModel {
     return [...this.geometries].map((geometry) => geometry.id);
   }
   dispose() {
+    this.blushTexture.dispose();
     for (const geometry of this.geometries) geometry.dispose();
     for (const material of this.materials) material.dispose();
   }

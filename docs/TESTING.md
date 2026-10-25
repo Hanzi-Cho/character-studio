@@ -1,5 +1,41 @@
 # 검증 기록 — 2026-10-24
 
+## 2026-10-24 · v4 닮음 개선 및 전체 구조 리팩터링
+
+- Windows / Node 24.19.0 / React19.3.0 / Three0.186.1 / IAB Chromium. 시작 HEAD `ac93896`, 이후 로컬 작업 트리.
+- 최종 `node node_modules/typescript/bin/tsc --noEmit`, `node scripts/build.mjs` 통과. `node --import tsx --test tests/*.test.ts`: **19/19 통과, 실패/skip 0**.
+- 새 테스트 초회에는 TS7 패키지의 compiler API 부재 및 LatheGeometry vertex 순서를 잘못 읽은 측정 코드가 실패했다. static import 검사와 실제 lathe의 97점×65열 인덱스로 수정한 뒤 최종 전체 19개를 통과했다. 실패를 모델 품질 통과로 숨기지 않는다.
+
+| 요구 / 위험 | 입력 → 기대 결과 | 실제 근거 |
+| --- | --- | --- |
+| F001 조형 | 기본값 → H/W .74~.78, head/body1.04~1.12, 단면9구간 차이<.025 | model.test.ts, v4 mesh JSON; 실제 .754164 / 1.085447 |
+| F001 얼굴 부착 | eyeSize .65/1/1.4 → 머리 곡면 위, geometry 재할당 없음 | 실제 head triangle raycast, relief0~.03; model.test.ts |
+| F001 표정 | 6개 선택 → body buffer·색·장식 유지 | 모델/도메인/HTTP-MCP 회귀, 최종 6장 화면 |
+| ARCH-01 경계 | domain/application·UI·HTTP·renderer → concrete 외부 구현 직접 의존 금지 | architecture.test.ts의 static import 규칙 |
+| ARCH-02 async 충돌 | interpreter 대기 중 다른 편집 → 늦은 응답 거부, 저장 보존 | application.test.ts의 대체 interpreter + 실제 파일 저장소 |
+| ARCH-03 복구 독립 | interpreter 장애 → typed undo/redo/reset 정상 | application.test.ts, /api/action HTTP, 실제 UI undo/redo |
+| ARCH-04 알림 | HTTP 밖 service.patch → 연결 SSE 최신화 | integration.test.ts 실제 loopback 스트림 |
+| ARCH-05 실패 | 잘못된/미지원 요청 → 무변경·입력 유지 | 기존 strict schema/MCP 테스트 + 실제 `add wings` UI 실패 |
+| ARCH-06 저장본 | 최신 서버 재시작 → 사용자 문서/이력 보존 | 4317 revision46→46, bodyColor#f4b5c5, character.json SHA256 동일 |
+
+브라우저는 별도 4318·`.data/fidelity-qa`에서 검증했다. `mint, eyes bigger` 성공 후 민트색/눈1.15, 웃음 선택 후 같은 커스텀 값, typed undo로 기본 표정만 복구, redo로 웃음 복구를 확인했다. 저장 API 재조회도 일치했다. 미지원 `add wings`는 문서 변경 없이 원문이 입력창에 남았다. 첫 한국어 자동 fill에는 마지막 `ㅁ`이 추가로 들어간 상태가 관찰되어 전체 요청이 거부됐다. 이후 명시적으로 확인한 영문 입력으로 정상 편집을 검증했으며 실제 한국어 IME 조작을 통과로 주장하지 않는다.
+
+1280×720의 기본/6표정·좌우 사면·측면·후면을 직접 관찰했다. 390×844에서 clientWidth=scrollWidth=390, clientHeight=scrollHeight=844, 여섯 시안·모델·입력·도구 표시 확인. 해당 폭에서 마우스 드래그 후 camera 이동도 관찰했다. 실제 모바일 touch/IME/GPU 성능과 구분한다.
+
+[최종 이미지](evidence/chiikawa-fidelity-v4/20-final-front.jpg), [390px](evidence/chiikawa-fidelity-v4/32-mobile-390.jpg), [수치 원시값](evidence/chiikawa-fidelity-v4/mesh-measurement.json), [윤곽 원본 측정](reference-data/contour-v4.json). 원본 이미지 sha256와 threshold 민감도도 기록했다. 새 창/서버가 사용자 파일을 초기화하지 않았다.
+
+기본 정면 초기 관찰 drawCalls40 / triangles74,066 / CPU model geometry pool73, 6표정 방문 후 동일 geometryIds. GPU는 최초 표시 때만 추가 upload된다. 수치는 renderer.info의 주 pass이며 FPS/p95/GPU 전체 비용이 아니다. 브라우저 error/warn 로그는 조회 시 0개였다. 드래그 직후의 browser-metrics.json은 damping 중 scheduled=true인 관찰이며 idle 완료 증거로 사용하지 않는다. 초기 정면 및 재로드 뒤에는 scheduled=false, frameCount3이 유지됨을 확인해 [idle 관찰](evidence/chiikawa-fidelity-v4/browser-idle-metrics.json)을 별도로 저장했다.
+
+현재 미검증: 실제 ChatKit/외부 AI 호스트, 실제 Android/iOS, 전체 한국어 IME/스크린리더, OS PNG 다운로드/JSON 파일선택의 전체 경로, 전원/디스크 장애·다중 writer·v2 마이그레이션. 사용자 닮음 최종 평가는 에이전트 수용 판정과 별도다. 제품화/출시 전이 없음.
+
+## 2026-10-24 · 기능 정의·닮음 피드백·채팅 계획 문서화
+
+- 앱 구현 기준 `ac93896`. 앱 코드/의존성/사용자 저장 설정 변경 없음. 전체 자동 테스트·타입 검사·빌드는 이번 문서화에서 재실행하지 않았다. 아래 14/14는 해당 구현 시점의 통과 이력이다.
+- 별도 4318 서버·`.data/feature-audit`에서 1280×720 실제 WebGL 정면/사면/기본·웃음·슬픔·화남을 재관찰하고 공식 사진과 비교했다. [새 피드백](reviews/chiikawa-render-fidelity-review.md)에 기능과 닮음 판정을 분리했다.
+- [측정 스크립트](evidence/initial-render-review/measure-model.ts)를 실행해 실제 버텍스·월드 중심값을 [JSON](evidence/initial-render-review/mesh-measurement.json)으로 저장했다. 머리 H/W=.7583008538, 머리/몸통 폭=1.0739530163. 선언 상수의 비율과 구분했다.
+- 새 기능/피드백/계획 문서와 README의 로컬 링크 존재 여부 및 주요 측정값 일치를 검사했다. 기존 사용자 작업 공간의 분홍색 캐릭터를 별도로 재조회했고 검토용 초기화를 수행하지 않았다.
+- [채팅 계획](features/character-chat-implementation-plan.md)은 공식 문서와 현재 코드를 바탕으로 한 제안이다. ChatKit·OpenAI API·Python 브리지의 설치/연결/호환성/실제 AI 동작은 미검증이며 실행 비용은 발생시키지 않았다.
+
 ## 2026-10-24 · R02.3 실측 비율 회귀
 
 - `node node_modules/typescript/bin/tsc --noEmit`, `node scripts/build.mjs`: 통과.

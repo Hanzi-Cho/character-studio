@@ -9,6 +9,8 @@ import {
 import { dirname } from "node:path";
 import type { CharacterRepository } from "../src/application/ports.js";
 import { z } from "zod";
+import { ConflictError } from "../src/domain/errors.js";
+export { ConflictError } from "../src/domain/errors.js";
 import {
   applyPatch,
   CharacterSchema,
@@ -27,7 +29,6 @@ const StoreSchema = z
     future: z.array(CharacterSchema).max(50),
   })
   .strict();
-export class ConflictError extends Error {}
 export class CharacterStore implements CharacterRepository {
   private state: z.infer<typeof StoreSchema>;
   constructor(private path: string) {
@@ -53,10 +54,7 @@ export class CharacterStore implements CharacterRepository {
     });
   }
   execute(command: Command, expectedRevision: number): Snapshot {
-    if (expectedRevision !== this.state.revision)
-      throw new ConflictError(
-        "다른 창에서 모습이 바뀌었어요. 최신 모습을 확인한 뒤 다시 시도해 주세요.",
-      );
+    if (expectedRevision !== this.state.revision) throw new ConflictError();
     const next = structuredClone(this.state);
     if (command.type === "undo") {
       const previous = next.past.pop();

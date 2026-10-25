@@ -31,8 +31,27 @@ export interface StudioGateway {
     text: string,
     revision: number,
   ): Promise<Snapshot & { message: string }>;
+  action(
+    action: "undo" | "redo" | "reset",
+    revision: number,
+  ): Promise<Snapshot & { message: string }>;
   subscribe(
     listener: (snapshot: Snapshot) => void,
     onConnection: (connected: boolean) => void,
   ): () => void;
+}
+
+/** Transport-independent application boundary shared by HTTP and future AI tools. */
+export interface CharacterApplication {
+  read(): Snapshot;
+  patch(patch: CharacterPatch, revision: number): Snapshot;
+  command(
+    text: string,
+    revision: number,
+  ): Promise<Snapshot & { message: string }>;
+  action(
+    action: "undo" | "redo" | "reset",
+    revision: number,
+  ): Snapshot & { message: string };
+  subscribe(listener: (snapshot: Snapshot) => void): () => void;
 }

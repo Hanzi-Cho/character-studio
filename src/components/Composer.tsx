@@ -9,7 +9,7 @@ export function Composer({
 }: {
   busy: boolean;
   disabled: boolean;
-  onSubmit: (text: string) => Promise<void>;
+  onSubmit: (text: string) => Promise<boolean>;
   onImport: (file: File) => void;
   onHelp: () => void;
 }) {
@@ -19,8 +19,8 @@ export function Composer({
   const submit = async () => {
     if (!text.trim() || busy || disabled) return;
     const sent = text;
-    setText("");
-    await onSubmit(sent);
+    if (await onSubmit(sent))
+      setText((current) => (current === sent ? "" : current));
   };
   return (
     <form
