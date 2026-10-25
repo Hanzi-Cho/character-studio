@@ -121,10 +121,12 @@ top = para("프로필을 바꾸고 싶은 날, 저장한 캐릭터를 열고 “
            "옆·뒤까지 확인하고 원하는 각도의 이미지를 저장합니다. 마음에 들지 않으면 한 번에 되돌립니다.",
            M, top, CW, 10.6, leading=17) - 20
 image_width = (CW - 16) / 2
-image_bottom = min(shot("image-draft.png", M, top, image_width),
-                   shot("chatgpt-flower.png", M + image_width + 16, top, image_width))
-para("참고 이미지 2장으로 만든 3D 초안", M, image_bottom - 7, image_width, 9, color=MUTED)
-para("날개·목도리에 새 꽃 장식 추가", M + image_width + 16,
+before, after = "proposal-before.png", "proposal-after.png"
+assert ImageReader(str(EVIDENCE / before)).getSize() == ImageReader(str(EVIDENCE / after)).getSize(), "Recapture both screenshots at the same viewport size"
+image_bottom = shot(before, M, top, image_width)
+shot(after, M + image_width + 16, top, image_width)
+para("편집 전 · 날개와 목도리를 꾸민 모습", M, image_bottom - 7, image_width, 9, color=MUTED)
+para("편집 후 · 기존 모습에 꽃만 추가", M + image_width + 16,
      image_bottom - 7, image_width, 9, color=MUTED)
 top = image_bottom - 35
 top = para("실제 ChatGPT 연결 편집. 꽃은 사전 목록 선택이 아니라 꽃잎 5장·꽃술을 도형 6개로 구성한 결과입니다.",
