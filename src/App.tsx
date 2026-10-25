@@ -13,8 +13,8 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
     connected,
     busy,
     messages,
-    notice,
-    setNotice,
+    feedback,
+    showFeedback,
     send,
     patch,
     action,
@@ -41,7 +41,7 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
     );
     download(url, "character-studio.json");
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    setNotice("캐릭터 파일을 저장했어요. + 버튼으로 다시 불러올 수 있어요.");
+    showFeedback("캐릭터 파일을 저장했어요. + 버튼으로 다시 불러올 수 있어요.");
   };
   return (
     <main className="studio">
@@ -81,7 +81,6 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
             {snapshot?.document.name ?? "치이카와"}
             <span className="name-dot" />
           </h1>
-          <p>작은 변화로, 나다운 캐릭터.</p>
         </div>
         <div
           className="stage"
@@ -184,6 +183,7 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
         busy={busy}
         disabled={!snapshot || !connected}
         messages={messages}
+        feedback={feedback}
         onExpression={(expression) => {
           if (snapshot?.document.expression !== expression)
             void patch(
@@ -195,11 +195,6 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
         onImport={(file) => void importCharacter(file)}
         onHelp={() => setHelp(true)}
       />
-      {notice && (
-        <div className="toast" role="status">
-          {notice}
-        </div>
-      )}
       <HelpDialog
         open={help}
         chatMode={chatMode}

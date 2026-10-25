@@ -148,3 +148,11 @@ diagnostics에서 대기 중 `scheduled:false`, frame counter가 상호작용 �
 - PDF: 기존 6쪽에서 2쪽으로 축약, 실제 편집 전후 이미지·5개 핵심 제안·1인 역할·출처·웹 데모 링크. 173,405 bytes, 8개 링크, 두 페이지 Poppler 렌더 시각 검수 완료. 참가 신청 완료·기획서 미제출 상태를 유지한다.
 - 실제 공개 URL https://hanzi-cho.github.io/character-studio/ 확인. main 9bc56c8의 GitHub Actions run 40181971018에서 Linux 빌드·타입·테스트·Pages 배포 모두 성공. 공개 화면에서 무작위 추천, 복합 예문 적용, 새로고침 후 저장 유지와 직접 입력 성공. 콘솔 오류·경고 없음. 저장소 About Website와 README에 URL 연결. 화면: `docs/evidence/pages-demo/public-demo.png`.
 - 후속 PDF 요청 반영: 채팅 → Codex JSON 직렬화 → JSON.parse → Zod의 명령/ENUM 검증 → compilePlan/patch/저장 → Three.js 갱신을 6노드로 표현. 실제 JSON 예시, 4개 편집 op와 6개 표정 enum, 부위 단위 갱신·메시 재사용·필요 시 렌더·예문 AI 호출 생략을 설명. PNG/JSON 다운로드·여러 시점 보기·세부 수정, Blender와 다른 기본 캐릭터 확장을 명시. 재생성 후 2쪽·173,405 bytes 및 양쪽 렌더 시각 검수 통과.
+
+## 2026-10-25 · 항상 보이는 편집 상태 영역
+
+- 요구: 초기 안내/적용 결과를 표정 버튼 위에 고정. 표정 변경 토스트 제거. 예문의 AI 없이 체험/분류와 캐릭터 소개 문구 제거.
+- 구현: useStudio의 단일 feedback 상태를 ChatPanel 계약으로 전달. 처리 중·예문·표정·undo/reset·파일·오류를 한 영역으로 통합. 채팅 이력과 분리해 표정 변경 뒤 이전 채팅 결과가 재노출되지 않게 했다. 토스트 및 시간제 숨김 제거.
+- 타입·서버 빌드·정적 웹 빌드 및 기존 31개 테스트 통과. UI 변경에 구현을 반복하는 새 단위 테스트는 추가하지 않았다.
+- 실제 정적 웹 UI: 초기 안내 → 첫 예문 → 슬픔 표정 → 미지원 요청 오류 확인. 상태 영역 항상 52px, toast 요소 0, 제거 대상 문구 없음. 오류 뒤에도 모델의 기존 상태 유지.
+- 1280×720: 첫 적용 전후 stage/status/expression/example/composer의 경계 좌표 모두 동일. 390×844: 표정 영역 y=585.600px와 상태 높이 52px 유지, 가로 넘침 없음. 실제 모바일 기기 검증은 별도. 화면: docs/evidence/edit-feedback/mobile.png.

@@ -9,12 +9,14 @@ export type ChatMessage = {
   error: boolean;
   audit?: unknown;
 };
+export type EditFeedback = { text: string; error: boolean };
 export interface ChatPanelProps {
   chatMode?: string;
   expression?: Expression;
   busy: boolean;
   disabled: boolean;
   messages: ChatMessage[];
+  feedback: EditFeedback;
   onExpression: (expression: Expression) => void;
   onSubmit: (text: string) => Promise<boolean>;
   onImport: (file: File) => void;

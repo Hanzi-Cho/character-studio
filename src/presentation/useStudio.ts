@@ -5,7 +5,7 @@ import {
   type CharacterPatch,
   type Snapshot,
 } from "../domain/character.js";
-import type { ChatMessage } from "./ports.js";
+import type { ChatMessage, EditFeedback } from "./ports.js";
 
 /** View state and recovery only: no HTTP, renderer, or interpreter implementation. */
 export function useStudio(gateway: StudioGateway) {
@@ -17,7 +17,12 @@ export function useStudio(gateway: StudioGateway) {
   const busyRef = useRef(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const messageId = useRef(0);
-  const [notice, setNotice] = useState("");
+  const [feedback, setFeedback] = useState<EditFeedback>({
+    text: "예문이나 표정을 골라 캐릭터를 바꿔보세요.",
+    error: false,
+  });
+  const showFeedback = (text: string, error = false) =>
+    setFeedback({ text, error });
   const accept = (value: Snapshot) => {
     if (!latest.current || value.revision >= latest.current.revision) {
       latest.current = value;
@@ -43,10 +48,11 @@ export function useStudio(gateway: StudioGateway) {
       .then(receive)
       .catch((error: unknown) => {
         if (active)
-          setNotice(
+          showFeedback(
             error instanceof Error && error.message.length < 200
               ? error.message
               : "스튜디오에 연결하지 못했어요. 실행 창을 확인해 주세요.",
+            true,
           );
       });
     const unsubscribe = gateway.subscribe(receive, (value) => {
@@ -57,12 +63,6 @@ export function useStudio(gateway: StudioGateway) {
       unsubscribe();
     };
   }, [gateway]);
-  useEffect(() => {
-    if (!notice) return;
-    const timer = setTimeout(() => setNotice(""), 6000);
-    return () => clearTimeout(timer);
-  }, [notice]);
-
   async function mutate(
     operation: (revision: number) => Promise<Snapshot>,
     onError?: (message: string) => void,
@@ -79,7 +79,8 @@ export function useStudio(gateway: StudioGateway) {
         error instanceof Error && error.message.length < 200
           ? error.message
           : "요청 형식이나 연결을 확인해 주세요.";
-      (onError ?? setNotice)(message);
+      showFeedback(message, true);
+      onError?.(message);
       try {
         accept(await gateway.read());
       } catch {
@@ -97,6 +98,7 @@ export function useStudio(gateway: StudioGateway) {
     error: boolean,
     audit?: unknown,
   ) => {
+    showFeedback(reply, error);
     const id = ++messageId.current;
     setMessages((items) => [
       ...items.slice(-19),
@@ -115,18 +117,18 @@ export function useStudio(gateway: StudioGateway) {
   const patch = (value: CharacterPatch, message?: string) =>
     mutate(async (revision) => {
       const result = await gateway.patch(value, revision);
-      if (message) setNotice(message);
+      if (message) showFeedback(message);
       return result;
     });
   const action = (value: "undo" | "redo" | "reset") =>
     mutate(async (revision) => {
       const result = await gateway.action(value, revision);
-      setNotice(result.message);
+      showFeedback(result.message);
       return result;
     });
   const importCharacter = (file: File) => {
     if (file.size > 131072) {
-      setNotice("128KB 이하의 캐릭터 JSON 파일을 선택해 주세요.");
+      showFeedback("128KB 이하의 캐릭터 JSON 파일을 선택해 주세요.", true);
       return Promise.resolve(false);
     }
     // Capture revision before reading the file; a concurrent edit must conflict.
@@ -135,7 +137,7 @@ export function useStudio(gateway: StudioGateway) {
         JSON.parse(await file.text()),
       );
       const result = await gateway.patch(value, revision);
-      setNotice(
+      showFeedback(
         "캐릭터를 불러왔어요. 되돌리기로 이전 모습으로 돌아갈 수 있어요.",
       );
       return result;
@@ -147,8 +149,8 @@ export function useStudio(gateway: StudioGateway) {
     connected,
     busy,
     messages,
-    notice,
-    setNotice,
+    feedback,
+    showFeedback,
     send,
     patch,
     action,
