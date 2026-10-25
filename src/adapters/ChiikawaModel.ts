@@ -158,6 +158,14 @@ export class ChiikawaModel {
         this.earFur,
         true,
       );
+      const inner = this.ellipsoid(
+        ear,
+        [0, RIG.ear.lift, 0.145],
+        [0.085, 0.14, 0.015],
+        this.surfaceMaterial("#eeb1ab"),
+      );
+      inner.name = "inner-ear";
+      inner.visible = false;
       this.ears.add(ear);
       const arm = this.ellipsoid(
         this.torso,
@@ -405,6 +413,21 @@ export class ChiikawaModel {
         expression === "angry" ? 0.01 : 0.008,
       );
       brow.name = side < 0 ? "left-brow" : "right-brow";
+      if (expression === "gentle") {
+        brow.userData.faceStyle = "soft";
+        const rabbitBrow = this.line(
+          parent,
+          [
+            [side * 0.29, 0.4],
+            [side * 0.26, 0.31],
+            [side * 0.21, 0.24],
+            [side * 0.15, 0.205],
+          ],
+          0.01,
+        );
+        rabbitBrow.userData.faceStyle = "rabbit";
+        rabbitBrow.visible = false;
+      }
     }
   }
   private buildOpenEye(
@@ -725,7 +748,8 @@ export class ChiikawaModel {
     if (
       !this.lastDocument ||
       next.bodyWidth !== this.lastDocument.bodyWidth ||
-      next.bodyHeight !== this.lastDocument.bodyHeight
+      next.bodyHeight !== this.lastDocument.bodyHeight ||
+      JSON.stringify(next.base) !== JSON.stringify(this.lastDocument.base)
     ) {
       const positions = this.bodyGeometry.getAttribute(
         "position",
@@ -737,9 +761,11 @@ export class ChiikawaModel {
         const cranial = i < this.cranialVertexCount;
         positions.setXYZ(
           i,
-          cranial ? x : x * next.bodyWidth,
+          cranial ? x * next.base.headWidth : x * next.bodyWidth,
           cranial
-            ? y + headOffset
+            ? RIG.head.bottom +
+                (y - RIG.head.bottom) * next.base.headHeight +
+                headOffset
             : RIG.torso.bottom + (y - RIG.torso.bottom) * torsoHeight,
           z,
         );
@@ -751,9 +777,23 @@ export class ChiikawaModel {
     }
     this.torso.scale.set(next.bodyWidth, torsoHeight, 1);
     this.torso.position.y = RIG.torso.bottom * (1 - torsoHeight);
-    this.head.position.y = headOffset;
+    this.head.scale.set(next.base.headWidth, next.base.headHeight, 1);
+    this.head.position.y =
+      headOffset + RIG.head.bottom * (1 - next.base.headHeight);
     this.feet.scale.x = next.bodyWidth;
-    for (const ear of this.ears.children) ear.scale.setScalar(next.earSize);
+    for (const [index, ear] of this.ears.children.entries()) {
+      const side = index === 0 ? -1 : 1;
+      ear.position.x =
+        side * RIG.ear.x * (next.base.faceStyle === "rabbit" ? 0.48 : 1);
+      ear.scale.set(
+        next.earSize * next.base.earWidth,
+        next.earSize * next.base.earLength,
+        next.earSize,
+      );
+      ear.rotation.z = -side * THREE.MathUtils.degToRad(next.base.earTilt);
+      const inner = ear.getObjectByName("inner-ear");
+      if (inner) inner.visible = next.base.innerEar;
+    }
     for (const eye of this.eyes.children) {
       if (!this.lastDocument || next.eyeSize !== this.lastDocument.eyeSize) {
         for (const child of eye.children) {
@@ -777,6 +817,10 @@ export class ChiikawaModel {
     }
     this.eyes.visible =
       next.expression !== "happy" && next.expression !== "sleepy";
+    this.head.traverse((object) => {
+      if (object.userData.faceStyle)
+        object.visible = object.userData.faceStyle === next.base.faceStyle;
+    });
     for (const [name, group] of this.expressions)
       group.visible = name === next.expression;
     for (const [name, group] of this.accessories)

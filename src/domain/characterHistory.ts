@@ -1,6 +1,7 @@
 import { z } from "zod";
 import {
   applyPatch,
+  characterFromBase,
   CharacterImportSchema,
   DEFAULT_CHARACTER,
   type Command,
@@ -57,7 +58,7 @@ export function advanceHistory(
   } else {
     const document =
       command.type === "reset"
-        ? structuredClone(DEFAULT_CHARACTER)
+        ? characterFromBase(next.document.base)
         : applyPatch(next.document, command.patch);
     if (JSON.stringify(document) === JSON.stringify(next.document))
       return state;

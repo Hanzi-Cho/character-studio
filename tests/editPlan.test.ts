@@ -120,7 +120,7 @@ test("invalid last operation, executable shape, duplicate ids and stale requests
   }
 });
 test("v1 document and its undo history migrate together and remain reversible", () => {
-  const { parts, ...legacy } = DEFAULT_CHARACTER;
+  const { parts, base, ...legacy } = DEFAULT_CHARACTER;
   const old = { ...legacy, schemaVersion: 1 };
   assert.deepEqual(CharacterImportSchema.parse(old), DEFAULT_CHARACTER);
   const dir = mkdtempSync(join(tmpdir(), "character-migration-"));
@@ -137,7 +137,7 @@ test("v1 document and its undo history migrate together and remain reversible", 
       }),
     );
     const store = new CharacterStore(path);
-    assert.equal(store.snapshot().document.schemaVersion, 2);
+    assert.equal(store.snapshot().document.schemaVersion, 3);
     assert.deepEqual(
       store.execute({ type: "undo", summary: "" }, 4).document,
       DEFAULT_CHARACTER,

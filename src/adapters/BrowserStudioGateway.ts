@@ -1,5 +1,7 @@
+import type { ReferenceImage } from "../domain/referenceImages.js";
 import type {
   CharacterRepository,
+  CommandInterpreter,
   StudioGateway,
 } from "../application/ports.js";
 import { CharacterService } from "../application/CharacterService.js";
@@ -58,14 +60,18 @@ export class BrowserCharacterRepository implements CharacterRepository {
 /** Entirely in-browser demo: never requests a backend, AI endpoint or credentials. */
 export class BrowserStudioGateway implements StudioGateway {
   private readonly service: CharacterService;
-  constructor(private readonly host: Window = window) {
+  constructor(
+    private readonly host: Window = window,
+    interpreter: CommandInterpreter = new LocalCommandInterpreter(),
+    private mode: () => Promise<string> = async () => "browser",
+  ) {
     this.service = new CharacterService(
       new BrowserCharacterRepository(() => host.localStorage),
-      new ExampleCommandInterpreter(new LocalCommandInterpreter()),
+      new ExampleCommandInterpreter(interpreter),
     );
   }
   async capabilities() {
-    return { chatMode: "browser", model: "none" };
+    return { chatMode: await this.mode(), model: "" };
   }
   async read() {
     return this.service.read();
@@ -81,8 +87,8 @@ export class BrowserStudioGateway implements StudioGateway {
   async patch(patch: CharacterPatch, revision: number) {
     return this.mutate(() => this.service.patch(patch, revision));
   }
-  async command(text: string, revision: number) {
-    return this.mutate(() => this.service.command(text, revision));
+  async command(text: string, revision: number, images: ReferenceImage[] = []) {
+    return this.mutate(() => this.service.command(text, revision, images));
   }
   async action(action: "undo" | "redo" | "reset", revision: number) {
     return this.mutate(() => this.service.action(action, revision));

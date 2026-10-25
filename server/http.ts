@@ -1,3 +1,5 @@
+import type { ChatGptConnection } from "./ChatGptConnection.js";
+import { ReferenceImagesSchema } from "../src/domain/referenceImages.js";
 import { createServer, type ServerResponse } from "node:http";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -10,6 +12,7 @@ import { EditPlanSchema } from "../src/domain/editPlan.js";
 const requestSchema = z
   .object({
     text: z.string().min(1).max(1000),
+    images: ReferenceImagesSchema.optional(),
     revision: z.number().int().min(0),
   })
   .strict();
@@ -20,6 +23,7 @@ export function createStudioServer(
   service: CharacterApplication,
   staticDirectory: string,
   capabilities = { chatMode: "local", model: "" },
+  ai?: ChatGptConnection,
 ) {
   const clients = new Set<ServerResponse>();
   const unsubscribe = service.subscribe((snapshot) => {
@@ -41,19 +45,115 @@ export function createStudioServer(
     };
     if (!validHosts.includes(req.headers.host ?? ""))
       return json(403, { error: "허용되지 않은 호스트입니다." });
+    const callbackUrl = new URL(req.url ?? "/", `http://127.0.0.1:${port}`);
     if (
+      req.method === "GET" &&
+      callbackUrl.pathname === "/auth/callback" &&
+      ai
+    ) {
+      try {
+        await ai.callback(callbackUrl.searchParams);
+        res.writeHead(303, {
+          Location: "/",
+          "Cache-Control": "no-store",
+          "Referrer-Policy": "no-referrer",
+        });
+        res.end();
+      } catch (error) {
+        json(400, {
+          error:
+            error instanceof Error ? error.message : "로그인에 실패했어요.",
+        });
+      }
+      return;
+    }
+    if (
+      callbackUrl.pathname.startsWith("/api/") &&
       req.headers.origin &&
       !validHosts.some((h) => req.headers.origin === `http://${h}`)
     )
       return json(403, { error: "다른 웹사이트의 접근을 허용하지 않습니다." });
-    if (req.headers["sec-fetch-site"] === "cross-site")
+    if (
+      callbackUrl.pathname.startsWith("/api/") &&
+      req.headers["sec-fetch-site"] === "cross-site"
+    )
       return json(403, { error: "다른 웹사이트의 접근을 허용하지 않습니다." });
     const pathname = new URL(req.url ?? "/", `http://127.0.0.1:${port}`)
       .pathname;
     if (req.method === "GET" && pathname === "/api/state")
       return json(200, service.read());
     if (req.method === "GET" && pathname === "/api/capabilities")
-      return json(200, capabilities);
+      return json(
+        200,
+        ai
+          ? {
+              ...capabilities,
+              ...(await ai
+                .status()
+                .then((s) =>
+                  s.mode === "none" ? {} : { chatMode: s.mode, model: s.model },
+                )),
+            }
+          : capabilities,
+      );
+    if (ai && pathname.startsWith("/api/ai/")) {
+      if (req.method === "GET" && pathname === "/api/ai/status")
+        return json(200, await ai.status());
+      if (
+        req.method !== "POST" ||
+        !req.headers["content-type"]?.startsWith("application/json")
+      )
+        return json(405, { error: "JSON POST 요청이 필요합니다." });
+      try {
+        let body = "";
+        for await (const chunk of req) {
+          body += chunk.toString();
+          if (Buffer.byteLength(body) > 4096)
+            return json(413, { error: "요청이 너무 큽니다." });
+        }
+        const data = JSON.parse(body);
+        if (pathname === "/api/ai/key")
+          return json(
+            200,
+            await ai.connectKey(
+              z
+                .object({ key: z.string().max(512) })
+                .strict()
+                .parse(data).key,
+            ),
+          );
+        if (pathname === "/api/ai/model")
+          return json(
+            200,
+            await ai.selectModel(
+              z
+                .object({ model: z.string().max(100) })
+                .strict()
+                .parse(data).model,
+            ),
+          );
+        if (pathname === "/api/ai/disconnect")
+          return json(200, await ai.disconnect());
+        if (pathname === "/api/ai/sign-in")
+          return json(200, {
+            url: await ai.signIn(
+              z.object({ clientId: z.string().optional() }).strict().parse(data)
+                .clientId,
+              port,
+            ),
+          });
+        return json(404, { error: "연결 기능을 찾지 못했어요." });
+      } catch (error) {
+        return json(400, {
+          error:
+            error instanceof z.ZodError
+              ? "연결 입력을 확인해 주세요."
+              : error instanceof Error && error.message.length < 200
+                ? error.message
+                : "AI 연결을 완료하지 못했어요.",
+        });
+      }
+    }
     if (req.method === "GET" && pathname === "/api/events") {
       res.writeHead(200, {
         "Content-Type": "text/event-stream",
@@ -81,7 +181,10 @@ export function createStudioServer(
         let body = "";
         for await (const chunk of req) {
           body += chunk.toString();
-          if (Buffer.byteLength(body) > 131072) {
+          if (
+            Buffer.byteLength(body) >
+            (pathname === "/api/command" ? 5_700_000 : 131072)
+          ) {
             json(413, { error: "요청이 너무 큽니다." });
             return;
           }
@@ -91,7 +194,11 @@ export function createStudioServer(
         let snapshot;
         if (pathname === "/api/command") {
           const data = requestSchema.parse(input);
-          snapshot = await service.command(data.text, data.revision);
+          snapshot = await service.command(
+            data.text,
+            data.revision,
+            data.images,
+          );
           message = snapshot.message;
         } else if (pathname === "/api/plan") {
           const data = z

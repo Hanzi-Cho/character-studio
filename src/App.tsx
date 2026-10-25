@@ -1,3 +1,6 @@
+import { AiConnectionDialog } from "./components/AiConnectionDialog.js";
+import { BASE_CATALOG } from "./domain/baseProfile.js";
+import { characterFromBase } from "./domain/character.js";
 import { useState } from "react";
 import { Icon } from "./components/Icon.js";
 import { HelpDialog } from "./components/HelpDialog.js";
@@ -8,6 +11,7 @@ import type { StudioRuntime } from "./presentation/ports.js";
 
 export default function App({ runtime }: { runtime: StudioRuntime }) {
   const {
+    refreshCapabilities,
     snapshot,
     chatMode,
     connected,
@@ -25,6 +29,7 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
     snapshot?.document,
   );
   const { ChatPanel } = runtime;
+  const [aiOpen, setAiOpen] = useState(false);
   const [help, setHelp] = useState(false);
   const download = (href: string, name: string) => {
     const anchor = document.createElement("a");
@@ -56,10 +61,17 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
           </span>
         </a>
         <div className="header-actions">
+          <button
+            className="ai-trigger"
+            disabled={busy}
+            onClick={() => setAiOpen(true)}
+          >
+            내 AI 연결
+          </button>
           <span className={`connection ${connected ? "" : "offline"}`}>
             <i />
             {connected
-              ? chatMode === "browser"
+              ? runtime.storage === "browser"
                 ? "웹 데모 · 이 브라우저에 저장"
                 : "이 기기의 작업 공간"
               : "연결 확인 중"}
@@ -81,6 +93,34 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
             {snapshot?.document.name ?? "치이카와"}
             <span className="name-dot" />
           </h1>
+          <label className="base-picker">
+            기본 모델
+            <select
+              aria-label="기본 캐릭터 선택"
+              disabled={busy || !snapshot || !connected}
+              value={snapshot?.document.base.id ?? "chiikawa"}
+              onChange={(event) => {
+                const base = BASE_CATALOG.find(
+                  (b) => b.id === event.target.value,
+                );
+                if (!base) return;
+                const { schemaVersion, ...value } = characterFromBase(base);
+                void patch(
+                  value,
+                  `${base.name} 기본 모델을 불러왔어요. 이전 모습은 되돌리기로 복구할 수 있어요.`,
+                );
+              }}
+            >
+              {BASE_CATALOG.map((base) => (
+                <option key={base.id} value={base.id}>
+                  {base.name}
+                </option>
+              ))}
+              {snapshot?.document.base.id === "custom" && (
+                <option value="custom">내 이미지 초안</option>
+              )}
+            </select>
+          </label>
         </div>
         <div
           className="stage"
@@ -174,10 +214,17 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
         </nav>
         <div className="scene-label">
           <span className="sample-tag">3D STUDY 01</span>
-          <span>Chiikawa</span>
+          <span>
+            {snapshot?.document.base.id === "usagi"
+              ? "Usagi"
+              : snapshot?.document.base.id === "custom"
+                ? "My draft"
+                : "Chiikawa"}
+          </span>
         </div>
       </section>
       <ChatPanel
+        storage={runtime.storage}
         chatMode={chatMode}
         expression={snapshot?.document.expression}
         busy={busy}
@@ -195,7 +242,14 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
         onImport={(file) => void importCharacter(file)}
         onHelp={() => setHelp(true)}
       />
+      <AiConnectionDialog
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        connection={runtime.ai}
+        onChanged={() => void refreshCapabilities()}
+      />
       <HelpDialog
+        storage={runtime.storage}
         open={help}
         chatMode={chatMode}
         onClose={() => setHelp(false)}

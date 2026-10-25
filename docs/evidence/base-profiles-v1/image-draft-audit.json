@@ -1,0 +1,31 @@
+{
+  "provider": "codex",
+  "model": "gpt-6.1-sol",
+  "durationMs": 6040,
+  "plan": {
+    "action": "edit",
+    "message": "작은 둥근 귀, 하얀 몸, 분홍 볼을 반영한 ‘이미지 초안’을 만들었어요. 이미지를 단순화한 편집 가능한 3D 초안이에요.",
+    "operations": [
+      {
+        "op": "load_base",
+        "base": {
+          "id": "custom",
+          "name": "이미지 초안",
+          "bodyColor": "#fffdf7",
+          "earColor": "#fffdf7",
+          "cheekColor": "#eda2ae",
+          "headWidth": 1.08,
+          "headHeight": 0.94,
+          "earLength": 0.65,
+          "earWidth": 0.95,
+          "earTilt": 15,
+          "innerEar": false,
+          "faceStyle": "soft",
+          "bodyWidth": 1,
+          "bodyHeight": 1,
+          "eyeSize": 1.08
+        }
+      }
+    ]
+  }
+}

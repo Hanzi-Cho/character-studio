@@ -7,6 +7,7 @@ import type { ChatPanelProps } from "../presentation/ports.js";
 
 export function ChatDock({
   chatMode = "local",
+  storage = "local",
   expression,
   busy,
   disabled,
@@ -78,7 +79,15 @@ export function ChatDock({
         </div>
       )}
       <Composer
-        modeLabel={chatMode === "codex" ? "Codex AI" : "예문 체험"}
+        modeLabel={
+          chatMode === "api"
+            ? "OpenAI API"
+            : chatMode === "chatgpt"
+              ? "ChatGPT"
+              : chatMode === "codex"
+                ? "Codex AI"
+                : "예문 체험"
+        }
         busy={busy}
         disabled={disabled}
         onSubmit={onSubmit}
@@ -86,18 +95,22 @@ export function ChatDock({
         onHelp={onHelp}
       />
       <p className="composer-note">
-        <span>{chatMode === "codex" ? "Codex AI" : "모델 연결 없음"}</span>
+        <span>
+          {["api", "chatgpt", "codex"].includes(chatMode)
+            ? "AI 연결됨"
+            : "모델 연결 없음"}
+        </span>
         <span className="note-dot">·</span>
-        {chatMode === "codex"
-          ? "추천 예문은 로컬 적용, 그 외 채팅은 AI로 전송돼요."
+        {["api", "chatgpt", "codex"].includes(chatMode)
+          ? "추천 예문은 로컬 적용, 자유 채팅·첨부 이미지는 AI로 전송돼요."
           : "추천 예문을 누르거나 그대로 입력해 보세요."}
         <span className="desktop-only">
           {" "}
-          {chatMode === "browser"
+          {storage === "browser"
             ? "모습은 이 브라우저에 저장돼요."
             : "모습은 이 PC에 저장돼요."}
         </span>
-        {chatMode === "browser" && (
+        {storage === "browser" && (
           <>
             {" "}
             <a
