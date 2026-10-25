@@ -89,6 +89,8 @@ button:disabled {
   cursor: default;
 }
 button:focus-visible,
+input:focus-visible,
+select:focus-visible,
 a:focus-visible,
 textarea:focus-visible,
 .stage:focus-visible {
@@ -930,6 +932,154 @@ a {
   color: #3d5141;
   font: inherit;
   font-size: 12px;
+}
+.library-dialog {
+  width: min(650px, calc(100% - 24px));
+  max-height: calc(100dvh - 32px);
+}
+.library-save {
+  border: 1px solid #dce2d4;
+  border-radius: 16px;
+  background: #f0f3e9;
+  padding: 16px;
+}
+.library-save label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.library-save input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #ccd4c7;
+  border-radius: 10px;
+  font: inherit;
+  background: white;
+}
+.library-save-actions,
+.library-entry-actions,
+.library-list-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.library-save-actions {
+  margin-top: 10px;
+}
+.library-save-actions > span {
+  font-size: 11px;
+  color: #66745b;
+  margin-left: auto;
+}
+.library-save small {
+  display: block;
+  font-size: 11px;
+  line-height: 1.6;
+  margin-top: 9px;
+}
+.library-save-actions button:not(.example-apply),
+.library-entry-actions button {
+  border: 1px solid #d1d9c9;
+  background: white;
+  border-radius: 9px;
+  padding: 9px 11px;
+  font-size: 12px;
+}
+.library-list-heading {
+  justify-content: space-between;
+  font-size: 12px;
+  margin: 20px 0 9px;
+}
+.library-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+.library-list li {
+  border: 1px solid #e1e5da;
+  border-radius: 15px;
+  background: #fffefa;
+  padding: 14px;
+}
+.library-list li.is-selected {
+  border-color: #a3b392;
+}
+.library-entry-summary {
+  display: flex;
+  gap: 11px;
+  align-items: center;
+  margin-bottom: 11px;
+}
+.library-entry-summary > div {
+  min-width: 0;
+}
+.library-entry-summary strong {
+  font-size: 14px;
+  display: block;
+  overflow-wrap: anywhere;
+}
+.library-entry-summary small {
+  display: block;
+  font-size: 10px;
+  color: #70796a;
+  margin-top: 5px;
+  line-height: 1.5;
+}
+.library-swatch {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border-radius: 14px;
+  border: 1px solid #d7dccf;
+  color: #505d48;
+}
+.library-entry-actions .library-delete {
+  color: #9a4330;
+  border-color: #d9a99e;
+}
+.help-content .library-notice {
+  color: #46603a;
+  font-size: 12px;
+  margin: 0;
+}
+.help-content .library-error {
+  color: #a13e2c;
+  font-size: 12px;
+}
+.help-content .library-storage-note {
+  font-size: 11px;
+  line-height: 1.7;
+}
+.library-empty {
+  padding: 20px;
+  text-align: center;
+  background: #f0f2ea;
+  border-radius: 12px;
+}
+@media (max-width: 700px) {
+  .topbar {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 15px 20px;
+  }
+  .header-actions {
+    margin-left: auto;
+  }
+  .library-trigger {
+    font-size: 11px;
+  }
+  .library-dialog .help-content {
+    padding: 28px 20px;
+  }
+  .library-save-actions > span {
+    width: 100%;
+    margin-left: 0;
+  }
 }
 .base-picker {
   display: flex;

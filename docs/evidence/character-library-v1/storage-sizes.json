@@ -1,0 +1,23 @@
+{
+  "measuredOn": "2026-10-25",
+  "encoding": "UTF-8",
+  "serialization": "compact JSON",
+  "scope": "Single editable CharacterDocument; excludes library metadata, history, renderer code and browser storage encoding overhead. Not mesh or PNG size.",
+  "samples": [
+    {
+      "name": "치이카와 기본",
+      "utf8JsonBytes": 471,
+      "partCount": 0
+    },
+    {
+      "name": "우사기 기본",
+      "utf8JsonBytes": 480,
+      "partCount": 0
+    },
+    {
+      "name": "하늘색 셔츠·작은 하얀 날개·웃음",
+      "utf8JsonBytes": 840,
+      "partCount": 2
+    }
+  ]
+}

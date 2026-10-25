@@ -1,4 +1,5 @@
 import { OpenAiInterpreter } from "./adapters/OpenAiInterpreter.js";
+import { BrowserCharacterLibrary } from "./adapters/BrowserCharacterLibrary.js";
 import { LocalCommandInterpreter } from "./adapters/LocalCommandInterpreter.js";
 import { HttpAiConnection } from "./adapters/HttpAiConnection.js";
 import { ChiikawaModel } from "./adapters/ChiikawaModel.js";
@@ -12,6 +13,7 @@ import type { StudioRuntime } from "./presentation/ports.js";
 export function createStudioRuntime(): StudioRuntime {
   const ai = new OpenAiInterpreter(new LocalCommandInterpreter());
   return {
+    library: new BrowserCharacterLibrary(),
     storage: __WEB_DEMO__ ? "browser" : "local",
     ai: __WEB_DEMO__ ? ai : new HttpAiConnection(),
     gateway: __WEB_DEMO__
