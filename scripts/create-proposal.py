@@ -93,9 +93,9 @@ top = image_bottom - 34
 top = para("실제 Codex 채팅 편집 화면. 색상·옷·장식·표정을 바꾸고, 다른 부위는 유지합니다.",
            M, top, CW, 9.5, color=MUTED) - 16
 for title, body in [
-    ("원하는 모습 말하기", "“하늘색 셔츠와 작은 날개를 달고 웃는 표정으로.”"),
-    ("돌려 보고 부분 수정하기", "“왕관만 빼고 새싹을 달아줘.” 3D로 확인하고 되돌리거나 초기화합니다."),
-    ("내 캐릭터로 활용하기", "PNG로 저장해 프로필에 쓰고, 설정 JSON을 다시 열어 다른 모습으로 꾸밉니다."),
+    ("채팅으로 세부 수정하기", "“하늘색 셔츠와 작은 날개를 달고 웃는 표정으로.” 색·옷·장식을 부분 수정합니다."),
+    ("3D를 여러 시점에서 보기", "드래그·확대로 정면·옆·뒤·위를 확인합니다. 변경은 되돌리거나 초기화할 수 있습니다."),
+    ("이미지·JSON 다운로드", "PNG 이미지를 프로필에 쓰고, 캐릭터 설정 JSON을 내려받아 다시 불러와 편집합니다."),
 ]:
     top = para(title, M, top, 140, 10.5, True) - 2
     top = para(body, M, top, CW, 10.5) - 11
@@ -104,40 +104,67 @@ para("현재 체험: 웹 데모에서 치이카와 1종과 41개 예문을 바�
 c.showPage()
 
 page(2)
-top = para("구현 방식과 발전 계획", M, H - 76, CW, 24, True, leading=33) - 24
-top = section("03  AI 적용 방식·데이터·기술",
-    "텍스트 요청과 현재 캐릭터 설정을 Codex에 전달해 JSON 편집 명령으로 직렬화합니다. "
-    "명령을 검증한 뒤 색·표정·부위 설정을 저장하고 3D 화면에 반영합니다.", top)
-flow = [("입력", "문장 + 현재 설정"), ("Codex", "JSON 편집 명령"), ("검증·저장", "허용된 변경 적용"), ("Three.js", "3D 화면 갱신")]
-flow_gap = 12
-box_width = (CW - flow_gap * 3) / 4
-for i, (title, body) in enumerate(flow):
-    x = M + i * (box_width + flow_gap)
+top = para("대화가 3D에 반영되는 과정", M, H - 72, CW, 23, True, leading=32) - 16
+top = para("03  AI 적용 방식·데이터·기술", M, top, CW, 13, True) - 7
+top = para("자연어를 정해진 편집 명령으로 바꾸고, 검증된 설정만 3D에 반영합니다. "
+           "아래는 n8n처럼 노드로 표현한 실제 앱 흐름입니다(n8n 실행 엔진은 사용하지 않음).",
+           M, top, CW, 9.6, leading=14) - 12
+
+flow_gap, box_height = 24, 48
+box_width = (CW - flow_gap * 2) / 3
+flow = [
+    (0, 0, "01  채팅 입력", "문장 + 현재 캐릭터 설정"),
+    (1, 0, "02  Codex 직렬화", "JSON Schema에 맞춘 명령 출력"),
+    (2, 0, "03  JSON 파싱", "JSON.parse → 명령 객체"),
+    (2, 1, "04  ENUM·값 검증", "Zod: 허용 명령·값·한도 검사"),
+    (1, 1, "05  설정 변경·저장", "compilePlan → patch → 저장"),
+    (0, 1, "06  Three.js 반영", "변경된 부위 갱신 → 화면 렌더"),
+]
+for col, row, title, body in flow:
+    x = M + col * (box_width + flow_gap)
+    y = top - row * 66
     c.setFillColor(HexColor("#EAF0E5"))
-    c.roundRect(x, top - 49, box_width, 49, 8, fill=1, stroke=0)
-    para(title, x + 10, top - 8, box_width - 20, 10, True, log=False)
-    para(body, x + 10, top - 27, box_width - 20, 8.2, color=MUTED, log=False)
-    if i < len(flow) - 1:
-        c.setStrokeColor(GREEN)
-        c.line(x + box_width + 3, top - 24, x + box_width + 9, top - 24)
-        c.line(x + box_width + 7, top - 22, x + box_width + 9, top - 24)
-        c.line(x + box_width + 7, top - 26, x + box_width + 9, top - 24)
-copy_log.append("텍스트·현재 설정 → Codex JSON 명령 → 검증·저장 → Three.js 화면 갱신")
-top -= 64
-top = para("현재 연결은 Codex CLI의 ChatGPT 로그인 방식입니다. "
-           "입력 데이터는 텍스트·캐릭터 JSON·직접 작성한 도형 및 장식 정의이며, 별도 모델 학습은 하지 않습니다.",
-           M, top, CW, 10) - 8
-top = para("기술 구성: React·TypeScript / Three.js / Node.js / Zod 검증 / HTTP·SSE 및 MCP",
-           M, top, CW, 9.2, color=MUTED) - 22
-top = section("04  구현 계획·역할 분담·기대 효과",
-    "현재는 Codex 채팅으로 색상·의상·장식·표정을 수정하고 저장·복구하며, 별도 설치 없는 예문 웹 데모를 제공합니다. "
-    "다음 단계에서는 서비스용 모델 API와 사용자별 저장을 연결해 자유로운 AI 채팅도 브라우저 접속만으로 사용하도록 발전시킵니다. "
-    "이후 내부 Blender 실행기와 CLI-Anything을 연동해 정밀 조형과 의상·표정 편집으로 확장할 계획입니다.", top, 10.5)
-top = para("1인 프로젝트로 기획, 구현, 자료 조사와 제출 자료 제작을 모두 담당합니다. "
-           "Codex는 코드 구현과 편집 명령 해석에 활용합니다.", M, top, CW, 10.5) - 12
-top = para("기대 효과는 3D 도구를 배우는 부담을 낮추고, 하나의 캐릭터를 "
-           "취향과 활동에 맞춰 변형해 SNS·GitHub·커뮤니티에서 일관된 자기 표현에 활용하는 것입니다.",
-           M, top, CW, 10.5) - 23
+    c.roundRect(x, y - box_height, box_width, box_height, 8, fill=1, stroke=0)
+    para(title, x + 10, y - 8, box_width - 20, 10, True, log=False)
+    para(body, x + 10, y - 27, box_width - 20, 8.1, color=MUTED, log=False)
+    copy_log.append(f"{title}: {body}")
+
+def arrow(x1, y1, x2, y2):
+    from math import atan2, cos, sin, pi
+    c.setStrokeColor(GREEN)
+    c.setLineWidth(1)
+    c.line(x1, y1, x2, y2)
+    angle = atan2(y2 - y1, x2 - x1)
+    for delta in [-.55, .55]:
+        c.line(x2, y2, x2 - 4 * cos(angle + delta), y2 - 4 * sin(angle + delta))
+
+for col in range(2):
+    x = M + col * (box_width + flow_gap) + box_width
+    arrow(x + 3, top - 24, x + flow_gap - 3, top - 24)
+    arrow(x + flow_gap - 3, top - 90, x + 3, top - 90)
+x = M + 2 * (box_width + flow_gap) + box_width / 2
+arrow(x, top - 51, x, top - 63)
+top -= 128
+top = para('예: “웃는 표정으로” → {"action":"edit", "message":"웃는 표정을 적용했어요",\n'
+           '"operations":[{"op":"set", "key":"expression", "value":"happy"}]}',
+           M, top, CW, 9.2, leading=14) - 9
+top = para("명령은 set(속성), upsert_part(부위 추가·수정), remove_part(삭제), clear_parts(장식 정리)로 제한합니다. "
+           "표정은 gentle / happy / sad / angry / surprised / sleepy 중 선택합니다. 오류·충돌이면 전체 변경을 취소합니다.",
+           M, top, CW, 9.3, leading=14) - 9
+top = para("빠른 이유: 전체 3D 모델을 다시 생성하지 않고 색·표정·변경된 부위만 갱신합니다. "
+           "유지되는 메시를 재사용하고 화면도 필요할 때만 그립니다. 41개 예문은 AI 호출을 생략합니다. "
+           "자유 채팅의 AI 응답 대기 시간은 별도입니다.", M, top, CW, 9.3, leading=14) - 9
+top = para("현재 Codex CLI의 ChatGPT 로그인 사용. 데이터는 텍스트·캐릭터 JSON·직접 작성한 도형 정의이며 학습은 하지 않습니다. "
+           "React·TypeScript / Three.js / Node.js / Zod / HTTP·SSE·MCP로 구성합니다.",
+           M, top, CW, 8.8, leading=13, color=MUTED) - 16
+top = para("04  구현 계획·역할 분담·기대 효과", M, top, CW, 13, True) - 7
+top = para("현재: 로컬 Codex 채팅 편집·저장·복구와 설치 없는 예문 웹 데모. "
+           "다음: 모델 API와 사용자별 저장을 연결해 브라우저에서 자유로운 AI 채팅 제공. "
+           "이후: Blender + CLI-Anything으로 메시·의상·표정의 세부 수정을 연동하고, 다른 캐릭터 기본 모델을 추가합니다.",
+           M, top, CW, 10, leading=15) - 9
+top = para("1인으로 기획·구현·자료 조사·제출 자료를 담당하며 Codex를 활용합니다. "
+           "3D 도구의 학습 부담을 줄이고, SNS·GitHub·커뮤니티에서 나만의 캐릭터로 표현하도록 돕습니다.",
+           M, top, CW, 9.8, leading=15) - 16
 top = para("05  외부 자료·오픈소스·AI 도구 출처", M, top, CW, 13, True) - 10
 refs = [
     ("Codex: 코드 구현·편집 명령 해석", "https://learn.chatgpt.com/docs/cli"),
@@ -151,7 +178,7 @@ ref_width = (CW - 14) / 2
 for i in range(0, len(refs), 2):
     link(*refs[i], M, top, ref_width)
     link(*refs[i + 1], M + ref_width + 14, top, ref_width)
-    top -= 22
+    top -= 18
 top -= 1
 top = para("화면의 치이카와는 원작을 참고해 코드로 만든 비공식 3D 스터디입니다. "
            "공식 모델 파일은 사용하지 않았으며, 공개 서비스용 자산은 자체 제작 또는 이용 허락을 받은 캐릭터로 준비할 계획입니다.",
