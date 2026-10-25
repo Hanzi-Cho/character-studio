@@ -1,0 +1,87 @@
+{
+  "document": {
+    "schemaVersion": 3,
+    "base": {
+      "id": "custom",
+      "name": "이미지 초안",
+      "bodyColor": "#fffdf7",
+      "earColor": "#fffdf7",
+      "cheekColor": "#eda2ae",
+      "headWidth": 1.08,
+      "headHeight": 0.94,
+      "earLength": 0.65,
+      "earWidth": 0.95,
+      "earTilt": 15,
+      "innerEar": false,
+      "faceStyle": "soft",
+      "bodyWidth": 1,
+      "bodyHeight": 1,
+      "eyeSize": 1.08
+    },
+    "name": "이미지 초안",
+    "bodyColor": "#fffdf7",
+    "cheekColor": "#eda2ae",
+    "earColor": "#fffdf7",
+    "bodyWidth": 1,
+    "bodyHeight": 1,
+    "earSize": 1,
+    "eyeSize": 1.08,
+    "expression": "gentle",
+    "accessory": "none",
+    "parts": [
+      {
+        "id": "mint_wings",
+        "label": "민트색 날개",
+        "kind": "wings",
+        "anchor": "back",
+        "color": "#b8dec7",
+        "accentColor": "#d9eee2",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "components": []
+      },
+      {
+        "id": "yellow_scarf",
+        "label": "노란 목도리",
+        "kind": "scarf",
+        "anchor": "neck",
+        "color": "#f5d85d",
+        "accentColor": "#fff0a0",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "components": []
+      }
+    ]
+  },
+  "revision": 2,
+  "updatedAt": "2026-10-25T11:34:54.136Z",
+  "canUndo": true,
+  "canRedo": false,
+  "message": "새로운 모습을 적용했어요."
+}
