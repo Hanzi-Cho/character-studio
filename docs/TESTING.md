@@ -1,5 +1,15 @@
 # 검증 기록
 
+## 2026-10-25 · 기본 모델·이미지 초안·본인 AI 연결
+
+- Windows PC / Node 24.19.0 / Codex CLI 0.163.0-alpha.10.2. 타입 검사, 두 빌드, **39/39 테스트 통과**. [기능별 기준](features/character-base-and-ai-connection.md).
+- 실제 Codex: 사용자 제공 이미지 2장 → `load_base` → 3D 초안 → 작은 민트 날개/노란 목도리 추가. 첫 요청 6,040ms, 단일 관찰값. 원본은 저장소에 포함하지 않았다.
+- 실제 공식 ChatGPT OAuth: 사용자 동의 → 모델 목록 → gpt-6.1-sol → 새 꽃을 구 6개로 조합 → 3D 적용. 14,807ms 단일 실행. [응답](evidence/base-profiles-v1/chatgpt-flower-audit.json) · [화면](evidence/base-profiles-v1/chatgpt-flower.png).
+- 웹 BYOK: 실제 브라우저에서 OpenAI API의 잘못된 키 거부와 한국어 안내 확인. API 키 유료 추론은 미실행. mock 스트림 테스트를 실제 API 과금 요청 성공으로 취급하지 않는다.
+- v1/v2 문서·이력→v3, 현재 기본 모델 기준 초기화/undo, 미완성 스트림·잘못된 명령·연결 변경 시 무변경, OAuth state/PKCE/취소, HTTP cross-site API 거부 회귀 포함.
+- 로그인 복귀 문서 차단, 완료 이벤트의 본문 생략, 브라우저 fetch receiver 문제를 수정했다. 공개 증거에 토큰·키·계정 이메일을 포함하지 않았다.
+- 미검증: BYOK 과금 추론, 장시간 갱신·철회 실패 재시도, 실제 모바일/다른 PC, 자유 문장 정확도 분포, 비개발자 5명 사용성. 제품화 작업이며 출시 완료가 아니다. 아래 날짜별 수치는 당시 이력이다.
+
 ## 2026-10-25 · 공개 실행과 41개 오프라인 예문
 
 - 사용자 결정: 공개 GitHub에서 코드를 내려받아 각자 PC·Codex 로그인으로 사용. 원격 AI 웹 호스팅은 이번 범위에서 제외. Codex 없는 체험도 추가 요청했다.

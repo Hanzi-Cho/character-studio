@@ -1,3 +1,4 @@
+import type { ReferenceImage } from "../domain/referenceImages.js";
 import { useEffect, useRef, useState } from "react";
 import type { StudioGateway } from "../application/ports.js";
 import {
@@ -105,10 +106,10 @@ export function useStudio(gateway: StudioGateway) {
       { id, text, reply, error, audit },
     ]);
   };
-  const send = (text: string) =>
+  const send = (text: string, images: ReferenceImage[] = []) =>
     mutate(
       async (revision) => {
-        const result = await gateway.command(text, revision);
+        const result = await gateway.command(text, revision, images);
         append(text, result.message, false, result.audit);
         return result;
       },
@@ -145,6 +146,10 @@ export function useStudio(gateway: StudioGateway) {
   };
   return {
     snapshot,
+    refreshCapabilities: async () => {
+      const info = await gateway.capabilities?.();
+      if (info) setChatMode(info.chatMode);
+    },
     chatMode,
     connected,
     busy,

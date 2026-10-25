@@ -28,6 +28,20 @@ test("HTTP + real stdio MCP: reads, changes, conflicts, persistence and origin b
   try {
     const initial = await (await fetch(`${base}/api/state`)).json();
     assert.equal(initial.revision, 0);
+    // An OAuth redirect may retain cross-site fetch metadata on the final document navigation.
+    assert.equal(
+      (await fetch(`${base}/`, { headers: { "sec-fetch-site": "cross-site" } }))
+        .status,
+      200,
+    );
+    assert.equal(
+      (
+        await fetch(`${base}/api/state`, {
+          headers: { "sec-fetch-site": "cross-site" },
+        })
+      ).status,
+      403,
+    );
     const badOrigin = await fetch(`${base}/api/command`, {
       method: "POST",
       headers: {

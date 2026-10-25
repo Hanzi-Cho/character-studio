@@ -11,7 +11,7 @@ from reportlab.lib.utils import ImageReader
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "output/pdf/character-studio-proposal-draft.pdf"
-EVIDENCE = ROOT / "docs/evidence/codex-chat-v1"
+EVIDENCE = ROOT / "docs/evidence/base-profiles-v1"
 OUT.parent.mkdir(parents=True, exist_ok=True)
 pdfmetrics.registerFont(TTFont("Malgun", "C:/Windows/Fonts/malgun.ttf"))
 pdfmetrics.registerFont(TTFont("MalgunBold", "C:/Windows/Fonts/malgunbd.ttf"))
@@ -83,150 +83,112 @@ def link(label, url, x, top, width, size=8.8):
     return bottom
 
 page(1)
-para("대화로 만드는 나만의 3D 캐릭터", M, H - 82, CW, 19, True, color=GREEN)
-para("Character Studio", M, H - 124, CW, 40, True, leading=50)
-purpose = "나만의 캐릭터를 채팅으로 꾸미고, 원하는 모습으로 수정하는 웹 기반 3D 편집 도구"
-assert pdfmetrics.stringWidth(purpose, "Malgun", 11.2) <= CW
-para(purpose, M, H - 190, CW, 11.2, leading=18)
-
+para("대화로 만드는 나만의 3D 캐릭터", M, H - 80, CW, 18, True, color=GREEN)
+para("Character Studio", M, H - 121, CW, 40, True, leading=50)
+para("마음에 드는 캐릭터를 불러와, 같은 3D 자산을 내 취향대로 계속 고치는 웹 도구",
+     M, H - 186, CW, 11.2, leading=18)
+top = H - 239
+top = para("누가, 왜 쓰나요?", M, top, CW, 15, True) - 10
+top = para("나노바나나·Sora로 이미지나 영상을 만들어 본 일반 사용자. "
+           "3D 편집 경험은 없지만, SNS·GitHub·커뮤니티에서 쓸 자기 캐릭터를 직접 꾸미고 싶은 사람을 첫 사용자로 삼습니다.",
+           M, top, CW, 11, leading=18) - 15
+top = para("한 번 만든 모습에서 옷·표정·장식만 바꾸고, 돌려 보며 확인한 뒤 저장합니다. "
+           "다음에도 같은 캐릭터를 불러와 계절·기분·활동에 맞게 다시 고칠 수 있습니다.",
+           M, top, CW, 11, leading=18) - 26
 c.setFillColor(HexColor("#EAF0E5"))
-c.roundRect(M, H - 357, CW, 117, 10, fill=1, stroke=0)
-para("지금 바로 사용해 볼 수 있는 웹 데모", M + 18, H - 253, CW - 36, 14, True)
-link("웹 데모 열기  →  hanzi-cho.github.io/character-studio/",
-     DEMO_URL, M + 18, H - 282, CW - 36, 11)
-para("설치 없이 접속해 41개 예문으로 색·옷·장식·표정을 바꾸고,\n"
-     "3D 회전·PNG/JSON 다운로드·브라우저 저장을 직접 확인할 수 있습니다.",
-     M + 18, H - 310, CW - 36, 10, leading=16)
-para("공개 배포된 동작 화면입니다. 자유로운 AI 채팅은 자신의 PC에서 Codex를 연결해 사용합니다.",
-     M, H - 371, CW, 9, color=MUTED, leading=15)
-
-cover_width = 270
-cover_bottom = shot("03-generated-sprout.png", (W - cover_width) / 2, H - 414, cover_width)
-para("실제 편집 결과 · 셔츠, 날개, 새싹, 웃는 표정", (W - cover_width) / 2,
-     cover_bottom - 7, cover_width, 8.5, color=MUTED)
+c.roundRect(M, top - 111, CW, 111, 10, fill=1, stroke=0)
+para("지금 바로 사용해 볼 수 있는 웹 데모", M + 18, top - 14, CW - 36, 14, True)
+link("웹 데모 열기  →  hanzi-cho.github.io/character-studio/", DEMO_URL,
+     M + 18, top - 44, CW - 36, 11)
+para("설치 없이 41개 예문·표정 선택·3D 회전·PNG/JSON 저장을 체험하세요.\n"
+     "자유 채팅은 본인 API 키로 연결합니다. ChatGPT 계정 연결은 로컬에서 지원합니다.",
+     M + 18, top - 72, CW - 36, 9.5, leading=15)
+top -= 145
+top = para("불러오기 → 말로 부분 수정 → 회전 확인 → 저장·다시 편집", M, top, CW, 12, True) - 14
+para("기본 모델: 치이카와·우사기 선택과 여러 참고 이미지로 만드는 편집 가능한 3D 초안. "
+     "이미지는 색·비율·귀·얼굴 특징을 추정하는 참고로 사용하며, 정밀 메시 복원은 후속 범위입니다.",
+     M, top, CW, 10, color=MUTED, leading=16)
 c.setStrokeColor(LINE)
-c.line(M, 150, W - M, 150)
-para("개인 참여 · 조재현", M, 131, CW, 13, True)
-para("팀명 · 캐릭터스튜디오   |   기획·구현·자료 조사", M, 104, CW, 10, color=MUTED)
+c.line(M, 141, W - M, 141)
+para("개인 참여 · 조재현", M, 121, CW, 13, True)
+para("팀명 · 캐릭터스튜디오   |   기획·구현·자료 조사", M, 94, CW, 10, color=MUTED)
 c.showPage()
 
 page(2)
-top = para("사용자와 핵심 기능", M, H - 68, CW, 28, True, leading=37) - 12
-top = para("SNS 프로필과 GitHub·커뮤니티에서 나를 표현할 캐릭터를\n채팅으로 꾸미고, 원하는 모습으로 계속 수정하는 서비스입니다.",
-           M, top, CW, 11.5, color=MUTED, leading=18) - 24
-top = para("01  해결하려는 문제와 주요 사용자", M, top, CW, 13, True) - 8
-top = para("주요 사용자는 자신만의 캐릭터로 프로필을 꾸미고 싶은 3D 비전문가입니다. "
-           "옷이나 표정만 바꾸려 해도 전문 모델링 도구와 용어를 배워야 하는 부담을 줄이고, "
-           "원하는 부분을 말로 고치며 같은 캐릭터를 여러 모습으로 활용하도록 돕습니다.",
-           M, top, CW, 11) - 22
-top = para("02  핵심 기능과 이용 흐름", M, top, CW, 13, True) - 12
-gap = 16
-image_width = (CW - gap) / 2
-image_bottom = shot("01-base.png", M, top, image_width)
-shot("03-generated-sprout.png", M + image_width + gap, top, image_width)
-para("기본 캐릭터", M, image_bottom - 7, image_width, 9, color=MUTED)
-para("셔츠·날개·새싹·웃음 적용", M + image_width + gap, image_bottom - 7,
-     image_width, 9, color=MUTED)
-top = image_bottom - 34
-top = para("실제 Codex 채팅 편집 화면. 색상·옷·장식·표정을 바꾸고, 다른 부위는 유지합니다.",
-           M, top, CW, 9.5, color=MUTED) - 16
+top = para("내 캐릭터를 계속 고쳐 쓰는 경험", M, H - 70, CW, 25, True, leading=34) - 15
+top = para("사용 동기와 대표 시나리오", M, top, CW, 13, True) - 7
+top = para("프로필을 바꾸고 싶은 날, 저장한 캐릭터를 열고 “얼굴과 옷은 그대로, 머리에 작은 분홍 꽃을 달아줘”라고 말합니다. "
+           "옆·뒤까지 확인하고 원하는 각도의 이미지를 저장합니다. 마음에 들지 않으면 한 번에 되돌립니다.",
+           M, top, CW, 10.6, leading=17) - 20
+image_width = (CW - 16) / 2
+image_bottom = min(shot("image-draft.png", M, top, image_width),
+                   shot("chatgpt-flower.png", M + image_width + 16, top, image_width))
+para("참고 이미지 2장으로 만든 3D 초안", M, image_bottom - 7, image_width, 9, color=MUTED)
+para("날개·목도리에 새 꽃 장식 추가", M + image_width + 16,
+     image_bottom - 7, image_width, 9, color=MUTED)
+top = image_bottom - 35
+top = para("실제 ChatGPT 연결 편집. 꽃은 사전 목록 선택이 아니라 꽃잎 5장·꽃술을 도형 6개로 구성한 결과입니다.",
+           M, top, CW, 9.5, color=MUTED, leading=15) - 19
+top = para("차별화하려는 경험", M, top, CW, 13, True) - 7
 for title, body in [
-    ("채팅으로 세부 수정하기", "“하늘색 셔츠와 작은 날개를 달고 웃는 표정으로.” 색·옷·장식을 부분 수정합니다."),
-    ("3D를 여러 시점에서 보기", "드래그·확대로 정면·옆·뒤·위를 확인합니다. 변경은 되돌리거나 초기화할 수 있습니다."),
-    ("이미지·JSON 다운로드", "PNG 이미지를 프로필에 쓰고, 캐릭터 설정 JSON을 내려받아 다시 불러와 편집합니다."),
+    ("웹에서 가볍게 시작", "기본 모델이나 저장 파일에서 출발합니다. AI 연결 후 참고 그림 1–4장의 특징으로 단순 3D 초안을 만듭니다."),
+    ("수정한 부분을 확인하고 되돌리기", "3D 설정과 장식을 구조화해 저장합니다. 요청하지 않은 속성은 유지하고 잘못된 명령은 적용하지 않습니다."),
+    ("내 캐릭터를 이어서 사용", "설정 JSON을 다시 열어 같은 자산을 편집하고, PNG 이미지는 프로필·커뮤니티에 활용합니다."),
 ]:
-    top = para(title, M, top, 140, 10.5, True) - 2
-    top = para(body, M, top, CW, 10.5) - 11
-para("현재 체험: 웹 데모에서 치이카와 1종과 41개 예문을 바로 체험합니다. 자유로운 AI 채팅은 PC에서 실행합니다.",
-     M, top - 1, CW, 9, color=MUTED)
+    top = para(title, M, top, CW, 10.5, True, leading=16) - 3
+    top = para(body, M, top, CW, 10.1, leading=16) - 11
+para("웹 접근이나 이미지→3D만으로 독점적 차별성을 주장하지 않습니다. "
+     "부분 수정·복구·재사용까지 이어지는 흐름이 일반 사용자에게 더 쉬운지 실제 사용 테스트로 검증합니다.",
+     M, top, CW, 9, color=MUTED, leading=14)
 c.showPage()
 
 page(3)
-top = para("대화가 3D에 반영되는 과정", M, H - 72, CW, 23, True, leading=32) - 16
-top = para("03  AI 적용 방식·데이터·기술", M, top, CW, 13, True) - 7
-top = para("자연어를 정해진 편집 명령으로 바꾸고, 검증된 설정만 3D에 반영합니다. "
-           "아래는 n8n처럼 노드로 표현한 실제 앱 흐름입니다(n8n 실행 엔진은 사용하지 않음).",
-           M, top, CW, 9.6, leading=14) - 12
-
-flow_gap, box_height = 24, 48
-box_width = (CW - flow_gap * 2) / 3
-flow = [
-    (0, 0, "01  채팅 입력", "문장 + 현재 캐릭터 설정"),
-    (1, 0, "02  Codex 직렬화", "JSON Schema에 맞춘 명령 출력"),
-    (2, 0, "03  JSON 파싱", "JSON.parse → 명령 객체"),
-    (2, 1, "04  ENUM·값 검증", "Zod: 허용 명령·값·한도 검사"),
-    (1, 1, "05  설정 변경·저장", "compilePlan → patch → 저장"),
-    (0, 1, "06  Three.js 반영", "변경된 부위 갱신 → 화면 렌더"),
-]
-for col, row, title, body in flow:
-    x = M + col * (box_width + flow_gap)
-    y = top - row * 66
+top = para("AI가 제안하고, 검증한 변경만 반영", M, H - 68, CW, 23, True, leading=32) - 15
+labels = [("말·참고 이미지", "원하는 모습 설명"), ("AI 편집 제안", "구조화된 변경 목록"),
+          ("변경 검증", "허용 값·현재 상태 확인"), ("3D 반영·저장", "확인·되돌리기·재사용")]
+gap = 12
+bw = (CW - gap * 3) / 4
+for i, (title, body) in enumerate(labels):
+    x = M + i * (bw + gap)
     c.setFillColor(HexColor("#EAF0E5"))
-    c.roundRect(x, y - box_height, box_width, box_height, 8, fill=1, stroke=0)
-    para(title, x + 10, y - 8, box_width - 20, 10, True, log=False)
-    para(body, x + 10, y - 27, box_width - 20, 8.1, color=MUTED, log=False)
-    copy_log.append(f"{title}: {body}")
-
-def arrow(x1, y1, x2, y2):
-    from math import atan2, cos, sin, pi
-    c.setStrokeColor(GREEN)
-    c.setLineWidth(1)
-    c.line(x1, y1, x2, y2)
-    angle = atan2(y2 - y1, x2 - x1)
-    for delta in [-.55, .55]:
-        c.line(x2, y2, x2 - 4 * cos(angle + delta), y2 - 4 * sin(angle + delta))
-
-for col in range(2):
-    x = M + col * (box_width + flow_gap) + box_width
-    arrow(x + 3, top - 24, x + flow_gap - 3, top - 24)
-    arrow(x + flow_gap - 3, top - 90, x + 3, top - 90)
-x = M + 2 * (box_width + flow_gap) + box_width / 2
-arrow(x, top - 51, x, top - 63)
-top -= 128
-top = para('예: “웃는 표정으로” → {"action":"edit", "message":"웃는 표정을 적용했어요",\n'
-           '"operations":[{"op":"set", "key":"expression", "value":"happy"}]}',
-           M, top, CW, 9.2, leading=14) - 9
-top = para("명령은 set(속성), upsert_part(부위 추가·수정), remove_part(삭제), clear_parts(장식 정리)로 제한합니다. "
-           "표정은 gentle / happy / sad / angry / surprised / sleepy 중 선택합니다. 오류·충돌이면 전체 변경을 취소합니다.",
-           M, top, CW, 9.3, leading=14) - 9
-top = para("빠른 이유: 전체 3D 모델을 다시 생성하지 않고 색·표정·변경된 부위만 갱신합니다. "
-           "유지되는 메시를 재사용하고 화면도 필요할 때만 그립니다. 41개 예문은 AI 호출을 생략합니다. "
-           "자유 채팅의 AI 응답 대기 시간은 별도입니다.", M, top, CW, 9.3, leading=14) - 9
-top = para("현재 Codex CLI의 ChatGPT 로그인 사용. 데이터는 텍스트·캐릭터 JSON·직접 작성한 도형 정의이며 학습은 하지 않습니다. "
-           "React·TypeScript / Three.js / Node.js / Zod / HTTP·SSE·MCP로 구성합니다.",
-           M, top, CW, 8.8, leading=13, color=MUTED) - 16
-top = para("04  구현 계획·역할 분담·기대 효과", M, top, CW, 13, True) - 7
-top = para("현재: 로컬 Codex 채팅 편집·저장·복구와 설치 없는 예문 웹 데모. "
-           "다음: 모델 API와 사용자별 저장을 연결해 브라우저에서 자유로운 AI 채팅 제공. "
-           "이후: Blender + CLI-Anything으로 메시·의상·표정의 세부 수정을 연동하고, 다른 캐릭터 기본 모델을 추가합니다.",
-           M, top, CW, 10, leading=15) - 9
-top = para("1인으로 기획·구현·자료 조사·제출 자료를 담당하며 Codex를 활용합니다. "
-           "3D 도구의 학습 부담을 줄이고, SNS·GitHub·커뮤니티에서 나만의 캐릭터로 표현하도록 돕습니다.",
-           M, top, CW, 9.8, leading=15) - 16
-top = para("05  외부 자료·오픈소스·AI 도구 출처", M, top, CW, 13, True) - 4
-top = para("파란색 밑줄을 누르면 해당 자료나 웹페이지가 열립니다.",
-           M, top, CW, 8, color=LINK, leading=12) - 6
-refs = [
-    ("Codex: 코드 구현·편집 명령 해석", "https://learn.chatgpt.com/docs/cli"),
-    ("React·Three.js·Zod 등: 앱 구성", "https://github.com/Hanzi-Cho/character-studio/blob/main/package.json"),
-    ("Human Atlas: 렌더링·구조 참고", "https://github.com/ashemag/human-atlas"),
-    ("Humanizer: 제안서 문장 교정", "https://github.com/blader/humanizer"),
-    ("Blender: 정밀 모델링 연동 예정", "https://www.blender.org/"),
-    ("CLI-Anything: 에이전트 도구 연동 예정", "https://github.com/HKUDS/CLI-Anything"),
-]
-ref_width = (CW - 14) / 2
-for i in range(0, len(refs), 2):
-    link(*refs[i], M, top, ref_width)
-    link(*refs[i + 1], M + ref_width + 14, top, ref_width)
-    top -= 18
-top -= 1
-top = para("화면의 치이카와는 원작을 참고해 코드로 만든 비공식 3D 스터디입니다. "
-           "공식 모델 파일은 사용하지 않았으며, 공개 서비스용 자산은 자체 제작 또는 이용 허락을 받은 캐릭터로 준비할 계획입니다.",
-           M, top, CW, 8.8, color=MUTED) - 12
-top = link("지금 바로 웹 데모 체험  →  hanzi-cho.github.io/character-studio/",
-     DEMO_URL, M, top, CW, 9.2) - 5
-link("공개 코드·AI 실행 안내  github.com/Hanzi-Cho/character-studio",
-     "https://github.com/Hanzi-Cho/character-studio", M, top, CW, 9.2)
+    c.roundRect(x, top - 58, bw, 58, 7, fill=1, stroke=0)
+    para(title, x + 8, top - 9, bw - 16, 10, True, leading=15)
+    para(body, x + 8, top - 32, bw - 16, 8, color=MUTED, leading=12)
+    if i < 3:
+        c.setFillColor(GREEN)
+        c.setFont("Malgun", 10)
+        c.drawString(x + bw + 2, top - 33, "→")
+top -= 78
+top = para("AI는 실행 코드 대신 편집 목록을 제안합니다. 전체 명령을 검사한 뒤 한 번에 적용하고, "
+           "검증 실패나 상태 충돌이면 기존 캐릭터를 보존합니다. 완성된 편집안만 적용하며, 기존 메시의 설정을 갱신합니다.",
+           M, top, CW, 10, leading=16) - 18
+top = para("현재 확인한 것 / 앞으로 검증할 것", M, top, CW, 13, True) - 8
+top = para("확인: 공개 데모, 실제 Codex 이미지→3D 초안, 공식 ChatGPT 로그인→새 장식 생성, 저장·되돌리기, 자동 시험 39개. "
+           "이미지 초안 1회 실행은 6.04초였으며 평균 성능은 아닙니다. "
+           "미검증: API 키 과금 호출, 자유 문장 성공률·시간 분포, 일반 사용자 수요, 모바일 실기기.",
+           M, top, CW, 9.5, leading=15) - 12
+top = para("제품화 순서와 검증 목표", M, top, CW, 13, True) - 8
+for title, body in [
+    ("1  기본 자산과 시작 경험", "기본 모델·이미지 초안 흐름을 다듬고 공개 대표 자산은 자체 디자인·허가 자산으로 준비."),
+    ("2  AI 연결의 진입 부담 완화", "웹 API 키·로컬 ChatGPT 연결을 제공. 계정 준비 없는 체험 경로와 사용량 한도는 비용·권한 검토 후 설계."),
+    ("3  반복 편집 품질", "자유 문장 30개·실패 시나리오 10개로 변경 정확도와 지연 측정. 비개발자 5명의 불러오기→수정→저장 과업 관찰."),
+    ("4  확장", "Blender 세부 수정, 여러 기본 캐릭터, 3D 파일 내보내기. MCP를 통한 다른 AI 도구 연결은 호스트별로 검증."),
+]:
+    top = para(title, M, top, CW, 10, True, leading=15) - 2
+    top = para(body, M, top, CW, 9.3, leading=14) - 6
+top = para("목표 일정: 10/25 제안서·기본 모델 확장 → 11/1까지 AI 연결·사용자 과업 검증 → "
+           "11/25까지 제출용 서비스와 시연 정리. 1인 개발이며 실제 검증 결과에 따라 범위를 조정합니다. "
+           "현재 AI 비용은 사용자 계정 부담이며, 운영자 제공 무료 체험·유료 저장·파츠 판매는 수요 확인 후 검토합니다.",
+           M, top, CW, 9.2, leading=14) - 16
+top = para("출처와 구현 상세", M, top, CW, 12, True, leading=18) - 5
+top = link("코드·기술 문서·전체 도구 사용 내역  →  GitHub", "https://github.com/Hanzi-Cho/character-studio", M, top, CW, 9) - 5
+link("Gemini: 이미지 편집·일관성", "https://blog.google/products-and-platforms/products/gemini/image-generation-prompting-tips/", M, top, 245, 8)
+link("Meshy: 이미지→3D 대안", "https://docs.meshy.ai/en/api/multi-image-to-3d", M + 260, top, 251, 8)
+top -= 19
+top = para("현재 화면은 치이카와를 참고해 코드로 만든 비공식 스터디입니다. 공식 모델 파일을 사용하지 않았습니다. "
+           "참고 이미지·자산 출처와 AI 도구 활용 내역은 저장소에 기록합니다.",
+           M, top, CW, 8, color=MUTED, leading=12) - 10
+link("지금 바로 웹 데모 체험  →  hanzi-cho.github.io/character-studio/", DEMO_URL, M, top, CW, 9)
 c.showPage()
 c.save()
 (ROOT / "docs/hackathon-proposal-copy.md").write_text("\n\n".join(copy_log) + "\n", encoding="utf-8")

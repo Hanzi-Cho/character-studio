@@ -2,7 +2,7 @@
 
 대화로 3D 캐릭터의 옷·장식·표정을 바꾸는 스튜디오입니다. 공개 저장소는 [Hanzi-Cho/character-studio](https://github.com/Hanzi-Cho/character-studio)입니다. 예전 작업명 Softform Studio는 로컬 폴더와 일부 내부 식별자에 남아 있습니다.
 
-PC 브라우저에서 치이카와 한 모델을 돌려 보고 하단 채팅으로 편집합니다. React + TypeScript + Three.js를 사용합니다. **Codex CLI의 ChatGPT 로그인**으로 실제 AI 요청을 처리하고, 여러 편집 명령을 검증한 뒤 한 번에 저장합니다. 셔츠·날개·왕관 등 9개 장식 유형과 기본 도형을 조합한 새 장식을 지원합니다. 자유로운 고품질 메시 생성이나 Blender 작업은 아직 지원하지 않습니다.
+브라우저에서 치이카와·우사기 기본 모델을 고르거나 참고 이미지로 단순 3D 초안을 만들고, 하단 채팅으로 편집합니다. React + TypeScript + Three.js를 사용합니다. 웹에서는 **본인 OpenAI API 키**, 로컬에서는 **공식 ChatGPT 로그인 또는 기존 Codex CLI**로 AI를 연결합니다. 여러 편집 명령을 검증한 뒤 한 번에 저장하며 셔츠·날개·왕관 등 9개 장식 유형과 기본 도형을 조합한 새 장식을 지원합니다. 정밀 메시 복원이나 Blender 조형은 아직 지원하지 않습니다.
 
 Codex 없이도 **41개 추천 예문**으로 색상·옷·장식·표정을 바꿀 수 있습니다. 예문마다 편집 명령을 JSON으로 저장해 두었으며 모델 호출 없이 같은 검증·저장·되돌리기 경로를 사용합니다. [예문과 실행 방식](docs/features/offline-command-examples.md) · [사전 직렬화 JSON](src/domain/command-examples.json).
 
@@ -12,7 +12,7 @@ Codex 없이도 **41개 추천 예문**으로 색상·옷·장식·표정을 바
 
 로그인·설치·API 키 없이 접속해 추천 문장의 **바로 적용**을 누르세요. 새로고침은 다른 문장을 무작위로 추천하며 번호는 표시하지 않습니다. PC·모바일 브라우저에서 회전, 표정·옷·장식 편집, 되돌리기, PNG/JSON 저장을 체험할 수 있습니다.
 
-웹 데모는 저장된 예문과 일부 규칙 명령을 처리합니다. 자유로운 AI 해석은 아래의 로컬 Codex 실행으로 이용하세요. 웹 데모의 캐릭터와 최근 50개 변경은 **각 방문자의 브라우저**에 저장되고 서버나 AI로 전송되지 않습니다. 사이트 데이터 삭제 시 사라지므로 JSON으로 내보내 보관하세요. 최신 브라우저의 WebGL·localStorage·Web Locks가 필요하며, 모바일 실기기 검증은 아직 남아 있습니다.
+자유 채팅은 상단 **내 AI 연결**에서 본인 OpenAI API 키를 입력해 사용합니다. API 사용료는 본인 계정에 청구됩니다. AI를 연결하지 않으면 예문과 지원 규칙 명령만 처리합니다. 캐릭터와 최근 50개 변경은 **각 방문자의 브라우저**에 저장됩니다. AI 연결 시 자유 입력·현재 캐릭터·선택한 이미지가 OpenAI로 전송되며, 키는 탭 메모리에만 남습니다. 사이트 데이터 삭제 시 작업이 사라지므로 JSON으로 내보내 보관하세요. 최신 브라우저의 WebGL·localStorage·Web Locks가 필요하며, 모바일 실기기 검증은 아직 남아 있습니다.
 
 `pnpm build:web`로 정적 파일을 `dist-web/`에 생성합니다. main 변경 시 GitHub Actions가 테스트 후 이 폴더만 Pages에 게시합니다. `.data`, 서버, 로그인 정보는 배포물에 포함하지 않습니다. [배포 구조](docs/features/github-pages-demo.md).
 
@@ -35,7 +35,7 @@ pnpm demo
 
 [http://127.0.0.1:4317](http://127.0.0.1:4317)을 열고 **바로 적용**을 누르세요. 새로고침 아이콘은 다른 예문을 무작위로 보여주며 캐릭터는 바꾸지 않습니다. Windows에서는 설치·빌드 후 `Start-Demo.cmd`로 다시 열 수 있습니다.
 
-저장소는 실행 가능한 코드를 공유하며 Pages 주소는 설치 없는 예문 데모입니다. 자유로운 AI 채팅 앱은 각자의 PC에서 실행합니다. Windows 실기기에서 검증했으며 macOS/Linux의 전체 설치·화면 동작은 아직 검증하지 않았습니다.
+이 모드도 **내 AI 연결 → Continue with ChatGPT** 또는 API 키로 자유 채팅을 활성화할 수 있습니다. ChatGPT 로그인은 로컬 실행에서 지원합니다. Windows 실기기에서 검증했으며 macOS/Linux의 전체 설치·화면 동작은 아직 검증하지 않았습니다.
 
 ## 자신의 Codex로 자유롭게 채팅하기
 
@@ -50,7 +50,7 @@ pnpm start
 
 `pnpm doctor`는 Node, 빌드 파일, CLI 옵션과 ChatGPT 로그인을 확인합니다. 모델 호출은 하지 않습니다. Windows에서는 `Start-Studio.cmd`로도 시작할 수 있습니다. npm의 Windows 실행 래퍼와 독립 실행형 CLI를 지원합니다.
 
-기본 모델은 `gpt-6.1-sol`이며 계정의 모델 접근 권한·잔여 한도가 적용됩니다. 앱은 ChatGPT 로그인만 사용하고 API 키 방식으로 자동 전환하지 않습니다. 인증 파일은 각자의 Codex가 관리하며 프로젝트에 넣지 않습니다. [OpenAI 인증 안내](https://learn.chatgpt.com/docs/auth).
+CLI 경로의 기본 모델은 `gpt-6.1-sol`이며 계정의 모델 접근 권한·잔여 한도가 적용됩니다. CLI는 ChatGPT 로그인만 사용하고 과금 API 키로 자동 전환하지 않습니다. 앱의 **내 AI 연결**에서 API 키를 명시적으로 연결하는 것은 별도 경로입니다. CLI 인증 파일은 각자의 Codex가 관리하며 프로젝트에 넣지 않습니다. [OpenAI 인증 안내](https://learn.chatgpt.com/docs/auth).
 
 `하늘색 셔츠를 입히고 왕관 대신 새싹을 달아줘`처럼 목록에 없는 요청은 실제 AI로 해석합니다. 41개 예문과 정확히 같은 문장은 Codex 모드에서도 로컬로 처리합니다. AI 실패 시 오류를 보여주고 현재 모습을 보존합니다.
 
@@ -65,7 +65,7 @@ pnpm start
 - 얼굴 시안에서 **기본·웃음·슬픔·화남·놀람·졸림**을 선택하면 표정만 바뀝니다. `슬픈 표정으로`, `화난 표정으로`, `졸린 표정으로`도 지원합니다. 색상·체형·이름·장식은 유지되고 되돌릴 수 있습니다.
 - [치이카와 57개 스티커 관찰 기록](docs/CHIIKAWA-REFERENCE-REVIEW.md) · [31장 추가 사진과 부위별 실측 수치](docs/CHIIKAWA-MEASUREMENTS.md) · [최신 모델링 변경과 확인 범위](docs/CHARACTER-MODELING.md)
 - `되돌리기`, `다시 실행`, `초기화`. 최근 50개 변경을 저장합니다. 미지원 문장·부정문·상충 속성은 적용하지 않습니다.
-- 카메라 버튼: PNG. 다운로드 버튼: 캐릭터 JSON. + 버튼: 저장한 JSON 가져오기. 사진 입력·음성 버튼이 아닙니다.
+- 카메라 버튼: PNG. 다운로드 버튼: 캐릭터 JSON. + 버튼: 저장한 JSON 또는 참고 이미지 1–4장 가져오기. 이미지 초안에는 AI 연결이 필요합니다.
 - 도움말: 실제 지원 명령, 입력 한계, 로컬 저장 정책을 안내합니다.
 - `http://127.0.0.1:4317/?benchmark=1`: 별도의 4,096개 반복 메시 실험. 전체 캐릭터 부하 실험과 구분합니다.
 
@@ -73,7 +73,7 @@ pnpm start
 
 ```text
 src/bootstrap.ts      gateway / renderer / model / ChatPanel 구현 조립
-src/domain/           CharacterDocument v2, parts·EditPlan 스키마와 원자적 명령 컴파일
+src/domain/           CharacterDocument v3, 기본 프로필·parts·EditPlan 스키마와 원자적 명령 컴파일
 src/application/      편집 서비스 + 렌더러 / 해석기 / 저장소 / gateway 계약
 src/presentation/     화면 상태·명령/복구, 렌더 수명과 교체용 UI 계약
 src/adapters/         Three.js, 인스턴스 배치, 로컬 해석기, HTTP/SSE
@@ -91,7 +91,7 @@ docs/                 아키텍처, 원본 코드 연구, 범위/결정, 검증 
 
 하나의 로컬 사용자와 하나의 writer 서버를 전제로 합니다. Host/Origin 검사와 JSON 검증이 있지만 로그인/RBAC는 없습니다. 같은 PC의 프로세스·컴퓨터 소유자의 파일 접근을 차단하지 않습니다. **Codex 모드의 자유 입력과 현재 캐릭터 설정을 모델에 전송**합니다. 저장된 예문은 로컬에서 처리합니다. 앱의 채팅 내역은 현재 탭 메모리에 남고, 캐릭터와 최근 50개 변경 이력은 디스크에 남습니다. CLI는 ephemeral 모드로 실행하며 임시 입력/출력 파일을 요청 후 지웁니다. 공급자 측 보존 정책까지 앱이 통제하지는 않습니다. 인증 파일이나 API 키는 프로젝트에 복사하지 않습니다.
 
-기본값은 `CHARACTER_CHAT_MODE=codex`, `CHARACTER_CODEX_MODEL=gpt-6.1-sol`입니다. CLI 경로는 `CHARACTER_CODEX_PATH`로 지정할 수 있습니다. `CHARACTER_CHAT_MODE=local` 또는 `pnpm demo`는 41개 예문과 기존 색상·비율·표정·리본/별 규칙 명령을 외부 AI 없이 처리합니다. AI 오류 시 이 모드로 조용히 전환하지 않습니다. v1 저장본과 변경 이력은 읽을 때 v2로 변환됩니다.
+기본값은 `CHARACTER_CHAT_MODE=codex`, `CHARACTER_CODEX_MODEL=gpt-6.1-sol`입니다. CLI 경로는 `CHARACTER_CODEX_PATH`로 지정할 수 있습니다. `CHARACTER_CHAT_MODE=local` 또는 `pnpm demo`는 AI 연결 전까지 41개 예문과 기존 규칙 명령을 외부 AI 없이 처리합니다. AI 오류 시 예문 모드로 조용히 전환하지 않습니다. v1/v2 저장본과 변경 이력은 읽을 때 v3로 변환됩니다.
 
 ## MCP 개발 연결
 
@@ -125,4 +125,28 @@ docs/                 아키텍처, 원본 코드 연구, 범위/결정, 검증 
 - [첨부 이미지에 따른 기본 모델 수정](docs/CHARACTER-MODELING.md)
 - [출처와 재사용 구분](THIRD_PARTY_NOTICES.md)
 
-치이카와는 사용자 지정 비공식 절차적 3D 스터디입니다. 공식 모델 파일을 사용하지 않았고 서비스 출시용 독자 캐릭터 생성기 완성을 의미하지 않습니다.
+치이카와·우사기는 사용자 지정 비공식 절차적 3D 스터디입니다. 공식 모델 파일을 사용하지 않았고 서비스 출시용 독자 캐릭터 생성기 완성을 의미하지 않습니다.
+
+
+## 내 AI 연결 · API 키 / ChatGPT 로그인
+
+공개 [웹 데모](https://hanzi-cho.github.io/character-studio/)의 **내 AI 연결 → 내 OpenAI API 키로 연결**에서 자신의 OpenAI API 키를 입력하고 전송·과금 안내에 동의한다. 계정에서 제공하는 모델을 선택한 뒤 채팅을 보낸다. 키는 현재 탭 메모리에만 두고 OpenAI 공식 API로 직접 전송한다. 새로고침/연결 해제 시 제거되며 localStorage, 캐릭터 JSON, 로그에 기록하지 않는다. API 사용료는 본인 계정에 부과되며 ChatGPT 구독과 별도다. 일반 Codex 로그인 토큰이나 auth.json을 복사하지 않는다.
+
+**API 키 없이 ChatGPT 플랜을 사용하려면 로컬 실행** 후 내 AI 연결 → **Continue with ChatGPT**. 공식 계정 선택(연결된 Google 로그인 등)과 플랜 사용 동의 후 앱으로 돌아온다. 지원 플랜과 계정 정책에 따라 사용 가능 모델/한도가 다르다. 현재 OSS OAuth 규격은 `http://127.0.0.1:<port>/auth/callback`을 요구하므로 GitHub Pages 단독 로그인은 지원하지 않는다. 순수 Google OAuth만으로 AI 사용 권한을 얻는 구조가 아니다.
+
+Codex CLI를 설치하지 않고 로컬 ChatGPT 로그인만 이용하려면 `pnpm install`, `pnpm build`, `pnpm demo`를 실행한다. Windows 실행기는 `powershell -ExecutionPolicy Bypass -File scripts/start.ps1 -Demo`를 사용한다. 이 모드도 실행 후 앱에서 AI를 연결할 수 있다. 이미 자신의 Codex CLI 로그인이 있다면 기존 `pnpm start` 흐름을 그대로 사용한다.
+
+토큰은 로컬 서버 메모리에만 둔다. 서버 종료 후 재로그인이 필요하며, 재사용할 계정/앱 등록 메타데이터만 `.data/ai-registration.json`에 보관한다. 연결 해제는 원격 renewable session 철회를 시도하고 기기 토큰을 지운다. 원격 철회를 확인하지 못하면 화면 안내에 따라 [ChatGPT 사용량·앱 권한](https://chatgpt.com/settings/usage)에서 해제한다. `.data`는 Git에 포함하지 않는다.
+
+Meta 모델은 아직 연결하지 않았다. 공식 API 접근 권한/호출 규격이 확보되면 `CommandInterpreter` 어댑터를 추가한다. 미확인 모델명·엔드포인트를 작동하는 선택지로 노출하지 않는다.
+
+## 기본 모델과 참고 이미지
+
+- 기본 모델 선택에서 치이카와/우사기를 즉시 로드한다. 변경 전 모습은 되돌릴 수 있다.
+- `+`에서 참고 이미지 1–4장(PNG/JPEG/WebP, 원본 각 10MB 이하)을 선택하고 원하는 특징을 적어 보낸다. 같은 캐릭터의 여러 각도가 유용하다.
+- 브라우저에서 긴 변 1024px 이하 JPEG로 재인코딩해 메타데이터를 제거한다. 선택한 이미지·요청·현재 캐릭터 설정이 연결한 AI에 전달된다.
+- AI가 색, 머리 비율, 귀 크기·각도, 얼굴 유형·눈 크기를 `load_base` 명령으로 제안하고 검증 후 단순 3D 초안에 반영한다. 정밀 메시 복원이나 모델 학습 기능은 아니다.
+- 원본 이미지·API 키·토큰은 캐릭터 JSON에 포함하지 않는다. 결과 설정은 저장·재불러오기·일반 채팅 수정이 가능하다. 초기화는 **현재 선택/생성한 기본 모델**로 돌아간다.
+- 문서 스키마 v3. v1/v2 저장과 변경 이력은 치이카와 기본 프로필을 보완해 읽는다. 디스크 변경 시 `.bak`를 유지하며 브라우저 작업은 JSON 백업을 권장한다.
+
+[기능 정의·검증 및 제품화 순서](docs/features/character-base-and-ai-connection.md)

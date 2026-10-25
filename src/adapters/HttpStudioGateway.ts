@@ -1,3 +1,4 @@
+import type { ReferenceImage } from "../domain/referenceImages.js";
 import {
   SnapshotSchema,
   type Snapshot,
@@ -34,7 +35,7 @@ export class HttpStudioGateway implements StudioGateway {
       await request("/api/patch", { patch, revision }),
     );
   }
-  async command(text: string, revision: number) {
+  async command(text: string, revision: number, images: ReferenceImage[] = []) {
     return SnapshotSchema.extend({
       message: z.string(),
       audit: z.unknown().optional(),
@@ -42,6 +43,7 @@ export class HttpStudioGateway implements StudioGateway {
       await request("/api/command", {
         text,
         revision,
+        images,
       }),
     );
   }

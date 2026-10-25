@@ -1,5 +1,10 @@
 import { z } from "zod";
 import { PartsSchema } from "./parts.js";
+import {
+  BaseProfileSchema,
+  CHIIKAWA_BASE,
+  type BaseProfile,
+} from "./baseProfile.js";
 
 export const EXPRESSIONS = [
   "gentle",
@@ -17,7 +22,8 @@ const color = z
   .transform((v) => v.toLowerCase());
 export const CharacterSchema = z
   .object({
-    schemaVersion: z.literal(2),
+    schemaVersion: z.literal(3),
+    base: BaseProfileSchema,
     name: z.string().trim().min(1).max(40),
     bodyColor: color,
     cheekColor: color,
@@ -37,7 +43,8 @@ export const PatchSchema = CharacterSchema.omit({ schemaVersion: true })
   .refine((v) => Object.keys(v).length > 0, "변경할 속성이 없습니다.");
 export type CharacterPatch = z.infer<typeof PatchSchema>;
 export const DEFAULT_CHARACTER: CharacterDocument = {
-  schemaVersion: 2,
+  schemaVersion: 3,
+  base: structuredClone(CHIIKAWA_BASE),
   name: "치이카와",
   bodyColor: "#fffdf7",
   cheekColor: "#f3a5b2",
@@ -56,11 +63,30 @@ export const CharacterImportSchema = z.preprocess((value) => {
     value &&
     typeof value === "object" &&
     "schemaVersion" in value &&
-    value.schemaVersion === 1
+    (value.schemaVersion === 1 || value.schemaVersion === 2)
   )
-    return { ...value, schemaVersion: 2, parts: [] };
+    return {
+      ...value,
+      schemaVersion: 3,
+      base: structuredClone(CHIIKAWA_BASE),
+      ...(value.schemaVersion === 1 ? { parts: [] } : {}),
+    };
   return value;
 }, CharacterSchema);
+export function characterFromBase(input: BaseProfile): CharacterDocument {
+  const base = BaseProfileSchema.parse(input);
+  return CharacterSchema.parse({
+    ...structuredClone(DEFAULT_CHARACTER),
+    base,
+    name: base.name,
+    bodyColor: base.bodyColor,
+    earColor: base.earColor,
+    cheekColor: base.cheekColor,
+    bodyWidth: base.bodyWidth,
+    bodyHeight: base.bodyHeight,
+    eyeSize: base.eyeSize,
+  });
+}
 export function applyPatch(
   document: CharacterDocument,
   input: unknown,

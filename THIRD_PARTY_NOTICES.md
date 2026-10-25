@@ -21,3 +21,10 @@ React, React DOM, Three.js, Zod와 MCP TypeScript SDK는 package.json/pnpm-lock.
 ## 캐릭터
 
 치이카와는 사용자 요청에 따라 코드로 만든 비공식 3D 스터디다. 공식 mesh/texture/이미지 파일을 다운로드·재배포하지 않았다. 공식 제휴나 원작 캐릭터에 대한 권리 보유를 주장하지 않는다. 공개용 최종 서비스 자산과 독자 캐릭터 생성 범위는 별도 결정이다.
+
+
+## 이번 연결·기본 모델 확장
+
+- jose 6.2.13, MIT: 공식 OAuth ID 토큰 서명·issuer·audience·만료 검증. 패키지 LICENSE 보존.
+- OpenAI 공식 [등록·로그인](https://developers.openai.com/siwc/token-sharing-open-source/sign-in), [모델 호출](https://developers.openai.com/siwc/token-sharing-open-source/models-and-inference), [제약](https://developers.openai.com/siwc/token-sharing-open-source/preview-limitations), [세션](https://developers.openai.com/siwc/token-sharing-open-source/profiles-and-sessions)을 2026-10-25 확인했다. 문서 예제를 통째로 복제하지 않고 현재 어댑터에 맞춰 구현했다.
+- 우사기도 사용자 요청으로 만든 비공식 절차적 스터디다. [캐릭터 소개의 정면 레퍼런스](https://gobo-hk.com/blogs/sumikko/2024%E5%B9%B4-chiikawa%E5%90%89%E4%BC%8A%E5%8D%A1%E5%93%87%E8%A7%92%E8%89%B2%E5%85%A8%E4%BB%8B%E7%B4%B9-%E6%87%B6%E4%BA%BA%E5%8C%85%E4%B8%80%E5%88%86%E9%90%98%E7%90%86%E8%A7%A3%E9%80%99%E7%99%82%E7%99%92%E7%89%A9%E7%A8%AE-9009)를 시각 확인했으며 이미지 자체를 번들/재배포하지 않았다. 귀·색·눈썹의 관찰을 수치화한 근사 모델이며 공식 치수가 아니다.

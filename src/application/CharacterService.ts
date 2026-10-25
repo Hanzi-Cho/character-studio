@@ -1,3 +1,4 @@
+import type { ReferenceImage } from "../domain/referenceImages.js";
 import type {
   CharacterApplication,
   CharacterRepository,
@@ -51,10 +52,14 @@ export class CharacterService implements CharacterApplication {
       revision,
     );
   }
-  async command(text: string, revision: number) {
+  async command(text: string, revision: number, images: ReferenceImage[] = []) {
     const baseline = this.read();
     if (baseline.revision !== revision) throw new ConflictError();
-    const command = await this.interpreter.interpret(text, baseline.document);
+    const command = await this.interpreter.interpret(
+      text,
+      baseline.document,
+      images,
+    );
     // The repository checks again after async interpretation; never silently rebase.
     const audit = "audit" in command ? command.audit : undefined;
     return {

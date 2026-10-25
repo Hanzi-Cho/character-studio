@@ -1,3 +1,4 @@
+import type { ReferenceImage } from "../domain/referenceImages.js";
 import type { CommandInterpreter } from "../application/ports.js";
 import type { CharacterDocument } from "../domain/character.js";
 import { findCommandExample } from "../domain/commandExamples.js";
@@ -6,9 +7,13 @@ import { compilePlan } from "../domain/editPlan.js";
 /** Exact catalog matches always stay local, including in Codex mode. */
 export class ExampleCommandInterpreter implements CommandInterpreter {
   constructor(private readonly fallback: CommandInterpreter) {}
-  interpret(text: string, document: CharacterDocument) {
-    const example = findCommandExample(text);
-    if (!example) return this.fallback.interpret(text, document);
+  interpret(
+    text: string,
+    document: CharacterDocument,
+    images: ReferenceImage[] = [],
+  ) {
+    const example = images.length ? undefined : findCommandExample(text);
+    if (!example) return this.fallback.interpret(text, document, images);
     return {
       ...compilePlan(example.plan, document),
       summary: `예문 적용 · ${example.plan.message}`,

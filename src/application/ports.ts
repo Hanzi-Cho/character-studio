@@ -1,3 +1,4 @@
+import type { ReferenceImage } from "../domain/referenceImages.js";
 import type {
   CharacterDocument,
   CharacterPatch,
@@ -11,6 +12,7 @@ export interface CommandInterpreter {
   interpret(
     text: string,
     document: CharacterDocument,
+    images?: ReferenceImage[],
   ): Command | Promise<Command>;
 }
 export interface CharacterRepository {
@@ -32,6 +34,7 @@ export interface StudioGateway {
   command(
     text: string,
     revision: number,
+    images?: ReferenceImage[],
   ): Promise<Snapshot & { message: string; audit?: unknown }>;
   action(
     action: "undo" | "redo" | "reset",
@@ -51,6 +54,7 @@ export interface CharacterApplication {
   command(
     text: string,
     revision: number,
+    images?: ReferenceImage[],
   ): Promise<Snapshot & { message: string }>;
   action(
     action: "undo" | "redo" | "reset",

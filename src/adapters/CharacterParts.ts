@@ -28,15 +28,21 @@ export class CharacterParts {
         this.root.add(root);
       }
       const offset = 1.11 * (document.bodyHeight - 1);
+      const headY = (y: number) =>
+        1.34 + (y - 1.34) * document.base.headHeight + offset;
+      const earX =
+        0.69 *
+        document.base.headWidth *
+        (document.base.faceStyle === "rabbit" ? 0.48 : 1);
       const anchor: Record<CharacterPart["anchor"], [number, number, number]> =
         {
-          head: [0, 3.03 + offset, 0],
-          face: [0, 2.2 + offset, 0.79],
+          head: [0, headY(3.03), 0],
+          face: [0, headY(2.2), 0.79],
           neck: [0, 1.38 + offset, 0.63],
           body: [0, 0.23 * (1 - document.bodyHeight), 0],
           back: [0, 1.33 + offset, -0.52],
-          leftEar: [-0.69, 3.16 + offset, 0],
-          rightEar: [0.69, 3.16 + offset, 0],
+          leftEar: [-earX, headY(2.95 + 0.21 * document.base.earLength), 0],
+          rightEar: [earX, headY(2.95 + 0.21 * document.base.earLength), 0],
         };
       entry!.root.position
         .set(...anchor[part.anchor])

@@ -1,12 +1,15 @@
 import { z } from "zod";
 import { PartSchema } from "./parts.js";
+import { BaseProfileSchema } from "./baseProfile.js";
 import {
   applyPatch,
+  characterFromBase,
   type CharacterDocument,
   type Command,
 } from "./character.js";
 
 export const EditOperationSchema = z.discriminatedUnion("op", [
+  z.object({ op: z.literal("load_base"), base: BaseProfileSchema }).strict(),
   z
     .object({
       op: z.literal("set"),
@@ -55,8 +58,11 @@ export function compilePlan(
   if (!plan.operations.length)
     throw new Error("변경할 내용이 없어요. 원하는 모습을 조금 더 알려주세요.");
   let next = structuredClone(current);
+  if (plan.operations.some((op, index) => op.op === "load_base" && index !== 0))
+    throw new Error("기본 모델 불러오기는 첫 작업에 한 번만 사용할 수 있어요.");
   for (const operation of plan.operations) {
-    if (operation.op === "set")
+    if (operation.op === "load_base") next = characterFromBase(operation.base);
+    else if (operation.op === "set")
       next = applyPatch(next, { [operation.key]: operation.value });
     else if (operation.op === "upsert_part") {
       const parts = next.parts.filter((p) => p.id !== operation.part.id);
