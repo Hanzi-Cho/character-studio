@@ -11,15 +11,38 @@ export function ChatDock({
   busy,
   disabled,
   messages,
+  feedback,
   onExpression,
   onSubmit,
   onImport,
   onHelp,
 }: ChatPanelProps) {
   const [history, setHistory] = useState(false);
-  const last = messages.at(-1);
   return (
     <section className="chat-dock" aria-label="캐릭터 편집 채팅">
+      <div
+        className={`last-message ${!busy && feedback.error ? "error" : ""}`}
+        aria-label="편집 상태"
+      >
+        <span className="reply-mark">
+          <Icon name="sparkle" size={14} />
+        </span>
+        <p role="status" aria-live="polite" aria-atomic="true" tabIndex={0}>
+          {busy
+            ? "편집을 처리하고 있어요. 잠시만 기다려 주세요."
+            : feedback.text}
+        </p>
+        <button
+          className="icon-button"
+          disabled={messages.length === 0}
+          onClick={() => setHistory(!history)}
+          aria-label="대화 내역 보기"
+          aria-expanded={history}
+          title="대화 내역"
+        >
+          <Icon name="history" size={17} />
+        </button>
+      </div>
       <ExpressionPicker
         value={expression}
         disabled={disabled || busy}
@@ -54,25 +77,6 @@ export function ChatDock({
           ))}
         </div>
       )}
-      {last && (
-        <div
-          className={`last-message ${last.error ? "error" : ""}`}
-          aria-live="polite"
-        >
-          <span className="reply-mark">
-            <Icon name="sparkle" size={14} />
-          </span>
-          <p>{last.reply}</p>
-          <button
-            className="icon-button"
-            onClick={() => setHistory(!history)}
-            aria-label="대화 내역 보기"
-            title="대화 내역"
-          >
-            <Icon name="history" size={17} />
-          </button>
-        </div>
-      )}
       <Composer
         modeLabel={chatMode === "codex" ? "Codex AI" : "예문 체험"}
         busy={busy}
@@ -81,11 +85,6 @@ export function ChatDock({
         onImport={onImport}
         onHelp={onHelp}
       />
-      {busy && (
-        <p className="ai-progress" role="status">
-          편집을 처리하고 있어요. 잠시만 기다려 주세요.
-        </p>
-      )}
       <p className="composer-note">
         <span>{chatMode === "codex" ? "Codex AI" : "모델 연결 없음"}</span>
         <span className="note-dot">·</span>

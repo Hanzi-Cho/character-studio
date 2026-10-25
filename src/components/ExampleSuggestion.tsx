@@ -17,7 +17,6 @@ export function ExampleSuggestion({
   return (
     <section className="example-suggestion" aria-label="모델 없이 예문 체험">
       <div className="example-copy" aria-live="polite" aria-atomic="true">
-        <span className="example-meta">AI 없이 체험 · {example.category}</span>
         <p>{example.text}</p>
       </div>
       <button
