@@ -1,4 +1,30 @@
-# 검증 기록 — 2026-10-24
+# 검증 기록
+
+## 2026-10-25 · 공개 실행과 41개 오프라인 예문
+
+- 사용자 결정: 공개 GitHub에서 코드를 내려받아 각자 PC·Codex 로그인으로 사용. 원격 AI 웹 호스팅은 이번 범위에서 제외. Codex 없는 체험도 추가 요청했다.
+- `pnpm demo`, `Start-Demo.cmd`, 41개 JSON 예문, 추천 한 문장·새로고침·바로 적용을 추가했다. AI 모드에서도 정확히 일치하는 예문은 모델 호출을 건너뛴다.
+- 타입 검사·빌드 성공, 자동 테스트 **27/27 통과**. 예문 전체를 실제 HTTP로 적용하고 파일 재조회·undo를 검증했다. 모델 대체 함수 호출 0회, 부정문 추가/오래된 revision/잘못된 Origin 거부와 상태 보존을 확인했다.
+- Windows npm shim을 Node로 직접 실행해 공백·`&`가 포함된 경로와 인자를 검증했다. shell 실행을 사용하지 않는다. 독립 실행형 경로와 누락된 npm entry 실패도 확인했다.
+- `pnpm doctor`: Node 24.19.0, Codex 0.163.0-alpha.10.2의 필요한 CLI 옵션, ChatGPT 로그인, 화면 빌드 모두 통과. 초회 로그인 점검의 잘못된 CLI 옵션을 수정한 뒤 재실행했다. doctor는 모델을 호출하지 않는다.
+- 별도 4318 / `.data/publication-demo`에서 존재하지 않는 Codex 경로를 지정하고 데모 모드 실행. 복합 예문 버튼 → 추천 새로고침 → 색 적용 → undo → 새싹 예문 직접 입력 → 초기화/undo → 페이지 재열기를 확인했다. 실제 CLI가 없는 다른 PC의 검증을 대신하지는 않는다.
+- 1280×720 PC 및 390×844 viewport 확인. 390px에서 가로·세로 overflow 없음, 예문과 적용/새로고침 버튼 표시. 물리 휴대폰 터치 검증은 아니다. 브라우저 error/warn 0개. [PC](evidence/offline-examples/desktop.png) · [390px](evidence/offline-examples/mobile-390.png).
+- 수정한 Codex 경로로 예문 목록에 없는 자유 입력을 실제 호출: 본체/귀 `#a8d5ba` + 놀람, 5,883ms, 기대 명령 일치. [모델 응답](evidence/offline-examples/codex-smoke.json). 단일 해석 시험이며 평균 지연이나 사용자별 모델 접근 보장은 아니다.
+- commit `730f21a`를 `.data/publication-clean`에 Git 파일만 새로 복제해 frozen-lockfile 설치·빌드·타입 검사·27개 테스트를 모두 통과했다. 기존 앱의 node_modules와 사용자 데이터를 복사하지 않았으며, 같은 Windows의 pnpm 패키지 캐시는 재사용했다. 별도 PC·새 OS·빈 다운로드 캐시 검증은 아니다.
+
+
+## 2026-10-25 · 실제 Codex 채팅과 조합형 장식
+
+- Windows PC, Codex CLI 0.163.0-alpha.10.2 / ChatGPT 로그인 / gpt-6.1-sol. 외부 API 키 신규 발급 없음. 앱 채팅으로 실제 모델 호출, MCP 5도구 등록. 등록 확인과 현재 대화의 동적 도구 발견 여부는 구분한다.
+- 타입 검사·빌드 성공, 자동 테스트 **23/23 통과**, 실패·skip 0. HTTP + 실제 stdio MCP에서 apply_edit_plan의 복합 편집·저장·충돌·잘못된 마지막 작업의 원자적 거부·undo 검증. v1 저장본/이력 마이그레이션, 장식 geometry 재사용/dispose 회귀 포함.
+- 실제 UI: 전체 초기화 → 셔츠/날개/왕관/웃음 동시 적용 → 왕관 제거/새싹 새로 조합/날개 1.5배 → 셔츠만 분홍색/놀람. 새싹과 날개·본체 색 유지. 드래그/방향키 회전, undo/redo, 초기화 후 undo 확인.
+- 새싹 응답은 원통 1개 + 구 2개, 3개 작업, 10,830ms. [실제 모델 응답](evidence/codex-chat-v1/sprout-model-output.json). 별도 단일 해석 시험은 약 7,918ms. 평균·p95 성능이나 30개 정확도 평가가 아니다.
+- 10초 걷기 애니메이션 요청은 미지원 안내, 입력 유지, 저장 문서 무변경. 최종 revision 76의 문서가 [부분 변경 직후 문서](evidence/codex-chat-v1/final-character.json)와 같음을 대조했다.
+- [새싹 화면](evidence/codex-chat-v1/03-generated-sprout.png), [부분 색/표정](evidence/codex-chat-v1/04-partial-edit.png), [회전](evidence/codex-chat-v1/05-rotated.png). 실제 화면은 642×510 IAB viewport이며 모바일 실기기 증거가 아니다.
+- 기존 사용자 저장본은 `.data/character.before-v2.json`에 보관했다. 현재 작업 공간에는 이번 데모 캐릭터가 저장돼 있다. 이 파일과 CLI 인증 정보는 Git 제외다.
+- 최신 서버 재시작 후 revision 76, 저장 파일 SHA256 완전 일치. 시작 스크립트 PowerShell 구문 검사 통과.
+- PDF 초안 6쪽, 221,320 bytes. 전체 6쪽을 PNG로 렌더해 한글·줄바꿈·이미지·여백을 확인했다. 파일 생성은 대회 제출 완료가 아니다.
+- 후속: 정상 20/실패 10 요청 평가, 실제 Codex 데스크톱 채팅의 새 MCP 도구 발견, 사용 한도/네트워크 장애·취소 UX, 다른 PC 설치, 실제 휴대폰, 정밀 메시·Blender, 5명 사용성, 자산 권리와 제출 완료. 프로젝트 MVP 단계 유지.
 
 ## 2026-10-24 · v4 닮음 개선 및 전체 구조 리팩터링
 

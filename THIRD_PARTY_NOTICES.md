@@ -1,5 +1,11 @@
 # 출처와 재사용 구분
 
+## Humanizer
+
+https://github.com/blader/humanizer, 버전 3.1.0, 고정 SHA `8c307f367c91bd974002f10f2be2965d642c13df`.
+
+프로젝트 문서 교정용 에이전트 스킬을 `.agents/skills/humanizer`에 설치했다. MIT License, Copyright (c) 2025 Siqi Chen. 원문 LICENSE와 SKILL.md를 함께 보존한다. 앱 런타임에는 포함하지 않는다. 수치·권한·미검증 사실은 유지하면서 제안서 문장과 가독성을 다듬는 용도로 사용한다. [적용 절차](docs/WRITING.md).
+
 ## Human Atlas
 
 https://github.com/ashemag/human-atlas, 기준 SHA `1c38bf35c254a891200d3cedecfd57abebe83d8d`.

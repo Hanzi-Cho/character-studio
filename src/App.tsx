@@ -9,6 +9,7 @@ import type { StudioRuntime } from "./presentation/ports.js";
 export default function App({ runtime }: { runtime: StudioRuntime }) {
   const {
     snapshot,
+    chatMode,
     connected,
     busy,
     messages,
@@ -38,20 +39,20 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
         type: "application/json",
       }),
     );
-    download(url, "softform-character.json");
+    download(url, "character-studio.json");
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     setNotice("캐릭터 파일을 저장했어요. + 버튼으로 다시 불러올 수 있어요.");
   };
   return (
     <main className="studio">
       <header className="topbar">
-        <a className="brand" href="/" aria-label="Softform Studio 홈">
+        <a className="brand" href="/" aria-label="Character Studio 홈">
           <span className="brand-symbol">
             <span />
             <span />
           </span>
           <span>
-            softform<span className="brand-secondary"> / studio</span>
+            character<span className="brand-secondary"> / studio</span>
           </span>
         </a>
         <div className="header-actions">
@@ -132,6 +133,15 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
           <span className="tool-divider" />
           <button
             className="icon-button"
+            disabled={!snapshot || busy || !connected}
+            onClick={() => void action("reset")}
+            title="초기 모습으로 · 되돌리기 가능"
+            aria-label="초기 모습으로"
+          >
+            <Icon name="reset" />
+          </button>
+          <button
+            className="icon-button"
             onClick={() => renderer.current?.resetView()}
             title="정면으로"
             aria-label="정면으로"
@@ -142,7 +152,7 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
             className="icon-button"
             onClick={() => {
               if (renderer.current)
-                download(renderer.current.capture(), "softform-character.png");
+                download(renderer.current.capture(), "character-studio.png");
             }}
             title="이미지 저장"
             aria-label="이미지 저장"
@@ -165,6 +175,7 @@ export default function App({ runtime }: { runtime: StudioRuntime }) {
         </div>
       </section>
       <ChatPanel
+        chatMode={chatMode}
         expression={snapshot?.document.expression}
         busy={busy}
         disabled={!snapshot || !connected}

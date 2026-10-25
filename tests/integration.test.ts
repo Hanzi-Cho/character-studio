@@ -58,7 +58,7 @@ test("HTTP + real stdio MCP: reads, changes, conflicts, persistence and origin b
     });
     await client.connect(transport);
     const tools = await client.listTools();
-    assert.equal(tools.tools.length, 3);
+    assert.equal(tools.tools.length, 5);
     const read = await client.callTool({
       name: "get_character",
       arguments: {},
@@ -145,6 +145,72 @@ test("HTTP + real stdio MCP: reads, changes, conflicts, persistence and origin b
     });
     assert.equal(reset.status, 200);
     assert.equal((await reset.json()).document.accessory, "none");
+    const beforePlan = service.read();
+    const part = {
+      id: "demo-shirt",
+      label: "하늘색 셔츠",
+      kind: "shirt",
+      anchor: "body",
+      color: "#87ceeb",
+      accentColor: "#ffffff",
+      position: [0, 0, 0],
+      rotation: [0, 0, 0],
+      scale: [1, 1, 1],
+      components: [],
+    };
+    const plan = {
+      action: "edit",
+      message: "셔츠와 웃는 표정을 적용했어요.",
+      operations: [
+        { op: "upsert_part", part },
+        { op: "set", key: "expression", value: "happy" },
+      ],
+    };
+    const multi = await client.callTool({
+      name: "apply_edit_plan",
+      arguments: { revision: beforePlan.revision, plan },
+    });
+    assert.equal(multi.isError, undefined);
+    const afterPlan = multi.structuredContent as any;
+    assert.equal(afterPlan.revision, beforePlan.revision + 1);
+    assert.equal(afterPlan.document.parts[0].id, "demo-shirt");
+    assert.equal(afterPlan.document.expression, "happy");
+    assert.deepEqual(
+      new CharacterStore(path).snapshot().document,
+      afterPlan.document,
+    );
+    const stalePlan = await client.callTool({
+      name: "apply_edit_plan",
+      arguments: { revision: beforePlan.revision, plan },
+    });
+    assert.equal(stalePlan.isError, true);
+    const invalidPlan = await client.callTool({
+      name: "apply_edit_plan",
+      arguments: {
+        revision: afterPlan.revision,
+        plan: {
+          ...plan,
+          operations: [
+            ...plan.operations,
+            { op: "set", key: "bodyWidth", value: 50 },
+          ],
+        },
+      },
+    });
+    assert.equal(invalidPlan.isError, true);
+    assert.deepEqual(service.read().document, afterPlan.document);
+    assert.equal(service.read().revision, afterPlan.revision);
+    const undoPlan = await client.callTool({
+      name: "apply_edit_plan",
+      arguments: {
+        revision: afterPlan.revision,
+        plan: { action: "undo", message: "되돌렸어요.", operations: [] },
+      },
+    });
+    assert.deepEqual(
+      (undoPlan.structuredContent as any).document,
+      beforePlan.document,
+    );
     const abort = new AbortController();
     const stream = await fetch(`${base}/api/events`, { signal: abort.signal });
     const reader = stream.body!.getReader();

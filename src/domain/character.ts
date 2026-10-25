@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PartsSchema } from "./parts.js";
 
 export const EXPRESSIONS = [
   "gentle",
@@ -16,7 +17,7 @@ const color = z
   .transform((v) => v.toLowerCase());
 export const CharacterSchema = z
   .object({
-    schemaVersion: z.literal(1),
+    schemaVersion: z.literal(2),
     name: z.string().trim().min(1).max(40),
     bodyColor: color,
     cheekColor: color,
@@ -27,6 +28,7 @@ export const CharacterSchema = z
     eyeSize: z.number().min(0.65).max(1.4),
     expression: z.enum(EXPRESSIONS),
     accessory: z.enum(["none", "bow", "star"]),
+    parts: PartsSchema,
   })
   .strict();
 export type CharacterDocument = z.infer<typeof CharacterSchema>;
@@ -35,7 +37,7 @@ export const PatchSchema = CharacterSchema.omit({ schemaVersion: true })
   .refine((v) => Object.keys(v).length > 0, "변경할 속성이 없습니다.");
 export type CharacterPatch = z.infer<typeof PatchSchema>;
 export const DEFAULT_CHARACTER: CharacterDocument = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   name: "치이카와",
   bodyColor: "#fffdf7",
   cheekColor: "#f3a5b2",
@@ -46,7 +48,19 @@ export const DEFAULT_CHARACTER: CharacterDocument = {
   eyeSize: 1,
   expression: "gentle",
   accessory: "none",
+  parts: [],
 };
+/** Preserve v1 documents and undo history when upgrading to composable parts. */
+export const CharacterImportSchema = z.preprocess((value) => {
+  if (
+    value &&
+    typeof value === "object" &&
+    "schemaVersion" in value &&
+    value.schemaVersion === 1
+  )
+    return { ...value, schemaVersion: 2, parts: [] };
+  return value;
+}, CharacterSchema);
 export function applyPatch(
   document: CharacterDocument,
   input: unknown,

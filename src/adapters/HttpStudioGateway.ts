@@ -21,6 +21,11 @@ async function request(url: string, body?: unknown): Promise<unknown> {
   return data;
 }
 export class HttpStudioGateway implements StudioGateway {
+  async capabilities() {
+    return z
+      .object({ chatMode: z.string(), model: z.string() })
+      .parse(await request("/api/capabilities"));
+  }
   async read() {
     return SnapshotSchema.parse(await request("/api/state"));
   }
@@ -30,7 +35,10 @@ export class HttpStudioGateway implements StudioGateway {
     );
   }
   async command(text: string, revision: number) {
-    return SnapshotSchema.extend({ message: z.string() }).parse(
+    return SnapshotSchema.extend({
+      message: z.string(),
+      audit: z.unknown().optional(),
+    }).parse(
       await request("/api/command", {
         text,
         revision,

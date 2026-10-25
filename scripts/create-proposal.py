@@ -1,0 +1,155 @@
+"""Rebuild the Korean proposal from reviewed copy and actual app screenshots."""
+from pathlib import Path
+from xml.sax.saxutils import escape
+from reportlab.pdfgen import canvas
+from reportlab.lib.colors import HexColor, Color
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.platypus import Paragraph
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.utils import ImageReader
+
+ROOT = Path(__file__).resolve().parent.parent
+OUT = ROOT / 'output/pdf/character-studio-proposal-draft.pdf'
+EVIDENCE = ROOT / 'docs/evidence/codex-chat-v1'
+OUT.parent.mkdir(parents=True, exist_ok=True)
+pdfmetrics.registerFont(TTFont('Malgun', 'C:/Windows/Fonts/malgun.ttf'))
+pdfmetrics.registerFont(TTFont('MalgunBold', 'C:/Windows/Fonts/malgunbd.ttf'))
+W, H, M = 595.276, 841.89, 44
+INK, MUTED, GREEN, PAPER = map(HexColor, ['#27372E','#627166','#44684E','#FAFAF6'])
+c = canvas.Canvas(str(OUT), pagesize=(W,H), pageCompression=1)
+c.setTitle('Character Studio | AI Platform Build Challenge 제안서 초안')
+c.setAuthor('Character Studio')
+c.setSubject('대화로 3D 캐릭터의 옷, 장식, 표정을 편집하는 서비스')
+copy_log = []
+
+def para(text, x, top, width, size=11.5, bold=False, color=INK, leading=None):
+    style = ParagraphStyle('copy', fontName='MalgunBold' if bold else 'Malgun',
+        fontSize=size, leading=leading or size*1.6, textColor=color, wordWrap='CJK')
+    p = Paragraph(escape(text).replace('\n','<br/>'), style)
+    _, height = p.wrap(width, H)
+    if top-height < 48: raise ValueError(f'Page {c.getPageNumber()} overflow: {text[:60]}')
+    p.drawOn(c,x,top-height)
+    copy_log.append(text)
+    return top-height
+
+def page(n, label, title, subtitle=None):
+    c.setFillColor(PAPER); c.rect(0,0,W,H,fill=1,stroke=0)
+    c.setFillColor(GREEN); c.setFont('MalgunBold',9)
+    c.drawString(M,H-34,'CHARACTER / STUDIO')
+    c.setFillColor(MUTED); c.setFont('Malgun',8)
+    c.drawRightString(W-M,H-34,'AI PLATFORM BUILD CHALLENGE · 예선 제안서 초안')
+    c.setStrokeColor(HexColor('#DCE3D9')); c.line(M,H-48,W-M,H-48)
+    c.setFont('MalgunBold',9); c.setFillColor(GREEN); c.drawString(M, H-79,label)
+    top = para(title,M,H-101,W-2*M,27,True,leading=37)
+    if subtitle: top = para(subtitle,M,top-12,W-2*M,11.5,color=MUTED)
+    c.setFont('Malgun',8); c.setFillColor(MUTED)
+    c.drawString(M,28,'2026.10.25 · 실제 구현과 후속 계획 구분 · 아직 제출하지 않은 초안')
+    c.drawRightString(W-M,28,f'{n:02d} / 06')
+    return top-26
+
+def section(title,text,top):
+    bottom = para(title,M,top,W-2*M,15,True)
+    return para(text,M,bottom-8,W-2*M,11.5)-25
+
+def shot(name,x,top,width):
+    image = ImageReader(str(EVIDENCE/name)); iw,ih = image.getSize(); height=width*ih/iw
+    c.drawImage(image,x,top-height,width,height,mask='auto')
+    return top-height
+
+def link(label,url,top,size=8.7):
+    bottom = para(label,M,top,W-2*M,size,color=GREEN)
+    c.linkURL(url,(M,bottom,W-M,top),relative=0,thickness=0)
+    return bottom-5
+
+# 1. Product, with proof rather than a speculative mock-up.
+top=page(1,'01  /  서비스 제안','말로 다듬는 나의 3D 캐릭터','Character Studio')
+top=para('“하늘색 셔츠를 입히고, 하얀 날개를 달아줘.”\n모델링 도구를 배우기 전에 원하는 모습부터 말할 수 있는 캐릭터 편집 서비스입니다.',M,top,W-2*M,13,leading=21)-18
+bottom=shot('03-generated-sprout.png',M,top,W-2*M)
+para('실제 실행 화면 · Codex가 새싹 장식을 구성하고 셔츠·날개·표정을 함께 편집했습니다.',M,bottom-12,W-2*M,9,color=MUTED)
+para('현재 시연: 치이카와 1종 / PC 웹 / 실제 AI 대화 / 저장·되돌리기\n확장 방향: 독자 캐릭터와 모바일, 모델 공급자 교체, Blender 정밀 작업',M,114,W-2*M,11,leading=19)
+c.showPage()
+
+# 2. User and differentiating behavior.
+top=page(2,'02  /  문제와 사용자','작은 수정을 위해\n복잡한 도구부터 배워야 할까?')
+top=section('첫 사용자는 캐릭터를 좋아하는 비전문가입니다.',
+    '프로필이나 작은 창작물에 쓸 캐릭터를 꾸미고 싶지만, 메시·재질·UV 같은 개념을 먼저 배우기는 부담스러운 사람을 대상으로 합니다. 첫 단계는 치이카와 한 모델에서 원하는 옷과 장식을 말하고, 직접 돌려 보며 결과를 고치는 경험에 집중합니다.',top)
+top=section('한 번 만든 캐릭터를 계속 고칠 수 있어야 합니다.',
+    '“왕관은 빼고 새싹을 달아줘”라고 하면 머리 장식만 바뀌어야 합니다. 셔츠와 날개, 몸 색까지 다시 만들어지는 것은 사용자가 원한 수정이 아닙니다. 각 부위에 식별자를 두고 현재 상태를 AI에 함께 보내는 이유입니다.',top)
+top=section('차별성은 반복해서 편집할 때 드러납니다.',
+    '자연어를 여러 편집 작업으로 바꾸고, 허용 범위인지 확인한 뒤 함께 적용합니다. 사용자는 바뀐 부위를 3D로 확인하고 한 번에 되돌릴 수 있습니다. AI가 예쁜 설명을 쓰는 데서 끝나지 않고, 저장된 캐릭터의 실제 상태를 바꿉니다.',top)
+top=section('성공 기준은 “내가 원한 부분만 바뀌었다”입니다.',
+    '본선 전 비개발자 5명에게 같은 수정 과제를 맡겨 완수 시간, 재질문 횟수, 의도와 다른 변경을 기록할 계획입니다. 아직 사용자 실험은 진행하지 않았습니다. 첫 측정 목표는 5명 중 4명이 도움 없이 기본 캐릭터를 꾸미고 저장하는 것입니다.',top)
+c.showPage()
+
+# 3. Actual demonstration and scope.
+top=page(3,'03  /  실제 사용 흐름','한 문장에서 여러 작업으로','2026-10-25 Windows PC 브라우저에서 실제 Codex 응답과 저장 결과를 확인했습니다.')
+gap=18; cw=(W-2*M-gap)/2
+b1=shot('01-base.png',M,top,cw); b2=shot('03-generated-sprout.png',M+cw+gap,top,cw)
+para('처음 모습',M,b1-8,cw,9,color=MUTED)
+para('옷·날개·새싹·웃음 적용',M+cw+gap,b2-8,cw,9,color=MUTED)
+top=min(b1,b2)-47
+top=section('01  원하는 모습을 말합니다.',
+    '“하늘색 셔츠와 작은 하얀 날개, 금색 왕관을 달고 웃는 표정으로.” 한 요청에서 장식 세 개와 표정 변경을 함께 처리했습니다.',top)
+top=section('02  필요한 부분만 다시 고칩니다.',
+    '“왕관만 빼고 줄기 하나와 잎 두 장의 새싹을 만들어줘. 날개는 1.5배로.” AI가 기본 도형을 조합해 새싹을 구성했습니다. 셔츠는 유지됐습니다.',top)
+top=section('03  돌려 보고, 저장하고, 되돌립니다.',
+    '마우스로 회전하며 입체 형태를 확인합니다. 저장된 설정은 새로고침 후에도 남고, 한 번의 되돌리기로 직전 요청 전체를 복구합니다. 초기화 버튼과 캐릭터 JSON·PNG 저장 기능도 있습니다.',top)
+para('현재 의상은 절차적 표면, 새 장식은 제한된 도형 조합입니다. 천 시뮬레이션이나 임의의 정교한 3D 메시 생성은 아직 지원하지 않습니다.',M,top,W-2*M,10,color=MUTED)
+c.showPage()
+
+# 4. Architecture without exposing implementation noise to the product UI.
+top=page(4,'04  /  AI 적용과 기술 구성','AI의 제안을 검증한 뒤\n캐릭터 상태에 반영합니다.')
+steps=[
+    ('1. 요청과 현재 모습','사용자의 문장과 현재 캐릭터 JSON을 Codex에 전달합니다.'),
+    ('2. 구조화된 편집 계획','set / upsert_part / remove_part 등의 작업 목록으로 받습니다.'),
+    ('3. 전체 검증','허용 속성·수치 범위·장식 수·문서 버전을 확인합니다.'),
+    ('4. 저장과 되돌리기','작업 전체를 한 번에 저장합니다. 잘못된 작업은 일부도 적용하지 않습니다.'),
+    ('5. 3D 반영','변경을 화면에 알리고, 바뀐 장식의 메시만 다시 구성합니다.'),
+]
+for title,body in steps:
+    c.setFillColor(HexColor('#EDF1E8')); c.roundRect(M,top-65,W-2*M,65,9,fill=1,stroke=0)
+    para(title,M+15,top-10,W-2*M-30,11.5,True)
+    para(body,M+15,top-32,W-2*M-30,10.2)
+    top-=77
+top-=7
+top=section('화면·모델·AI·저장소를 따로 교체합니다.',
+    'React와 Three.js 사이, 채팅 해석기와 도메인 사이에 어댑터를 둡니다. 앱 채팅과 MCP도 같은 편집 계약을 사용합니다. Meta API와 Blender를 붙일 때 기존 화면과 저장 규칙을 재사용하는 구조입니다.',top)
+para('현재 제한: 요청당 24개 작업 / 장식 12개 / 장식당 도형 32개 / 전체 도형 128개. AI에 코드를 실행시키지 않고, 검증된 데이터만 렌더러에 전달합니다.',M,top,W-2*M,10,color=MUTED)
+c.showPage()
+
+# 5. Evidence and measurable next quality gates.
+top=page(5,'05  /  구현 근거와 품질','실제 연결을 확인했고,\n실패 상황도 검증합니다.')
+top=section('자동 회귀 시험 23개 통과',
+    '타입 검사와 빌드를 통과했습니다. 실제 HTTP·stdio MCP 통합 시험에서 복합 편집, 파일 저장, 되돌리기, 오래된 버전의 요청 거부, 허용 범위를 벗어난 입력의 무변경 처리를 확인했습니다. v1 저장본과 이력의 v2 변환도 검사합니다.',top)
+top=section('앱 하단 채팅에서 실제 Codex 호출',
+    'ChatGPT 계정으로 로그인한 Codex CLI와 gpt-6.1-sol을 사용합니다. 셔츠·날개·왕관·표정의 동시 변경, 새싹 조합, 다른 부위 유지 흐름을 화면에서 확인했습니다. 단일 해석 시험은 약 7.9초였으며 평균 응답 시간이나 성능 보장을 뜻하지 않습니다.',top)
+top=section('사용자의 파일과 AI 전송 범위를 분리',
+    '캐릭터와 최근 변경 이력은 로컬 파일에 저장합니다. AI에는 입력한 채팅과 현재 캐릭터 설정을 전송합니다. 프로젝트에 인증 정보를 복사하지 않습니다. 서버는 같은 PC에서만 접근하도록 구성했으며, 다중 사용자 로그인과 권한 관리는 후속 과제입니다.',top)
+top=section('본선 전 통과할 기준',
+    '정상 요청 20개와 실패 요청 10개를 반복 평가하고, 부분 편집 보존율과 응답 지연을 측정합니다. 실패·충돌 때 무단 변경이 없어야 합니다. 실제 모바일 기기, 장시간 편집, 디스크 장애 복구, 비개발자 사용성은 아직 미검증입니다.',top)
+para('치이카와 닮음의 최종 평가는 사용자 피드백을 받습니다. 자동 시험 통과를 미적 완성도나 대회 수상 가능성의 증명으로 보지 않습니다.',M,top,W-2*M,10,color=MUTED)
+c.showPage()
+
+# 6. Roadmap, execution ownership and honest material provenance.
+top=page(6,'06  /  실행 계획과 자료 출처','시연에서 반복 사용 가능한\n캐릭터 도구로 확장합니다.')
+top=section('11월 2일 - 25일 · 실제 사용으로 다듬기',
+    '요청 30개 평가와 사용자 5명 테스트를 먼저 진행합니다. 독자 캐릭터의 제작·사용 권리를 정리하고 장식 배치를 개선합니다. Meta API 접근이 승인되면 해석기 어댑터를 연결해 같은 요청으로 품질을 비교합니다. 모델 학습·파인튜닝은 데이터와 권한을 확보한 뒤 별도로 검토합니다.',top)
+top=section('11월 26일 - 27일 · 멘토링과 본선 시연',
+    '입력부터 저장·복구까지 이어지는 데모와 검증 기록을 준비합니다. 제출 서비스 URL과 설치 방식은 최종 안내에 맞춰 정합니다. 기획·개발·시연은 프로젝트 운영자가 맡고 AI 코딩 도구를 보조로 사용합니다. 최종 참가자명·팀 구성·역할은 접수 정보와 대조해야 합니다.',top)
+top=section('후속 제품 범위',
+    '약 12종의 기본 캐릭터, 모바일 터치 편집, AI 호스트 연결을 목표로 합니다. Blender는 정밀 메시·의상·표정 작업을 처리할 별도 실행기로 검토하며 오늘 MVP에는 연결하지 않았습니다. 공용 서비스 비용과 과금 방식은 호출량을 측정한 뒤 정합니다.',top)
+top=para('자료와 사용 범위',M,top,W-2*M,14,True)-8
+top=para('치이카와는 비공식 절차적 3D 스터디입니다. 공식 메시를 가져오지 않았으며, 이미지 참고가 서비스 공개·상업 이용 권한을 뜻하지 않습니다. 공개 서비스에는 독자 또는 이용 허락을 받은 캐릭터를 사용할 계획입니다.',M,top,W-2*M,10.1)-11
+top=link('구현 저장소 · Hanzi-Cho/character-studio','https://github.com/Hanzi-Cho/character-studio',top)
+top=link('Three.js · 3D 렌더링 / React · 화면 / Zod · 편집 데이터 검증 (MIT)', 'https://github.com/Hanzi-Cho/character-studio/blob/main/package.json',top)
+top=link('Human Atlas · 렌더링과 교체 가능한 구조 연구 참고', 'https://github.com/ashemag/human-atlas',top)
+top=link('OpenAI Codex · 실제 모델 호출과 MCP 연결 공식 문서', 'https://learn.chatgpt.com/docs/non-interactive-mode',top)
+top=link('Humanizer 3.1.0 · MIT 스킬로 제안서 문장 교정, 코드 생성 엔진 아님', 'https://github.com/blader/humanizer/tree/8c307f367c91bd974002f10f2be2965d642c13df',top)
+top=link('대회 안내 · AI Platform Build Challenge (일정 변경 시 최신 안내 확인)', 'https://daker.ai/public/hackathons/ai-platform-build-challenge-prelims?section=info',top)
+para('제출 전 확인: 참가자·팀 정보, 캐릭터 참고 자료의 제출 가능 범위, 실제 제출 화면의 최종 안내.',M,top-10,W-2*M,9.5,color=MUTED)
+c.showPage()
+c.save()
+(ROOT/'docs/hackathon-proposal-copy.md').write_text('# Character Studio 제안서 문안\n\n'+'\n\n'.join(copy_log)+'\n',encoding='utf-8')
+print(f'{OUT}\n{OUT.stat().st_size:,} bytes / 6 pages')
+assert OUT.stat().st_size < 20_000_000

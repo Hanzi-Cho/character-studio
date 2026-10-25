@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 2,
+  "name": "치이카와",
+  "bodyColor": "#fffdf7",
+  "cheekColor": "#f3a5b2",
+  "earColor": "#fffdf7",
+  "bodyWidth": 1,
+  "bodyHeight": 1,
+  "earSize": 1,
+  "eyeSize": 1,
+  "expression": "surprised",
+  "accessory": "none",
+  "parts": [
+    {
+      "id": "green_sprout",
+      "label": "연두색 새싹",
+      "kind": "custom",
+      "anchor": "head",
+      "color": "#A8D95B",
+      "accentColor": "#A8D95B",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "components": [
+        {
+          "shape": "cylinder",
+          "color": "#A8D95B",
+          "position": [
+            0,
+            0.24,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            0.09,
+            0.48,
+            0.09
+          ]
+        },
+        {
+          "shape": "sphere",
+          "color": "#A8D95B",
+          "position": [
+            -0.2,
+            0.46,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            -30
+          ],
+          "scale": [
+            0.27,
+            0.11,
+            0.13
+          ]
+        },
+        {
+          "shape": "sphere",
+          "color": "#A8D95B",
+          "position": [
+            0.2,
+            0.46,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            30
+          ],
+          "scale": [
+            0.27,
+            0.11,
+            0.13
+          ]
+        }
+      ]
+    },
+    {
+      "id": "white_wings",
+      "label": "작은 하얀 날개",
+      "kind": "wings",
+      "anchor": "back",
+      "color": "#FFFFFF",
+      "accentColor": "#F0F0F0",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.975,
+        0.975,
+        0.975
+      ],
+      "components": []
+    },
+    {
+      "id": "sky_shirt",
+      "label": "분홍색 셔츠",
+      "kind": "shirt",
+      "anchor": "body",
+      "color": "#FFC0CB",
+      "accentColor": "#FFFFFF",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "components": []
+    }
+  ]
+}

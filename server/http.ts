@@ -5,6 +5,7 @@ import { z } from "zod";
 import { ConflictError } from "../src/domain/errors.js";
 import { PatchSchema } from "../src/domain/character.js";
 import type { CharacterApplication } from "../src/application/ports.js";
+import { EditPlanSchema } from "../src/domain/editPlan.js";
 
 const requestSchema = z
   .object({
@@ -18,6 +19,7 @@ const patchRequestSchema = z
 export function createStudioServer(
   service: CharacterApplication,
   staticDirectory: string,
+  capabilities = { chatMode: "local", model: "" },
 ) {
   const clients = new Set<ServerResponse>();
   const unsubscribe = service.subscribe((snapshot) => {
@@ -50,6 +52,8 @@ export function createStudioServer(
       .pathname;
     if (req.method === "GET" && pathname === "/api/state")
       return json(200, service.read());
+    if (req.method === "GET" && pathname === "/api/capabilities")
+      return json(200, capabilities);
     if (req.method === "GET" && pathname === "/api/events") {
       res.writeHead(200, {
         "Content-Type": "text/event-stream",
@@ -67,7 +71,9 @@ export function createStudioServer(
     }
     if (
       req.method === "POST" &&
-      ["/api/command", "/api/patch", "/api/action"].includes(pathname)
+      ["/api/command", "/api/patch", "/api/action", "/api/plan"].includes(
+        pathname,
+      )
     ) {
       if (!req.headers["content-type"]?.startsWith("application/json"))
         return json(415, { error: "JSON 요청이 필요합니다." });
@@ -75,7 +81,7 @@ export function createStudioServer(
         let body = "";
         for await (const chunk of req) {
           body += chunk.toString();
-          if (Buffer.byteLength(body) > 16384) {
+          if (Buffer.byteLength(body) > 131072) {
             json(413, { error: "요청이 너무 큽니다." });
             return;
           }
@@ -86,6 +92,13 @@ export function createStudioServer(
         if (pathname === "/api/command") {
           const data = requestSchema.parse(input);
           snapshot = await service.command(data.text, data.revision);
+          message = snapshot.message;
+        } else if (pathname === "/api/plan") {
+          const data = z
+            .object({ plan: EditPlanSchema, revision: z.number().int().min(0) })
+            .strict()
+            .parse(input);
+          snapshot = service.applyPlan(data.plan, data.revision);
           message = snapshot.message;
         } else if (pathname === "/api/action") {
           const data = z

@@ -1,5 +1,22 @@
 # PC 3D MVP 범위와 남은 결정
 
+## 2026-10-25 현재 범위
+
+추가 합의: GitHub 코드 공개 후 각자 PC의 Codex 로그인으로 실행한다. 원격 AI 웹 배포는 이번 범위에서 제외한다. Codex 없이 `pnpm demo`로 실행하는 41개 예문, 추천 새로고침·바로 적용을 추가했고 전체 자동 테스트 27개를 통과했다. 실제 자유 입력 Codex 호출도 유지된다. [예문 정의](features/offline-command-examples.md), [실행 안내](../README.md), [최신 검증](TESTING.md) 참조.
+
+사용자가 실제 Codex 채팅, 색상·옷·장식·표정, 한 문장의 여러 작업 직렬화, PDF 초안과 Humanizer 교정을 요청했다. Blender는 추후로 결정했다. 이 항목이 아래 2026-10-24 구현 기록과 당시 미결정보다 우선한다.
+
+- 치이카와 한 모델과 PC 웹. Codex CLI의 ChatGPT 로그인 / gpt-6.1-sol 실제 호출 성공. 앱 채팅 → EditPlan → 전체 검증 → 단일 저장 → SSE → 3D 갱신.
+- 장식 레시피 9종과 custom 도형 조합. 새싹을 원통 1개·구 2개로 생성하고 다른 장식은 유지하는 실제 UI 확인. 자유로운 정밀 메시/애니메이션 생성은 미지원.
+- CharacterDocument v2와 parts, v1 문서/이력 마이그레이션. 한 요청 전체 undo, reset/undo, 재시작 후 revision 76·저장 파일 SHA256 유지.
+- 타입·빌드와 23개 자동 테스트 통과. 현재 PC Codex에 MCP 5도구 등록. 다른 모델·모바일·공개 호스트 검증과 구분한다.
+- Humanizer 3.1.0 설치·문서 교정 절차. 제안서 PDF 6쪽/221,320 bytes, 전체 페이지 검수 완료. 대회 제출은 아직 하지 않았다.
+- 실제 사용자 5명, AI 평가 20+10개, 다른 PC 설치, 실제 모바일, 취소/장애, 자산 권리/제출은 남아 있어 MVP 유지.
+
+[구현 계약·녹화 순서](features/codex-character-editing.md) · [검증 근거](TESTING.md) · [문서 교정](WRITING.md).
+
+## 이전 구현 및 결정 기록
+
 2026-10-24 v4: 닫힌 머리 윤곽·눈/입/볼·6표정 개선, UI/서비스/렌더 모델 주입 경계 정리. 타입·빌드·자동 회귀 19/19 통과. 최신 [구조 리뷰](reviews/architecture-and-replaceability-review.md) 및 [12종 확장 전략](features/character-catalog-and-customization-strategy.md) 참조. 아래 과거의 자유 수정 우선순위는 이제 기본 템플릿 선택 → 부위/표정 편집 → 초기화/저장 순서로 구체화됐다. 12종 명단과 실제 AI 호스트/모바일 범위는 미정이다.
 
 2026-10-24 R02.3 갱신: [31장 추가 사진·12장 좌표 실측](CHIIKAWA-MEASUREMENTS.md)에 따라 머리 100×75.86, 머리/몸통 1.08:1, 귀·팔다리·6표정 배치를 교정했다. 타입/빌드/14개 테스트 및 PC/390px 렌더 확인. 기존 분홍색 저장 설정 유지. 아래 MVP 후속 범위/미검증 상태는 유지한다.

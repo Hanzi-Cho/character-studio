@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Composer } from "./Composer.js";
 import { ExpressionPicker } from "./ExpressionPicker.js";
 import { Icon } from "./Icon.js";
+import { ExampleSuggestion } from "./ExampleSuggestion.js";
 import type { ChatPanelProps } from "../presentation/ports.js";
 
 export function ChatDock({
+  chatMode = "local",
   expression,
   busy,
   disabled,
@@ -23,6 +25,7 @@ export function ChatDock({
         disabled={disabled || busy}
         onSelect={onExpression}
       />
+      <ExampleSuggestion disabled={disabled || busy} onApply={onSubmit} />
       {history && (
         <div className="history-panel">
           <div className="history-heading">
@@ -41,6 +44,12 @@ export function ChatDock({
               <p className={message.error ? "reply error" : "reply"}>
                 {message.reply}
               </p>
+              {!!message.audit && (
+                <details className="edit-details">
+                  <summary>적용한 편집 명령</summary>
+                  <pre>{JSON.stringify(message.audit, null, 2)}</pre>
+                </details>
+              )}
             </div>
           ))}
         </div>
@@ -65,16 +74,25 @@ export function ChatDock({
         </div>
       )}
       <Composer
+        modeLabel={chatMode === "codex" ? "Codex AI" : "예문 체험"}
         busy={busy}
         disabled={disabled}
         onSubmit={onSubmit}
         onImport={onImport}
         onHelp={onHelp}
       />
+      {busy && (
+        <p className="ai-progress" role="status">
+          편집을 처리하고 있어요. 잠시만 기다려 주세요.
+        </p>
+      )}
       <p className="composer-note">
-        <span>로컬 편집</span>
-        <span className="note-dot">·</span>색상, 크기, 표정부터 바꿔보세요.
-        <span className="desktop-only"> 모든 변경은 이 PC에 저장돼요.</span>
+        <span>{chatMode === "codex" ? "Codex AI" : "모델 연결 없음"}</span>
+        <span className="note-dot">·</span>
+        {chatMode === "codex"
+          ? "추천 예문은 로컬 적용, 그 외 채팅은 AI로 전송돼요."
+          : "추천 예문을 누르거나 그대로 입력해 보세요."}
+        <span className="desktop-only"> 모습은 이 PC에 저장돼요.</span>
       </p>
     </section>
   );

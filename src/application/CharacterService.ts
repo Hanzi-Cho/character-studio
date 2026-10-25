@@ -10,6 +10,7 @@ import {
   type Snapshot,
 } from "../domain/character.js";
 import { ConflictError } from "../domain/errors.js";
+import { compilePlan, type EditPlan } from "../domain/editPlan.js";
 
 /** All mutation channels use the same revision check and committed-state event. */
 export class CharacterService implements CharacterApplication {
@@ -55,6 +56,17 @@ export class CharacterService implements CharacterApplication {
     if (baseline.revision !== revision) throw new ConflictError();
     const command = await this.interpreter.interpret(text, baseline.document);
     // The repository checks again after async interpretation; never silently rebase.
+    const audit = "audit" in command ? command.audit : undefined;
+    return {
+      ...this.execute(command, revision),
+      message: command.summary,
+      audit,
+    };
+  }
+  applyPlan(plan: EditPlan, revision: number) {
+    const baseline = this.read();
+    if (baseline.revision !== revision) throw new ConflictError();
+    const command = compilePlan(plan, baseline.document);
     return { ...this.execute(command, revision), message: command.summary };
   }
   action(action: "undo" | "redo" | "reset", revision: number) {
