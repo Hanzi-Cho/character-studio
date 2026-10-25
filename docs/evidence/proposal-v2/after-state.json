@@ -1,0 +1,226 @@
+{
+  "document": {
+    "schemaVersion": 3,
+    "base": {
+      "id": "custom",
+      "name": "이미지 초안",
+      "bodyColor": "#fffdf7",
+      "earColor": "#fffdf7",
+      "cheekColor": "#eda2ae",
+      "headWidth": 1.08,
+      "headHeight": 0.94,
+      "earLength": 0.65,
+      "earWidth": 0.95,
+      "earTilt": 15,
+      "innerEar": false,
+      "faceStyle": "soft",
+      "bodyWidth": 1,
+      "bodyHeight": 1,
+      "eyeSize": 1.08
+    },
+    "name": "이미지 초안",
+    "bodyColor": "#fffdf7",
+    "cheekColor": "#eda2ae",
+    "earColor": "#fffdf7",
+    "bodyWidth": 1,
+    "bodyHeight": 1,
+    "earSize": 1,
+    "eyeSize": 1.08,
+    "expression": "gentle",
+    "accessory": "none",
+    "parts": [
+      {
+        "id": "mint_wings",
+        "label": "민트색 날개",
+        "kind": "wings",
+        "anchor": "back",
+        "color": "#b8dec7",
+        "accentColor": "#d9eee2",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "components": []
+      },
+      {
+        "id": "yellow_scarf",
+        "label": "노란 목도리",
+        "kind": "scarf",
+        "anchor": "neck",
+        "color": "#f5d85d",
+        "accentColor": "#fff0a0",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "components": []
+      },
+      {
+        "id": "pink_flower",
+        "label": "작은 연분홍 꽃 장식",
+        "kind": "custom",
+        "anchor": "head",
+        "color": "#f8bfd3",
+        "accentColor": "#f6d65c",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "components": [
+          {
+            "shape": "sphere",
+            "color": "#f8bfd3",
+            "position": [
+              0,
+              0.42,
+              0.03
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "scale": [
+              0.115,
+              0.15,
+              0.055
+            ]
+          },
+          {
+            "shape": "sphere",
+            "color": "#f8bfd3",
+            "position": [
+              0.19,
+              0.282,
+              0.03
+            ],
+            "rotation": [
+              0,
+              0,
+              -72
+            ],
+            "scale": [
+              0.115,
+              0.15,
+              0.055
+            ]
+          },
+          {
+            "shape": "sphere",
+            "color": "#f8bfd3",
+            "position": [
+              0.118,
+              0.058,
+              0.03
+            ],
+            "rotation": [
+              0,
+              0,
+              -144
+            ],
+            "scale": [
+              0.115,
+              0.15,
+              0.055
+            ]
+          },
+          {
+            "shape": "sphere",
+            "color": "#f8bfd3",
+            "position": [
+              -0.118,
+              0.058,
+              0.03
+            ],
+            "rotation": [
+              0,
+              0,
+              144
+            ],
+            "scale": [
+              0.115,
+              0.15,
+              0.055
+            ]
+          },
+          {
+            "shape": "sphere",
+            "color": "#f8bfd3",
+            "position": [
+              -0.19,
+              0.282,
+              0.03
+            ],
+            "rotation": [
+              0,
+              0,
+              72
+            ],
+            "scale": [
+              0.115,
+              0.15,
+              0.055
+            ]
+          },
+          {
+            "shape": "sphere",
+            "color": "#f6d65c",
+            "position": [
+              0,
+              0.22,
+              0.09
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "scale": [
+              0.105,
+              0.105,
+              0.065
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "revision": 3,
+  "updatedAt": "2026-10-25T11:35:13.521Z",
+  "canUndo": true,
+  "canRedo": false,
+  "message": "얼굴과 몸 비율, 민트색 날개와 노란 목도리는 그대로 두고, 머리 위에 연분홍 꽃잎 다섯 장과 노란 꽃술로 작은 꽃 장식을 추가했어요."
+}
