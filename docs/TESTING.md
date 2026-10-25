@@ -156,3 +156,4 @@ diagnostics에서 대기 중 `scheduled:false`, frame counter가 상호작용 �
 - 타입·서버 빌드·정적 웹 빌드 및 기존 31개 테스트 통과. UI 변경에 구현을 반복하는 새 단위 테스트는 추가하지 않았다.
 - 실제 정적 웹 UI: 초기 안내 → 첫 예문 → 슬픔 표정 → 미지원 요청 오류 확인. 상태 영역 항상 52px, toast 요소 0, 제거 대상 문구 없음. 오류 뒤에도 모델의 기존 상태 유지.
 - 1280×720: 첫 적용 전후 stage/status/expression/example/composer의 경계 좌표 모두 동일. 390×844: 표정 영역 y=585.600px와 상태 높이 52px 유지, 가로 넘침 없음. 실제 모바일 기기 검증은 별도. 화면: docs/evidence/edit-feedback/mobile.png.
+- 공개 배포 확인에서 브라우저가 기존 고정 app.js를 재사용하는 현상을 발견했다. 웹 빌드의 JS/CSS를 콘텐츠 해시 파일명으로 만들고 index.html을 실제 출력 이름으로 갱신했다. 로컬 정적 재조회 및 오류 없는 렌더 확인. 서버용 dist/app.js 경로는 유지한다.
