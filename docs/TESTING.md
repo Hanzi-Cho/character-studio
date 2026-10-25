@@ -145,4 +145,6 @@ diagnostics에서 대기 중 `scheduled:false`, frame counter가 상호작용 �
 - 390×844 브라우저 화면: 가로 넘침 없음(scrollWidth 390), 편집 컨트롤 표시, 콘솔 오류·경고 없음. 실제 모바일 기기 검증은 미실시. 화면: `docs/evidence/pages-demo/mobile.png`.
 - 정적 번들에 `/api/state`, EventSource, loopback 연결 문자열 없음. 배포 대상은 `dist-web/`만이며 `.data`와 인증 파일은 포함하지 않는다.
 - 실제 GitHub Pages 게시/원격 URL 검증은 배포 후 Linear HAN-186 기록으로 남긴다. 공개 AI 백엔드 배포와 구분한다.
-- PDF: 기존 6쪽에서 2쪽으로 축약, 실제 편집 전후 이미지·5개 핵심 제안·1인 역할·출처·웹 데모 링크. 165,924 bytes, 8개 링크, 두 페이지 Poppler 렌더 시각 검수 완료. 참가 신청 완료·기획서 미제출 상태를 유지한다.
+- PDF: 기존 6쪽에서 2쪽으로 축약, 실제 편집 전후 이미지·5개 핵심 제안·1인 역할·출처·웹 데모 링크. 173,405 bytes, 8개 링크, 두 페이지 Poppler 렌더 시각 검수 완료. 참가 신청 완료·기획서 미제출 상태를 유지한다.
+- 실제 공개 URL https://hanzi-cho.github.io/character-studio/ 확인. main 9bc56c8의 GitHub Actions run 40181971018에서 Linux 빌드·타입·테스트·Pages 배포 모두 성공. 공개 화면에서 무작위 추천, 복합 예문 적용, 새로고침 후 저장 유지와 직접 입력 성공. 콘솔 오류·경고 없음. 저장소 About Website와 README에 URL 연결. 화면: `docs/evidence/pages-demo/public-demo.png`.
+- 후속 PDF 요청 반영: 채팅 → Codex JSON 직렬화 → JSON.parse → Zod의 명령/ENUM 검증 → compilePlan/patch/저장 → Three.js 갱신을 6노드로 표현. 실제 JSON 예시, 4개 편집 op와 6개 표정 enum, 부위 단위 갱신·메시 재사용·필요 시 렌더·예문 AI 호출 생략을 설명. PNG/JSON 다운로드·여러 시점 보기·세부 수정, Blender와 다른 기본 캐릭터 확장을 명시. 재생성 후 2쪽·173,405 bytes 및 양쪽 렌더 시각 검수 통과.
