@@ -7,7 +7,7 @@ const status = document.querySelector<HTMLElement>("#status")!;
 try {
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
-    alpha: true,
+    alpha: false,
     powerPreference: "low-power",
   });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -19,7 +19,7 @@ try {
   // Geometry and lighting are fixed; orbiting only changes the viewing camera.
   renderer.shadowMap.autoUpdate = false;
   renderer.shadowMap.needsUpdate = true;
-  renderer.setClearColor("#faf8f5", 0);
+  renderer.setClearColor("#faf8f5", 1);
   renderer.domElement.tabIndex = 0;
   renderer.domElement.setAttribute("role", "img");
   renderer.domElement.setAttribute(
