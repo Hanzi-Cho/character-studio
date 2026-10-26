@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="HANZI의 우사기. Three.js로 만든 프로필 3D 캐릭터."
+    />
+    <title>HANZI · Character Studio</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #faf8f5;
+        color: #343a35;
+        font:
+          14px system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 1000px;
+        margin: auto;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+      }
+      header,
+      footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 26px 32px;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .brand {
+        font-weight: 750;
+        letter-spacing: -0.5px;
+      }
+      .brand span {
+        font-weight: 400;
+        color: #8a8c83;
+      }
+      #stage {
+        height: min(76svh, 760px);
+        min-height: 420px;
+        width: 100%;
+        background: radial-gradient(ellipse at 50% 43%, #fffdfa 0, #faf8f5 70%);
+        position: relative;
+      }
+      canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+        outline-offset: -5px;
+      }
+      canvas:focus-visible {
+        outline: 2px solid #7b8a70;
+        border-radius: 24px;
+      }
+      footer {
+        font-size: 12px;
+        color: #888d82;
+        gap: 16px;
+        flex-wrap: wrap;
+        padding-top: 6px;
+      }
+      button {
+        font: inherit;
+        color: #5a6653;
+        border: 1px solid #dce0d5;
+        border-radius: 20px;
+        background: #fffdf8;
+        padding: 9px 17px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #f0f2e9;
+      }
+      @media (max-width: 550px) {
+        header,
+        footer {
+          padding: 22px;
+        }
+        #stage {
+          height: 72svh;
+          min-height: 460px;
+        }
+        header a {
+          font-size: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <a class="brand" href="./">character <span>/ studio</span></a
+        ><a href="https://github.com/Hanzi-Cho">HANZI ↗</a>
+      </header>
+      <div id="stage"></div>
+      <footer>
+        <span id="status" role="status">3D를 불러오는 중…</span
+        ><button id="reset" type="button">처음 시점</button
+        ><a href="https://github.com/Hanzi-Cho/character-studio"
+          >Three.js · Source ↗</a
+        >
+      </footer>
+    </main>
+    <script type="module" src="./profile.js"></script>
+  </body>
+</html>
